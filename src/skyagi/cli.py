@@ -1,7 +1,8 @@
 import typer
 from rich.console import Console
+from rich.prompt import Prompt, Confirm, IntPrompt
 
-from skyagi import config, tui
+from skyagi import config, tui, util
 
 cli = typer.Typer()
 console = Console()
@@ -10,6 +11,21 @@ console = Console()
 # Config CLI
 
 config_cli = typer.Typer()
+
+
+@config_cli.command("openai")
+def config_openai():
+    """
+    Configure OpenAI API token
+    """
+    token = Prompt.ask("Enter your OpenAI API token").strip()
+    verify_resp = util.verify_openai_token(token)
+    if verify_resp != "OK":
+        console.print("[Error] OpenAI Token is invalid", style="red")
+        console.print(verify_resp)
+        return
+    config.set_openai_token(token)
+
 
 @config_cli.callback(invoke_without_command=True)
 def config_main(ctx: typer.Context):
