@@ -92,7 +92,7 @@ def run():
         console.print(f"Creating character {idx+1}")
         name = Prompt.ask("What is the character's name?").strip()
         personality = Prompt.ask("Please use 3~5 words describe the character's personality, [yellow]e.g. confident, creative...[/yellow]")
-        intro = Prompt.ask(f"A brief third-person intro, [yellow]e.g. {name} is a famous singer...[/yellow]")
+        intro = Prompt.ask(f"A brief intro, [yellow]e.g. {name} is a famous singer...[/yellow]")
         agent = Agent(name, personality, intro, idx==0)
         agents.append(agent)
         console.print(f"Successfully created character {name}", style="green")
