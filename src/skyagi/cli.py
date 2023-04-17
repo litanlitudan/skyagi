@@ -1,9 +1,9 @@
 import typer
 import time
 from rich.console import Console
-from rich.prompt import Prompt, Confirm, IntPrompt
+from rich.prompt import Prompt, IntPrompt
 
-from skyagi import config, tui, util
+from skyagi import config, util
 from skyagi.skyagi import Agent, Context, step
 
 cli = typer.Typer()
@@ -99,11 +99,12 @@ def run():
         time.sleep(0.5)
     console.print("SkyAGI starting...")
     console.print(f"Now, you are going to behave as {agents[0].name}")
-    ctx = Context()
+    ctx = Context(console, config.load_openai_token())
     instruction = ""
     while True:
         step(agents, ctx, instruction)
-        instruction = Prompt.ask("What's your action? Q for quit, Enter for continue").strip()
+        console.print("What's your action? Q for quit, Enter for continue", style="yellow")
+        instruction = Prompt.ask().strip()
         if (instruction == "Q" or instruction == "q"):
             console.print("Quitting SkyAGI...")
             break
