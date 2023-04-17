@@ -90,8 +90,8 @@ def run():
     agents = []
     for idx in range(agent_count):
         console.print(f"Creating character {idx+1}")
-        name = Prompt.ask("What's the character's name?").strip()
-        personality = Prompt.ask("Please use 3~5 words describe character's personality, [yellow]e.g. confident, creative...[/yellow]")
+        name = Prompt.ask("What is the character's name?").strip()
+        personality = Prompt.ask("Please use 3~5 words describe the character's personality, [yellow]e.g. confident, creative...[/yellow]")
         intro = Prompt.ask(f"A brief third-person intro, [yellow]e.g. {name} is a famous singer...[/yellow]")
         relation = Prompt.ask(f"Some background on social relationships, [yellow]e.g. John Miller growed up with {name} since childhood...[/yellow]")
         agent = Agent(name, personality, intro, relation)
