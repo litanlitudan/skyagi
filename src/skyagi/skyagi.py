@@ -1,6 +1,9 @@
+from typing import List
+
 class Context:
     def __init__(self) -> None:
-        pass
+        self.clock = 0
+
 
 class Agent:
     def __init__(self, name: str, personality: str, intro: str, relation: str) -> None:
@@ -36,5 +39,5 @@ class Reflection(Record):
         super().__init__()
 
 
-def step(agents, ctx):
-    pass
+def step(agents: List[Agent], ctx: Context) -> None:
+    ctx.clock += 1

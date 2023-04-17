@@ -100,7 +100,13 @@ def run():
         time.sleep(0.5)
     console.print("SkyAGI starting...")
     console.print(f"Now, you are going to behave as {agents[0].name}")
-
+    ctx = Context()
+    while True:
+        step(agents, ctx)
+        action = Prompt.ask("What's your action? Q for quit, Enter for continue").strip()
+        if (action == "Q" or action == "q"):
+            console.print("Quitting SkyAGI...")
+            break
 
 @cli.callback(invoke_without_command=True)
 def main(
