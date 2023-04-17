@@ -45,4 +45,4 @@ class Reflection(Record):
 def step(agents: List[Agent], ctx: Context, instruction: str) -> None:
     ctx.clock += 1
     for agent in agents:
-        agent.setp(instruction, ctx)
+        agent.step(instruction, ctx)
