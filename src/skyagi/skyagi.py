@@ -10,10 +10,7 @@ class Agent:
         self.name = name
         self.personality = personality
         self.intro = intro
-        self.prompt = f"""You are the AI behind a NPC character called {name}
-Here are some details about {name}:
-{name} is {personality}
-{intro}"""
+        self.prompt = ""
         self.is_human = is_human
         self.memory = []
 
