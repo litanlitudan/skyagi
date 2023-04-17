@@ -43,3 +43,10 @@ class Plan:
 
 def retrieve_records(memory, context):
     return []
+
+
+def reflect(records):
+    return ""
+
+def plan(records):
+    return ""
