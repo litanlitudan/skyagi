@@ -11,7 +11,7 @@ class Agent:
         self.personality = personality
         self.intro = intro
         self.relation = relation
-        self.prompt = name, f"""You are the AI behind a NPC character called {name}
+        self.prompt = f"""You are the AI behind a NPC character called {name}
 Here are some details about {name}:
 {name} is {personality}
 {intro}
