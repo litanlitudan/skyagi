@@ -1,1 +1,1 @@
-# sky-agi
+# SkyAGI: Sky is the limit
