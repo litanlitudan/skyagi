@@ -6,16 +6,14 @@ class Context:
 
 
 class Agent:
-    def __init__(self, name: str, personality: str, intro: str, relation: str, is_human: bool = False) -> None:
+    def __init__(self, name: str, personality: str, intro: str, is_human: bool = False) -> None:
         self.name = name
         self.personality = personality
         self.intro = intro
-        self.relation = relation
         self.prompt = f"""You are the AI behind a NPC character called {name}
 Here are some details about {name}:
 {name} is {personality}
-{intro}
-{relation}"""
+{intro}"""
         self.is_human = is_human
         self.memory = []
 
