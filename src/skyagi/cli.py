@@ -1,8 +1,10 @@
 import typer
+import time
 from rich.console import Console
 from rich.prompt import Prompt, Confirm, IntPrompt
 
 from skyagi import config, tui, util
+from skyagi.skyagi import run_agi, Agent
 
 cli = typer.Typer()
 console = Console()
@@ -77,6 +79,31 @@ def status():
     Status of the SkyAGI
     """
     console.print("SkyAGI status")
+
+
+@cli.command("run")
+def run():
+    """
+    Run SkyAGI
+    """
+    agent_count = IntPrompt.ask("Number of characters to create?", default=3)
+    agents = []
+    for idx in range(agent_count):
+        console.print(f"Creating character {idx+1}")
+        name = Prompt.ask("What's the character's name?").strip()
+        traits = Prompt.ask("Please use 3~5 words describe the character, [yellow]e.g. confident, creative...[/yellow]")
+        intro = Prompt.ask(f"A brief third-person intro, [yellow]e.g. {name} is a famous singer...[/yellow]")
+        relation = Prompt.ask(f"Some background on social relationships, [yellow]e.g. John Miller growed up with {name} since childhood...[/yellow]")
+        agent = Agent(f"""You are the AI behind a NPC character called {name}
+Here are some details about {name}:
+{name} is {traits}
+{intro}
+{relation}""")
+        agents.append(agent)
+        console.print(f"Successfully created character {name}", style="green")
+        time.sleep(0.5)
+
+
 
 
 @cli.callback(invoke_without_command=True)
