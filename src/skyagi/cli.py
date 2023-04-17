@@ -27,6 +27,20 @@ def config_openai():
     config.set_openai_token(token)
 
 
+@config_cli.command("pinecone")
+def config_pinecone():
+    """
+    Configure Pinecone API token
+    """
+    token = Prompt.ask("Enter your Pinecone API token").strip()
+    verify_resp = util.verify_pinecone_token(token)
+    if verify_resp != "OK":
+        console.print("[Error] Pinecone Token is invalid", style="red")
+        console.print(verify_resp)
+        return
+    config.set_pinecone_token(token)
+
+
 @config_cli.callback(invoke_without_command=True)
 def config_main(ctx: typer.Context):
     """
