@@ -1,10 +1,10 @@
-class Memory:
+class MemoryStream:
     def __init__(self):
         pass
 
-class Event:
-    def __init__(self, prompt: str):
-        self.prompt = prompt
+class Memory:
+    def __init__(self):
+        pass
 
 class Agent:
     def __init__(self, prompt: str):
