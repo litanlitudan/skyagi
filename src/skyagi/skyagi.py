@@ -19,6 +19,8 @@ Here are some details about {name}:
         self.is_human = is_human
         self.memory = []
 
+    def step(self, instruction: str, ctx: Context) -> None:
+        pass
 
 class Record:
     def __init__(self) -> None:
@@ -42,3 +44,5 @@ class Reflection(Record):
 
 def step(agents: List[Agent], ctx: Context, instruction: str) -> None:
     ctx.clock += 1
+    for agent in agents:
+        agent.setp(instruction, ctx)
