@@ -6,7 +6,7 @@ class Context:
 
 
 class Agent:
-    def __init__(self, name: str, personality: str, intro: str, relation: str) -> None:
+    def __init__(self, name: str, personality: str, intro: str, relation: str, is_human: bool = False) -> None:
         self.name = name
         self.personality = personality
         self.intro = intro
@@ -16,6 +16,7 @@ Here are some details about {name}:
 {name} is {personality}
 {intro}
 {relation}"""
+        self.is_human = is_human
         self.memory = []
 
 
