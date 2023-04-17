@@ -1,6 +1,15 @@
 class Memroy:
+    def __init__(self):
+        pass
 
-    def __init__(self, size):
-        self.logs = []
-        self.size = size
-        self.head = 0
+class Recency:
+    def __init__(self):
+        pass
+
+class Importance:
+    def __init__(self):
+        pass
+
+class Relevance:
+    def __init__(self):
+        pass
