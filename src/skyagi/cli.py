@@ -91,19 +91,15 @@ def run():
     for idx in range(agent_count):
         console.print(f"Creating character {idx+1}")
         name = Prompt.ask("What's the character's name?").strip()
-        traits = Prompt.ask("Please use 3~5 words describe the character, [yellow]e.g. confident, creative...[/yellow]")
+        personality = Prompt.ask("Please use 3~5 words describe character's personality, [yellow]e.g. confident, creative...[/yellow]")
         intro = Prompt.ask(f"A brief third-person intro, [yellow]e.g. {name} is a famous singer...[/yellow]")
         relation = Prompt.ask(f"Some background on social relationships, [yellow]e.g. John Miller growed up with {name} since childhood...[/yellow]")
-        agent = Agent(f"""You are the AI behind a NPC character called {name}
-Here are some details about {name}:
-{name} is {traits}
-{intro}
-{relation}""")
+        agent = Agent(name, personality, intro, relation)
         agents.append(agent)
         console.print(f"Successfully created character {name}", style="green")
         time.sleep(0.5)
-
-
+    console.print("SkyAGI starting...")
+    console.print(f"Now, you are going to behave as {agents[0].name}")
 
 
 @cli.callback(invoke_without_command=True)

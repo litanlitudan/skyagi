@@ -1,6 +1,14 @@
 class Agent:
-    def __init__(self, prompt: str):
-        self.prompt = prompt
+    def __init__(self, name: str, personality: str, intro: str, relation: str):
+        self.name = name
+        self.personality = personality
+        self.intro = intro
+        self.relation = relation
+        self.prompt = name, f"""You are the AI behind a NPC character called {name}
+Here are some details about {name}:
+{name} is {personality}
+{intro}
+{relation}"""
         self.memory = []
 
 
