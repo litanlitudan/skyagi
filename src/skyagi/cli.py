@@ -98,7 +98,7 @@ def run():
         console.print(f"Successfully created character {name}", style="green")
         time.sleep(0.5)
     console.print("SkyAGI starting...")
-    console.print(f"Now, you are going to behave as {agents[0].name}")
+    console.print(f"Now, you are going to behave as {agents[0].name}", style="yellow")
     ctx = Context(console, config.load_openai_token())
     instruction = ""
     while True:
