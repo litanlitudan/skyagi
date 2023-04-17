@@ -24,3 +24,11 @@ class Importance:
 class Relevance:
     def __init__(self):
         pass
+
+class Reflection:
+    def __init__(self):
+        pass
+
+class Plan:
+    def __init__(self):
+        pass
