@@ -17,7 +17,10 @@ class Agent:
         self.is_human = is_human
         self.memory = []
         # prompt related
-        prompt_instruct = f"""At each time I ender the command "New_TIME_STEP" I want you to list the time of day and the action Yuan Yu is taking. If he is in a conversation with some please show that conversation.
+        prompt_instruct = f"""{name} has a personality of {personality} and here is an intro:
+{intro}
+
+At each time I ender the command "New_TIME_STEP" I want you to list the time of day and the action Yuan Yu is taking. If he is in a conversation with some please show that conversation.
 
 Examples:
 
@@ -25,12 +28,12 @@ NEW_TIME_STEP
 06:00am {name} is asleep
 
 NEW_TIME_STEP
+
+It is currently 9:00 am
 """
         self.prompt = [
             {"role": "system", "content": f"You are the AI behind a NPC character called {name}"},
-            {"role": "user", "content": f"{name} has a personality of {personality} and here is an intro\n{intro}"},
             {"role": "user", "content": prompt_instruct},
-            {"role": "user", "content": "It is currently 9:00 am"}
         ]
 
     def step(self, instruction: str, ctx: Context) -> None:
@@ -42,7 +45,7 @@ NEW_TIME_STEP
         resp = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=self.prompt,
-            stream=False
+
         )
         message = resp["choices"][0]["message"]
         self.prompt.append(message)
