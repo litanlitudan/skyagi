@@ -1,8 +1,8 @@
-class MemoryStream:
+class Memory:
     def __init__(self):
         pass
 
-class Memory:
+class Record:
     def __init__(self):
         pass
 
@@ -18,7 +18,7 @@ class Importance:
     def __init__(self, prompt: str):
         self.prompt = prompt
 
-    def get_importance(self, event: Event):
+    def get_importance(self):
         return 0
 
 class Relevance:
