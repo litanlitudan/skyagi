@@ -1,5 +1,5 @@
-from typing import Any
-from pathlib import Path, Dict
+from typing import Any, Dict
+from pathlib import Path
 import os
 import json
 
@@ -44,6 +44,8 @@ def set_json_value(filepath: Path, key: str, value: Any) -> None:
 
 
 def load_json(filepath: Path) -> Dict:
+    if not Path(filepath).exists():
+        return {}
     with open(filepath, "r") as file:
         try:
             json_obj = json.load(file)
