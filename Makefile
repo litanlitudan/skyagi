@@ -7,3 +7,13 @@ build-package:
 
 install:
 	pip install -e .[dev]
+
+setup-dev:
+	cp scripts/pre-commit .git/hooks
+	cp scripts/pre-push .git/hooks
+
+lint:
+	echo "Linting not implemented"
+
+format-staged-files:
+	echo "Auto-formatting not implemented"

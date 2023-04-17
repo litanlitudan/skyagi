@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Prevent pushing code with style issues
+# Leverage Makefile to access user installed packges through pip
+# By default, pre-push is ran in a standalone shell env
+SCRIPT_PATH=${BASH_SOURCE[0]}
+cd "$(dirname $(dirname $(dirname "$SCRIPT_PATH")))" && make -s lint
+
+if [[ $? -ne 0 ]]; then
+    echo -e "\e[1;31mPlease resolve above linting errors.\e[1;m"
+    exit 1
+fi
