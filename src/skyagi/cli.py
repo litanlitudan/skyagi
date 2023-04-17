@@ -101,10 +101,11 @@ def run():
     console.print("SkyAGI starting...")
     console.print(f"Now, you are going to behave as {agents[0].name}")
     ctx = Context()
+    instruction = ""
     while True:
-        step(agents, ctx)
-        action = Prompt.ask("What's your action? Q for quit, Enter for continue").strip()
-        if (action == "Q" or action == "q"):
+        step(agents, ctx, instruction)
+        instruction = Prompt.ask("What's your action? Q for quit, Enter for continue").strip()
+        if (instruction == "Q" or instruction == "q"):
             console.print("Quitting SkyAGI...")
             break
 

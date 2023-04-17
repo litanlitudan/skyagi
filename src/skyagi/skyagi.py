@@ -39,5 +39,5 @@ class Reflection(Record):
         super().__init__()
 
 
-def step(agents: List[Agent], ctx: Context) -> None:
+def step(agents: List[Agent], ctx: Context, instruction: str) -> None:
     ctx.clock += 1
