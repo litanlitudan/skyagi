@@ -4,7 +4,7 @@ from rich.console import Console
 from rich.prompt import Prompt, Confirm, IntPrompt
 
 from skyagi import config, tui, util
-from skyagi.skyagi import run_agi, Agent
+from skyagi.skyagi import Agent, Context, step
 
 cli = typer.Typer()
 console = Console()

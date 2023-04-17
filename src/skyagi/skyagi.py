@@ -1,5 +1,9 @@
+class Context:
+    def __init__(self) -> None:
+        pass
+
 class Agent:
-    def __init__(self, name: str, personality: str, intro: str, relation: str):
+    def __init__(self, name: str, personality: str, intro: str, relation: str) -> None:
         self.name = name
         self.personality = personality
         self.intro = intro
@@ -13,31 +17,24 @@ Here are some details about {name}:
 
 
 class Record:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
 class Oberservation(Record):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
 
 class Plan(Record):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
 
 class Reflection(Record):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
 
-def run_agi(num_iterations, agents):
-    timer = 0
-    for iter in range(num_iterations):
-        pass
+def step(agents, ctx):
     pass
-
-
-if __name__ == "__main__":
-    run_agi(3, [])
