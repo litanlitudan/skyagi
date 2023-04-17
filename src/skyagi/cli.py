@@ -108,6 +108,7 @@ def run():
             console.print("Quitting SkyAGI...")
             break
 
+
 @cli.callback(invoke_without_command=True)
 def main(
     ctx: typer.Context,
