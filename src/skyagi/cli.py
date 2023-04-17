@@ -36,17 +36,15 @@ def config_main(ctx: typer.Context):
     if ctx.invoked_subcommand is not None:
         return
 
-    skyagi_config = config.load_config()
-
     console.print("SkyAGI's Configuration")
 
-    if (skyagi_config.get("openai", None)):
+    if (config.load_openai_token()):
         console.print("OpenAI Token is configured, good job!", style="green")
     else:
         console.print("OpenAI Token not configured yet! This is necessary to use SkyAGI", style="red")
         console.print("To config OpenAI token: [yellow]skyagi config openai[/yellow]")
 
-    if (skyagi_config.get("pinecone", None)):
+    if (config.load_pinecone_token()):
         console.print("Pinecone Token is configured, good job!", style="green")
     else:
         console.print("Pinecone Token not configured yet! This is necessary to use SkyAGI", style="red")
