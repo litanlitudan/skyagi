@@ -1,6 +1,7 @@
-class Memory:
-    def __init__(self):
-        pass
+class Agent:
+    def __init__(self, prompt: str):
+        self.prompt = prompt
+        self.memory = []
 
 
 class Record:
@@ -8,45 +9,27 @@ class Record:
         pass
 
 
-class Agent:
-    def __init__(self, prompt: str):
-        self.prompt = prompt
-
-
-class Recency:
+class Oberservation(Record):
     def __init__(self):
-        pass
+        super().__init__()
 
 
-class Importance:
-    def __init__(self, prompt: str):
-        self.prompt = prompt
-
-    def get_importance(self):
-        return 0
-
-
-class Relevance:
+class Plan(Record):
     def __init__(self):
-        pass
+        super().__init__()
 
 
-class Reflection:
+class Reflection(Record):
     def __init__(self):
+        super().__init__()
+
+
+def run_agi(num_iterations, agents):
+    timer = 0
+    for iter in range(num_iterations):
         pass
+    pass
 
 
-class Plan:
-    def __init__(self):
-        pass
-
-
-def retrieve_records(memory, context):
-    return []
-
-
-def reflect(records):
-    return ""
-
-def plan(records):
-    return ""
+if __name__ == "__main__":
+    run_agi(3, [])
