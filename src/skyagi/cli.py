@@ -25,6 +25,7 @@ def config_openai():
         console.print(verify_resp)
         return
     config.set_openai_token(token)
+    console.print("OpenAI Key is Configured Successfully!", style="green")
 
 
 @config_cli.command("pinecone")
@@ -39,6 +40,7 @@ def config_pinecone():
         console.print(verify_resp)
         return
     config.set_pinecone_token(token)
+    console.print("Pinecone Key is Configured Successfully!", style="green")
 
 
 @config_cli.callback(invoke_without_command=True)
