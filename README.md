@@ -1,1 +1,1 @@
-# sky9-ai
+# sky-agi
