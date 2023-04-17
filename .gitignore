@@ -1,3 +1,4 @@
 src/skyagi.egg-info
 **/__pycache__
 .vscode/*.log
+dist
