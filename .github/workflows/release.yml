@@ -14,3 +14,5 @@ jobs:
           python-version: 3.9
       - name: Get a patch release
         run: python3 .github/scripts/release.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
