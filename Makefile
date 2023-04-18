@@ -3,6 +3,7 @@ setup-package:
 	pip install build
 
 build-package:
+	make setup-package
 	python -m build
 
 install:
