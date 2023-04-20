@@ -57,3 +57,18 @@ tommie = GenerativeAgent(
 )
 
 print(tommie.get_summary())
+
+tommie_memories = [
+    "Tommie remembers his dog, Bruno, from when he was a kid",
+    "Tommie feels tired from driving so far",
+    "Tommie sees the new home",
+    "The new neighbors have a cat",
+    "The road is noisy at night",
+    "Tommie is hungry",
+    "Tommie tries to get some rest.",
+]
+
+for memory in tommie_memories:
+    tommie.add_memory(memory)
+
+print(tommie.get_summary())
