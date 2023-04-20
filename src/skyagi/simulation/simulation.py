@@ -11,6 +11,7 @@ from langchain.vectorstores import FAISS
 
 from skyagi.simulation.agent import GenerativeAgent
 
+
 # reference: https://python.langchain.com/en/latest/use_cases/agent_simulations/characters.html#create-a-generative-character
 def relevance_score_fn(score: float) -> float:
     """Return a similarity score on a scale [0, 1]."""
@@ -41,6 +42,7 @@ def create_new_memory_retriever():
     return TimeWeightedVectorStoreRetriever(
         vectorstore=vectorstore, other_score_keys=["importance"], k=15
     )
+
 
 def run_conversation(agents: List[GenerativeAgent], initial_observation: str) -> None:
     """Runs a conversation between agents."""

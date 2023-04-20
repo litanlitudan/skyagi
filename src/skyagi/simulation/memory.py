@@ -110,11 +110,9 @@ eve_memories = [
     "Eve helps a coworker on a task",
     "Eve plays tennis with her friend Xu before going to work",
     "Eve overhears her colleague say something about Tommie being hard to work with",
-
 ]
 for memory in eve_memories:
     eve.add_memory(memory)
-
 
 
 agents = [tommie, eve]
