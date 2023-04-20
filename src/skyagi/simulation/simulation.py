@@ -62,3 +62,9 @@ def run_conversation(agents: List[GenerativeAgent], initial_observation: str) ->
         if break_dialogue:
             break
         turns += 1
+
+
+def interview_agent(agent: GenerativeAgent, message: str, username: str) -> str:
+    """Help the notebook user interact with the agent."""
+    new_message = f"{username} says {message}"
+    return agent.generate_dialogue_response(new_message)[1]
