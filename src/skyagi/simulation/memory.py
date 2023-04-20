@@ -13,6 +13,7 @@ USER_NAME = "Person A"  # The name you want to use when interviewing the agent.
 LLM = ChatOpenAI(max_tokens=1500)  # Can be any LLM you want.
 
 
+# reference: https://python.langchain.com/en/latest/use_cases/agent_simulations/characters.html#create-a-generative-character
 def relevance_score_fn(score: float) -> float:
     """Return a similarity score on a scale [0, 1]."""
     # This will differ depending on a few things:
@@ -23,7 +24,7 @@ def relevance_score_fn(score: float) -> float:
     # to a similarity function (0 to 1)
     return 1.0 - score / math.sqrt(2)
 
-
+# reference: https://python.langchain.com/en/latest/use_cases/agent_simulations/characters.html#create-a-generative-character
 def create_new_memory_retriever():
     """Create a new vector store retriever unique to the agent."""
     # Define your embedding model
