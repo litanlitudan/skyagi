@@ -7,8 +7,10 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
+from langchain import LLMChain
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseLanguageModel
+from langchain.prompts import PromptTemplate
 
 class GenerativeAgent(BaseModel):
     """A character with memory and innate characteristics."""
