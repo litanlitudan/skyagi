@@ -55,3 +55,5 @@ tommie = GenerativeAgent(
     ],
     reflection_threshold=8,  # we will give this a relatively low number to show how reflection works
 )
+
+print(tommie.get_summary())
