@@ -71,4 +71,4 @@ tommie_memories = [
 for memory in tommie_memories:
     tommie.add_memory(memory)
 
-print(tommie.get_summary())
+print(tommie.get_summary(force_refresh=True))
