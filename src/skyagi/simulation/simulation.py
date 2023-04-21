@@ -9,6 +9,7 @@ from langchain.embeddings import OpenAIEmbeddings
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
 
+from skyagi.context import Context
 from skyagi.simulation.agent import GenerativeAgent
 
 
@@ -44,10 +45,14 @@ def create_new_memory_retriever():
     )
 
 
-def run_conversation(agents: List[GenerativeAgent], initial_observation: str) -> None:
+def run_conversation(agents: List[GenerativeAgent], initial_observation: str, ctx: Context) -> None:
     """Runs a conversation between agents."""
+    ctx.observations.append("A conversation happened among " + ",".join(list(map(lambda agent: agent.name, agents))))
+    ctx.observations.append(initial_observation)
+
     _, observation = agents[1].generate_reaction(initial_observation)
-    print(observation)
+    ctx.observations.append(observation)
+
     turns = 0
     while True:
         break_dialogue = False
@@ -55,8 +60,7 @@ def run_conversation(agents: List[GenerativeAgent], initial_observation: str) ->
             stay_in_dialogue, observation = agent.generate_dialogue_response(
                 observation
             )
-            print(observation)
-            # observation = f"{agent.name} said {reaction}"
+            ctx.observations.append(observation)
             if not stay_in_dialogue:
                 break_dialogue = True
         if break_dialogue:

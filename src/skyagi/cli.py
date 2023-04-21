@@ -97,7 +97,7 @@ def run():
         console.print(verify_openai)
         return
     # Get inputs from the user
-    agent_count = IntPrompt.ask("Number of agents to create?", default=1)
+    agent_count = IntPrompt.ask("Number of agents to create?", default=3)
     agent_configs = []
     agent_names = []
     for idx in range(agent_count):
@@ -124,11 +124,9 @@ def run():
     user_index = agent_names.index(user_role)
     ctx = agi_init(agent_configs, console, config.load_openai_token(), user_index)
 
-    instruction = {
-        "command": "continue"
-    }
     actions = ["continue", "interview", "exit"]
     while True:
+        instruction = { "command": "continue" }
         action = Prompt.ask("Pick an action to perform?", choices=actions, default=actions[0])
         if action == "interview":
             robot_agent_names = list(map(lambda agent: agent.name, ctx.robot_agents))
