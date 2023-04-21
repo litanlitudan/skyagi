@@ -16,7 +16,7 @@ def talks_to(amy: GenerativeAgent, bob: GenerativeAgent, observations: List[str]
     instruct = "Here are the timeline of events happend for these NPC characters:\n"
     instruct += "\n".join(observations)
     instruct += "\n"
-    instruct += f"I want to you to behave as {amy.name} and talk to {bob.name}.\n"
+    instruct += f"I want to you to behave as {amy.name} and talk to me as I am {bob.name}.\n"
     instruct += f"If you do not want to or can not talk to {bob.name}, just output NOTHING"
 
     prompts = [
