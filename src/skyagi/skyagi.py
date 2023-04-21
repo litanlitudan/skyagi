@@ -108,5 +108,6 @@ def agi_init(agent_configs: List[dict], console: Console, openai_key: str, user_
         agents.append(agent)
         console.print(f"Agent {agent_name} successfully created", style="green")
 
+    console.print("SkyAGI started...")
     console.print(f"You are going to behave as {user_agent_name}", style="yellow")
     return ctx
