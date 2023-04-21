@@ -25,11 +25,11 @@ def talks_to(amy: GenerativeAgent, bob: GenerativeAgent, observations: List[str]
     ]
 
     resp = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=prompts
-        )
+        model="gpt-3.5-turbo",
+        messages=prompts
+    )
 
-    message = resp["choices"][0]["message"]
+    message = resp["choices"][0]["message"]["content"]
     if "NOTHING" in message:
         return ""
     else:
