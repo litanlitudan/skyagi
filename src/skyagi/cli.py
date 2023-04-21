@@ -152,4 +152,4 @@ def main(
     if ctx.invoked_subcommand is not None:
         return
 
-    console.print("Hello SkyAGI")
+    run()
