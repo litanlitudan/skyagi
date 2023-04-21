@@ -13,7 +13,27 @@ from skyagi.simulation.simulation import create_new_memory_retriever, run_conver
 
 # whether amy wants to talk to bob based on the observations
 def talks_to(amy: GenerativeAgent, bob: GenerativeAgent, observations: List[str]) -> str:
-    return False
+    instruct = "Here are the timeline of events happend for these NPC characters:\n"
+    instruct += "\n".join(observations)
+    instruct += "\n"
+    instruct += f"I want to you to behave as {amy.name} and talk to {bob.name}.\n"
+    instruct += f"If you do not want to or can not talk to {bob.name}, just output NOTHING"
+
+    prompts = [
+        {"role": "system", "content": f"You are the AI behind a NPC character called {amy.name}"},
+        {"role": "user", "content": instruct},
+    ]
+
+    resp = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=prompts
+        )
+
+    message = resp["choices"][0]["message"]
+    if "NOTHING" in message:
+        return ""
+    else:
+        return message
 
 
 def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
