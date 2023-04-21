@@ -82,13 +82,13 @@ def agi_step(ctx: Context, instruction: dict) -> None:
             message = talks_to(amy, bob, ctx.observations)
             if message:
                 ctx.console.print(f"{amy.name} just whispered to {bob.name}...", style="yellow")
-                run_conversation([amy, bob], f"{amy.name} said: {message}")
+                run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
                 ctx.console.print(f"{amy.name} and {bob.name} finished their private conversation...", style="yellow")
                 continue
             message = talks_to(bob, amy, ctx.observations)
             if message:
                 ctx.console.print(f"{bob.name} just whispered to {amy.name}...", style="yellow")
-                run_conversation([bob, amy], f"{bob.name} said: {message}")
+                run_conversation([bob, amy], f"{bob.name} said: {message}", ctx)
                 ctx.console.print(f"{bob.name} and {amy.name} finished their private conversation...", style="yellow")
                 continue
 
