@@ -62,9 +62,9 @@ def agi_step(ctx: Context, instruction: dict) -> None:
             message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
             if message:
                 if someone_asked:
-                    ctx.console.print(f"{robot_agent.name} also said to you({ctx.user_agent.name})", style="yellow")
+                    ctx.console.print(f"{robot_agent.name} also whispered to you({ctx.user_agent.name}): {message}", style="yellow")
                 else:
-                    ctx.console.print(f"{robot_agent.name} said to you: ({ctx.user_agent.name})", style="yellow")
+                    ctx.console.print(f"{robot_agent.name} whispered to you ({ctx.user_agent.name}): {message}", style="yellow")
                 someone_asked = True
                 respond = Prompt.ask(f"Do you want to respond to {robot_agent.name}?", choices=["yes", "no"], default="yes")
                 if respond == "yes":
