@@ -20,10 +20,10 @@ class Context:
 
 def agi_step(ctx: Context, instruction: dict) -> None:
     ctx.clock += 1
-    if instruction["command"] == "continue":
-        pass
-    elif instruction["command"] == "interview":
-        pass
+    if instruction["command"] == "interview":
+        interview_agent = instruction["interview_agent"]
+    # let things happen
+
 
 
 def agi_init(agent_configs: List[dict], console: Console, openai_key: str, user_idx: int = 0) -> Context:
