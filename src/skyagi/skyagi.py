@@ -2,6 +2,11 @@ import openai
 from typing import List
 from rich.console import Console
 
+from langchain.chat_models import ChatOpenAI
+
+from skyagi.simulation.agent import GenerativeAgent
+from skyagi.simulation.simulation import create_new_memory_retriever, run_conversation, interview_agent
+
 class Context:
     def __init__(self, console: Console, openai_key: str) -> None:
         self.clock = 0
@@ -80,6 +85,27 @@ def agi_step(agents: List[Agent], ctx: Context, instruction: str) -> None:
 def agi_init(agent_configs: List[dict], console: Console, openai_key: str, user_idx: int = 0) -> Context:
     ctx = Context(console, openai_key)
     user_agent_name = agent_configs[user_idx]["name"]
+    agents = []
+    for agent_config in agent_configs:
+        agent_name = agent_config["name"]
+        console.print(f"Creating agent {agent_name}", style="yellow")
+        agent = GenerativeAgent(
+            name=agent_config["name"],
+            age=agent_config["age"],
+            traits=agent_config["personality"],
+            status="N/A",  # When connected to a virtual world, we can have the characters update their status
+            memory_retriever=create_new_memory_retriever(),
+            llm=ChatOpenAI(max_tokens=1500),
+            daily_summaries=[
+                (
+                    agent_config["current_status"]
+                )
+            ],
+            reflection_threshold=8,
+        )
+        for memory in agent_config["memories"]:
+            agent.add_memory(memory)
+        agents.append(agent)
 
     console.print(f"You are going to behave as {user_agent_name}", style="yellow")
     return ctx

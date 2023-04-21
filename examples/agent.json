@@ -1,6 +1,7 @@
 {
     "name": "YY",
     "personality": "curious, helpful",
+    "age": 30,
     "memories": [
         "First line of memory...",
         "Second line of memory..."
