@@ -8,7 +8,7 @@ from rich.prompt import Prompt, IntPrompt
 
 from skyagi import config, util
 from skyagi.skyagi import agi_step, agi_init
-from skyagi.discord import agent as discord_agent
+from skyagi.discord import client
 
 cli = typer.Typer()
 console = Console()
@@ -111,7 +111,7 @@ def status():
         console.print(verify_discord)
         return
     console.print("Discord client starting...", style="yellow")
-    discord_agent.run(discord_token)
+    client.run(discord_token)
 
 
 @cli.command("run")
