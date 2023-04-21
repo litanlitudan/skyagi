@@ -46,6 +46,8 @@ def agi_init(agent_configs: List[dict], console: Console, openai_key: str, user_
             agent.add_memory(memory)
         if idx == user_idx:
             ctx.user_agent = agent
+        else:
+            ctx.robot_agents.append(agent)
         ctx.agents.append(agent)
         console.print(f"Agent {agent_name} successfully created", style="green")
 

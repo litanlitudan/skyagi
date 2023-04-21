@@ -132,11 +132,9 @@ def run():
     while True:
         action = Prompt.ask("Pick an action to perform?", choices=actions, default=actions[0])
         if action == "interview":
-            robot_agents = []
-            for agent in ctx.agents:
-                if agent.name != ctx.user_agent.name:
-                    robot_agents.append(agent)
-            target = Prompt.ask()
+            robot_agent_names = list(map(lambda agent: agent.name, ctx.robot_agents))
+            robot_agent_name = Prompt.ask(f"As {ctx.user_agent.name}, which agent do you want to talk to?", choices=robot_agent_names, default=robot_agent_names[0])
+            console.print(robot_agent_name)
         elif action == "exit":
             console.print("SkyAGI exiting...", style="yellow")
             break
