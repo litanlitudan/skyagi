@@ -23,18 +23,23 @@ def talks_to(amy: GenerativeAgent, bob: GenerativeAgent, observations: List[str]
         {"role": "system", "content": f"You are the AI behind a NPC character called {amy.name}"},
         {"role": "user", "content": instruct},
     ]
-
     resp = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=prompts
     )
-
     message = resp["choices"][0]["message"]["content"]
     if "NOTHING" in message:
         return ""
-    else:
-        return message
 
+    prompts.append(resp["choices"][0]["message"])
+    prompts.append({"role": "user", "content": f"Did {amy.name} talk to {bob.name}, please answer yes or no"})
+    resp = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=prompts
+    )
+    if "no" in resp["choices"][0]["message"]["content"]:
+        return ""
+    return message
 
 def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
     ctx.console.print(f"Interview with {agent_to_interview.name} start, input empty line to exit", style="yellow")
