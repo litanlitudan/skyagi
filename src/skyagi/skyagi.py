@@ -13,6 +13,8 @@ class Context:
         self.clock = 0
         self.console = console
         self.openai_key = openai_key
+        self.agents = []
+        self.user_agent = None
 
 
 class Agent:
@@ -86,9 +88,7 @@ def agi_step(agents: List[Agent], ctx: Context, instruction: str) -> None:
 def agi_init(agent_configs: List[dict], console: Console, openai_key: str, user_idx: int = 0) -> Context:
     ctx = Context(console, openai_key)
     os.environ['OPENAI_API_KEY'] = openai_key
-    user_agent_name = agent_configs[user_idx]["name"]
-    agents = []
-    for agent_config in agent_configs:
+    for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
         console.print(f"Creating agent {agent_name}", style="yellow")
         agent = GenerativeAgent(
@@ -107,9 +107,11 @@ def agi_init(agent_configs: List[dict], console: Console, openai_key: str, user_
         )
         for memory in agent_config["memories"]:
             agent.add_memory(memory)
-        agents.append(agent)
+        if idx == user_idx:
+            ctx.user_agent = agent
+        ctx.agents.append(agent)
         console.print(f"Agent {agent_name} successfully created", style="green")
 
     console.print("SkyAGI started...")
-    console.print(f"You are going to behave as {user_agent_name}", style="yellow")
+    console.print(f"You are going to behave as {ctx.user_agent.name}", style="yellow")
     return ctx

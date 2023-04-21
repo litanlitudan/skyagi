@@ -122,27 +122,23 @@ def run():
 
     user_role = Prompt.ask("Pick which role you want to perform?", choices=agent_names, default=agent_names[0])
     user_index = agent_names.index(user_role)
-    ctx = agi_init(agent_configs, console, config.load_openai_token(), user_index)
+    ctx, agents = agi_init(agent_configs, console, config.load_openai_token(), user_index)
 
-    #     name = Prompt.ask("What is the character's name?").strip()
-    #     personality = Prompt.ask("Please use 3~5 words describe the character's personality, [yellow]e.g. confident, creative...[/yellow]")
-    #     intro = Prompt.ask(f"A brief intro, [yellow]e.g. {name} is a famous singer...[/yellow]")
-    #     agent = Agent(name, personality, intro, idx==0)
-    #     agents.append(agent)
-    #     console.print(f"Successfully created character {name}", style="green")
-    #     time.sleep(0.5)
-    # console.print("SkyAGI starting...")
-    # console.print(f"Now, you are going to behave as {agents[0].name}", style="yellow")
-    # ctx = Context(console, config.load_openai_token())
-    # instruction = ""
-    # while True:
-    #     step(agents, ctx, instruction)
-    #     console.print("What's your action? Q for quit, Enter for continue", style="yellow")
-    #     instruction = Prompt.ask().strip()
-    #     if (instruction == "Q" or instruction == "q"):
-    #         console.print("Quitting SkyAGI...")
-    #         break
+    instruction = {
+        "command": "continue",
+        "payload": ""
+    }
+    actions = ["continue", "interview", "exit"]
+    while True:
+        action = Prompt.ask("Pick an action to perform?", choices=actions, default=actions[0])
+        if action == "interview":
+            agi_step()
 
+        # console.print("What's your action? Q for quit, Enter for continue", style="yellow")
+        # instruction = Prompt.ask().strip()
+        # if (instruction == "Q" or instruction == "q"):
+        #     console.print("Quitting SkyAGI...")
+        #     break
 
 @cli.callback(invoke_without_command=True)
 def main(
