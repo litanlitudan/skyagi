@@ -71,7 +71,13 @@ class Reflection(Record):
         super().__init__()
 
 
-def step(agents: List[Agent], ctx: Context, instruction: str) -> None:
+def agi_step(agents: List[Agent], ctx: Context, instruction: str) -> None:
     ctx.clock += 1
     for agent in agents:
         agent.step(instruction, ctx)
+
+
+def agi_init(agent_configs: List[dict], console: Console, openai_key: str, user_idx: int = 0) -> Context:
+    ctx = Context(console, openai_key)
+    agent_config = agent_configs[user_idx]
+    return ctx
