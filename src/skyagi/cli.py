@@ -121,7 +121,8 @@ def run():
         agent_names.append(agent_config["name"])
 
     user_role = Prompt.ask("Pick which role you want to perform?", choices=agent_names, default=agent_names[0])
-    ctx = agi_init(agent_configs, console, agent_names.index(user_role), config.load_openai_token())
+    user_index = agent_names.index(user_role)
+    ctx = agi_init(agent_configs, console, config.load_openai_token(), user_index)
 
     #     name = Prompt.ask("What is the character's name?").strip()
     #     personality = Prompt.ask("Please use 3~5 words describe the character's personality, [yellow]e.g. confident, creative...[/yellow]")
