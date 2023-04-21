@@ -101,7 +101,7 @@ def run():
     agent_configs = []
     agent_names = []
     for idx in range(agent_count):
-        console.print(f"Creating agent number {idx+1}")
+        console.print(f"Specify agent number {idx+1}")
         agent_config = {}
         while True:
             agent_file = Prompt.ask("Enter the path to the agent configuration file", default="./agent.json")
