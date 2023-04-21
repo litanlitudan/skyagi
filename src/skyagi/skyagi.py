@@ -10,11 +10,12 @@ from skyagi.simulation.simulation import create_new_memory_retriever, run_conver
 
 class Context:
     def __init__(self, console: Console, openai_key: str) -> None:
-        self.clock = 0
-        self.console = console
-        self.openai_key = openai_key
-        self.agents = []
-        self.user_agent = None
+        self.clock: int = 0
+        self.console: Console = console
+        self.openai_key: str = openai_key
+        self.agents: List[GenerativeAgent] = []
+        self.user_agent: GenerativeAgent = None
+        self.robot_agents: List[GenerativeAgent] = []
 
 
 def agi_step(ctx: Context, instruction: dict) -> None:
