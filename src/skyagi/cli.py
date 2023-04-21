@@ -133,12 +133,10 @@ def run():
         action = Prompt.ask("Pick an action to perform?", choices=actions, default=actions[0])
         if action == "interview":
             agi_step()
-
-        # console.print("What's your action? Q for quit, Enter for continue", style="yellow")
-        # instruction = Prompt.ask().strip()
-        # if (instruction == "Q" or instruction == "q"):
-        #     console.print("Quitting SkyAGI...")
-        #     break
+        elif action == "exit":
+            console.print("SkyAGI exiting...", style="yellow")
+            break
+        agi_step(ctx, instruction)
 
 @cli.callback(invoke_without_command=True)
 def main(
