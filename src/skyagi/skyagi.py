@@ -39,7 +39,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
     if instruction["command"] == "continue":
         someone_asked = False
         for robot_agent in ctx.robot_agents:
-            message = talks_to(robot_agent, ctx.user_agent)
+            message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
             if message:
                 if someone_asked:
                     ctx.console.print(f"{robot_agent.name} also said to you({ctx.user_agent.name})", style="yellow")
@@ -54,13 +54,13 @@ def agi_step(ctx: Context, instruction: dict) -> None:
     for idx in range(len(ctx.robot_agents)-1):
         amy = ctx.robot_agents[idx]
         for bob in ctx.robot_agents[idx+1:]:
-            message = talks_to(amy, bob)
+            message = talks_to(amy, bob, ctx.observations)
             if message:
                 ctx.console.print(f"{amy.name} just whispered to {bob.name}...", style="yellow")
                 run_conversation([amy, bob], f"{amy.name} said: {message}")
                 ctx.console.print(f"{amy.name} and {bob.name} finished their private conversation...", style="yellow")
                 continue
-            message = talks_to(bob, amy)
+            message = talks_to(bob, amy, ctx.observations)
             if message:
                 ctx.console.print(f"{bob.name} just whispered to {amy.name}...", style="yellow")
                 run_conversation([bob, amy], f"{bob.name} said: {message}")
