@@ -7,7 +7,7 @@ from rich.console import Console
 from rich.prompt import Prompt, IntPrompt
 
 from skyagi import config, util
-from skyagi.skyagi import Agent, Context, agi_step, agi_init
+from skyagi.skyagi import agi_step, agi_init
 
 cli = typer.Typer()
 console = Console()
@@ -132,11 +132,12 @@ def run():
     while True:
         action = Prompt.ask("Pick an action to perform?", choices=actions, default=actions[0])
         if action == "interview":
-            agi_step()
+            target = Prompt.ask()
         elif action == "exit":
             console.print("SkyAGI exiting...", style="yellow")
             break
         agi_step(ctx, instruction)
+
 
 @cli.callback(invoke_without_command=True)
 def main(
