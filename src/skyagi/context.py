@@ -12,5 +12,5 @@ class Context:
         self.user_agent: GenerativeAgent = None
         self.robot_agents: List[GenerativeAgent] = []
         self.observations = ["Beginning of the day, people are living their lives."]
-        self.timewindow_size = 10
+        self.timewindow_size = 5
         self.observations_size_history = []
