@@ -122,7 +122,7 @@ def run():
 
     user_role = Prompt.ask("Pick which role you want to perform?", choices=agent_names, default=agent_names[0])
     user_index = agent_names.index(user_role)
-    ctx, agents = agi_init(agent_configs, console, config.load_openai_token(), user_index)
+    ctx = agi_init(agent_configs, console, config.load_openai_token(), user_index)
 
     instruction = {
         "command": "continue",
