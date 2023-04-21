@@ -25,6 +25,10 @@ def verify_pinecone_token(token: str) -> str:
     return "OK"
 
 
+def verify_discord_token(token: str) -> str:
+    return "OK"
+
+
 def load_json_value(filepath: Path, key: str, default_value: Any) -> Any:
     if not Path(filepath).exists():
         return default_value

@@ -48,6 +48,21 @@ def config_pinecone():
     console.print("Pinecone Key is Configured Successfully!", style="green")
 
 
+@config_cli.command("discord")
+def config_discord():
+    """
+    Configure discord API token
+    """
+    token = Prompt.ask("Enter your Discord API token").strip()
+    verify_resp = util.verify_discord_token(token)
+    if verify_resp != "OK":
+        console.print("[Error] Discord Token is invalid", style="red")
+        console.print(verify_resp)
+        return
+    config.set_discord_token(token)
+    console.print("Discord Key is Configured Successfully!", style="green")
+
+
 @config_cli.callback(invoke_without_command=True)
 def config_main(ctx: typer.Context):
     """
@@ -70,6 +85,12 @@ def config_main(ctx: typer.Context):
     else:
         console.print("Pinecone Token not configured yet! This is necessary to use SkyAGI", style="red")
         console.print("To config Pinecone token: [yellow]skyagi config pinecone[/yellow]")
+
+    if (config.load_discord_token()):
+        console.print("Discord Token is configured, good job!", style="green")
+    else:
+        console.print("Discord Token not configured yet!", style="red")
+        console.print("To config Discord token: [yellow]skyagi config discord[/yellow]")
 
 cli.add_typer(config_cli, name="config")
 
