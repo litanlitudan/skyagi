@@ -67,7 +67,14 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 ctx.console.print(f"{bob.name} and {amy.name} finished their private conversation...", style="yellow")
                 continue
 
-
+    # clean up context's observations based on the time window
+    ctx.observations_size_history.append(len(ctx.observations))
+    if len(ctx.observations_size_history) > ctx.timewindow_size:
+        remove_count = ctx.observations_size_history[0]
+        ctx.observations = ctx.observations[remove_count:]
+        ctx.observations_size_history = ctx.observations_size_history[1:]
+        for idx in range(len(ctx.observations_size_history)):
+            ctx.observations_size_history[idx] = ctx.observations_size_history[idx] - remove_count
 
 def agi_init(agent_configs: List[dict], console: Console, openai_key: str, user_idx: int = 0) -> Context:
     ctx = Context(console, openai_key)
