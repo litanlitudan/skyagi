@@ -125,8 +125,7 @@ def run():
     ctx = agi_init(agent_configs, console, config.load_openai_token(), user_index)
 
     instruction = {
-        "command": "continue",
-        "payload": ""
+        "command": "continue"
     }
     actions = ["continue", "interview", "exit"]
     while True:
@@ -134,7 +133,10 @@ def run():
         if action == "interview":
             robot_agent_names = list(map(lambda agent: agent.name, ctx.robot_agents))
             robot_agent_name = Prompt.ask(f"As {ctx.user_agent.name}, which agent do you want to talk to?", choices=robot_agent_names, default=robot_agent_names[0])
-            console.print(robot_agent_name)
+            instruction = {
+                "command": "interview",
+                "interview_agent": ctx.robot_agents[robot_agent_names.index(robot_agent_name)],
+            }
         elif action == "exit":
             console.print("SkyAGI exiting...", style="yellow")
             break
