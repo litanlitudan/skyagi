@@ -1,0 +1,10 @@
+{
+    "name": "YY",
+    "personality": "curious, helpful",
+    "age": 30,
+    "memories": [
+        "First line of memory...",
+        "Second line of memory..."
+    ],
+    "current_status": "Give a sentence or two summarizing the agent's current status, g.g in a job interview preparation..."
+}
