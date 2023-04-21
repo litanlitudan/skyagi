@@ -8,6 +8,7 @@ from rich.prompt import Prompt, IntPrompt
 
 from skyagi import config, util
 from skyagi.skyagi import agi_step, agi_init
+from skyagi.discord import agent as discord_agent
 
 cli = typer.Typer()
 console = Console()
@@ -97,12 +98,20 @@ cli.add_typer(config_cli, name="config")
 #######################################################################################
 # Main CLI
 
-@cli.command("status")
+@cli.command("discord")
 def status():
     """
-    Status of the SkyAGI
+    Run the Discord client
     """
-    console.print("SkyAGI status")
+    # Verify the Discord token before anything else
+    discord_token = config.load_discord_token()
+    verify_discord = util.verify_discord_token(discord_token)
+    if verify_discord != "OK":
+        console.print("Please config your Discord token", style="red")
+        console.print(verify_discord)
+        return
+    console.print("Discord client starting...", style="yellow")
+    discord_agent.run(discord_token)
 
 
 @cli.command("run")
