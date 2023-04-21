@@ -2,6 +2,7 @@ import os
 import openai
 from typing import List
 from rich.console import Console
+from rich.prompt import Prompt
 
 from langchain.chat_models import ChatOpenAI
 
@@ -21,9 +22,13 @@ class Context:
 def agi_step(ctx: Context, instruction: dict) -> None:
     ctx.clock += 1
     if instruction["command"] == "interview":
-        interview_agent = instruction["interview_agent"]
+        agent_to_interview = instruction["agent_to_interview"]
+        ctx.console.print(f"Interview with {agent_to_interview.name} start:", style="yellow")
+        while True:
+            user_message = Prompt.ask()
+            response = interview_agent(agent_to_interview, user_message, ctx.user_agent.name)
+            ctx.console.print(response)
     # let things happen
-
 
 
 def agi_init(agent_configs: List[dict], console: Console, openai_key: str, user_idx: int = 0) -> Context:
