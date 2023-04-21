@@ -21,7 +21,6 @@ class Context:
 
 def agi_step(ctx: Context, instruction: dict) -> None:
     ctx.clock += 1
-    observations = []
     if instruction["command"] == "interview":
         agent_to_interview = instruction["agent_to_interview"]
         ctx.console.print(f"Interview with {agent_to_interview.name} start, input empty line to exit", style="yellow")
@@ -29,12 +28,8 @@ def agi_step(ctx: Context, instruction: dict) -> None:
             user_message = Prompt.ask()
             if user_message == "":
                 break
-            observations.append(f"{ctx.user_agent.name} said {user_message}")
             response = interview_agent(agent_to_interview, user_message, ctx.user_agent.name)
-            observations.append(response)
             ctx.console.print(response)
-        for observation in observations:
-            observation
     # let the rest of things happen
 
 
