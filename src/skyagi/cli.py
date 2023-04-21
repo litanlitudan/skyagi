@@ -97,7 +97,7 @@ def run():
         console.print(verify_openai)
         return
     # Get inputs from the user
-    agent_count = IntPrompt.ask("Number of agents to create?", default=1)
+    agent_count = IntPrompt.ask("Number of agents to create?", default=3)
     agent_configs = []
     agent_names = []
     for idx in range(agent_count):
