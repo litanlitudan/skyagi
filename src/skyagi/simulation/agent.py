@@ -304,7 +304,8 @@ class GenerativeAgent(BaseModel):
 
     def generate_dialogue_response(self, observation: str) -> Tuple[bool, str]:
         """React to a given observation."""
-        call_to_action_template = 'What would {agent_name} say? To end the conversation, write: GOODBYE: "what to say". Otherwise to continue the conversation, write: SAY: "what to say next"\n\n'
+        call_to_action_template = 'What would {agent_name} say? To end the conversation, \
+            write: GOODBYE: "what to say". Otherwise to continue the conversation, write: SAY: "what to say next"\n\n'
         full_result = self._generate_reaction(observation, call_to_action_template)
         result = full_result.strip().split("\n")[0]
         if "GOODBYE:" in result:

@@ -11,7 +11,8 @@ from skyagi.context import Context
 from skyagi.simulation.agent import GenerativeAgent
 
 
-# reference: https://python.langchain.com/en/latest/use_cases/agent_simulations/characters.html#create-a-generative-character
+# reference:
+# https://python.langchain.com/en/latest/use_cases/agent_simulations/characters.html#create-a-generative-character
 def relevance_score_fn(score: float) -> float:
     """Return a similarity score on a scale [0, 1]."""
     # This will differ depending on a few things:
@@ -23,7 +24,8 @@ def relevance_score_fn(score: float) -> float:
     return 1.0 - score / math.sqrt(2)
 
 
-# reference: https://python.langchain.com/en/latest/use_cases/agent_simulations/characters.html#create-a-generative-character
+# reference:
+# https://python.langchain.com/en/latest/use_cases/agent_simulations/characters.html#create-a-generative-character
 def create_new_memory_retriever():
     """Create a new vector store retriever unique to the agent."""
     # Define your embedding model
