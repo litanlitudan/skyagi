@@ -1,17 +1,15 @@
 # Reference: https://python.langchain.com/en/latest/use_cases/agent_simulations
 
 import re
-from typing import List, Optional, Tuple
-from termcolor import colored
-
 from datetime import datetime
-
-from pydantic import BaseModel, Field
+from typing import List, Optional, Tuple
 
 from langchain import LLMChain
+from langchain.prompts import PromptTemplate
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseLanguageModel, Document
-from langchain.prompts import PromptTemplate
+from pydantic import BaseModel, Field
+from termcolor import colored
 
 
 class GenerativeAgent(BaseModel):
@@ -306,7 +304,8 @@ class GenerativeAgent(BaseModel):
 
     def generate_dialogue_response(self, observation: str) -> Tuple[bool, str]:
         """React to a given observation."""
-        call_to_action_template = 'What would {agent_name} say? To end the conversation, write: GOODBYE: "what to say". Otherwise to continue the conversation, write: SAY: "what to say next"\n\n'
+        call_to_action_template = 'What would {agent_name} say? To end the conversation, \
+            write: GOODBYE: "what to say". Otherwise to continue the conversation, write: SAY: "what to say next"\n\n'
         full_result = self._generate_reaction(observation, call_to_action_template)
         result = full_result.strip().split("\n")[0]
         if "GOODBYE:" in result:

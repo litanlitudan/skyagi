@@ -14,7 +14,10 @@ setup-dev:
 	cp scripts/pre-push .git/hooks
 
 lint:
-	echo "Linting not implemented"
+	flake8 .
+
+format:
+	isort . && black .
 
 format-staged-files:
 	echo "Auto-formatting not implemented"

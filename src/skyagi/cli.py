@@ -1,14 +1,14 @@
-import os
 import json
-import typer
-import time
+import os
 from pathlib import Path
+
+import typer
 from rich.console import Console
-from rich.prompt import Prompt, IntPrompt
+from rich.prompt import IntPrompt, Prompt
 
 from skyagi import config, util
-from skyagi.skyagi import agi_step, agi_init
 from skyagi.discord import client
+from skyagi.skyagi import agi_init, agi_step
 
 cli = typer.Typer()
 console = Console()
@@ -75,28 +75,38 @@ def config_main(ctx: typer.Context):
 
     console.print("SkyAGI's Configuration")
 
-    if (config.load_openai_token()):
+    if config.load_openai_token():
         console.print("OpenAI Token is configured, good job!", style="green")
     else:
-        console.print("OpenAI Token not configured yet! This is necessary to use SkyAGI", style="red")
+        console.print(
+            "OpenAI Token not configured yet! This is necessary to use SkyAGI",
+            style="red",
+        )
         console.print("To config OpenAI token: [yellow]skyagi config openai[/yellow]")
 
-    if (config.load_pinecone_token()):
+    if config.load_pinecone_token():
         console.print("Pinecone Token is configured, good job!", style="green")
     else:
-        console.print("Pinecone Token not configured yet! This is necessary to use SkyAGI", style="red")
-        console.print("To config Pinecone token: [yellow]skyagi config pinecone[/yellow]")
+        console.print(
+            "Pinecone Token not configured yet! This is necessary to use SkyAGI",
+            style="red",
+        )
+        console.print(
+            "To config Pinecone token: [yellow]skyagi config pinecone[/yellow]"
+        )
 
-    if (config.load_discord_token()):
+    if config.load_discord_token():
         console.print("Discord Token is configured, good job!", style="green")
     else:
         console.print("Discord Token not configured yet!", style="red")
         console.print("To config Discord token: [yellow]skyagi config discord[/yellow]")
 
+
 cli.add_typer(config_cli, name="config")
 
 #######################################################################################
 # Main CLI
+
 
 @cli.command("discord")
 def status():
@@ -122,8 +132,13 @@ def run():
     # Verify the OpenAI token before anything else
     verify_openai = util.verify_openai_token(config.load_openai_token())
     if verify_openai != "OK":
-        console.print("Please config your OpenAI token before using this app", style="red")
-        console.print("Config by running: skyagi config openai or OPENAI_API_KEY=\"...\" skyagi", style="yellow")
+        console.print(
+            "Please config your OpenAI token before using this app", style="red"
+        )
+        console.print(
+            'Config by running: skyagi config openai or OPENAI_API_KEY="..." skyagi',
+            style="yellow",
+        )
         console.print(verify_openai)
         return
     # Get inputs from the user
@@ -134,36 +149,54 @@ def run():
         console.print(f"Specify agent number {idx+1}")
         agent_config = {}
         while True:
-            agent_file = Prompt.ask("Enter the path to the agent configuration file", default="./agent.json")
+            agent_file = Prompt.ask(
+                "Enter the path to the agent configuration file", default="./agent.json"
+            )
             if not os.path.isfile(agent_file):
-                console.print(f"Invalid file path: {agent_file}", style='red')
+                console.print(f"Invalid file path: {agent_file}", style="red")
                 continue
             try:
                 agent_config = util.load_json(Path(agent_file))
                 if agent_config == {}:
-                    console.print(f"Empty configuration, please provide a valid one", style='red')
+                    console.print(
+                        "Empty configuration, please provide a valid one", style="red"
+                    )
                     continue
                 break
-            except json.JSONDecodeError as e:
-                console.print(f"Invalid configuration, please provide a valid one", style='red')
+            except json.JSONDecodeError:
+                console.print(
+                    "Invalid configuration, please provide a valid one", style="red"
+                )
                 continue
         agent_configs.append(agent_config)
         agent_names.append(agent_config["name"])
 
-    user_role = Prompt.ask("Pick which role you want to perform?", choices=agent_names, default=agent_names[0])
+    user_role = Prompt.ask(
+        "Pick which role you want to perform?",
+        choices=agent_names,
+        default=agent_names[0],
+    )
     user_index = agent_names.index(user_role)
     ctx = agi_init(agent_configs, console, config.load_openai_token(), user_index)
 
     actions = ["continue", "interview", "exit"]
     while True:
-        instruction = { "command": "continue" }
-        action = Prompt.ask("Pick an action to perform?", choices=actions, default=actions[0])
+        instruction = {"command": "continue"}
+        action = Prompt.ask(
+            "Pick an action to perform?", choices=actions, default=actions[0]
+        )
         if action == "interview":
             robot_agent_names = list(map(lambda agent: agent.name, ctx.robot_agents))
-            robot_agent_name = Prompt.ask(f"As {ctx.user_agent.name}, which agent do you want to talk to?", choices=robot_agent_names, default=robot_agent_names[0])
+            robot_agent_name = Prompt.ask(
+                f"As {ctx.user_agent.name}, which agent do you want to talk to?",
+                choices=robot_agent_names,
+                default=robot_agent_names[0],
+            )
             instruction = {
                 "command": "interview",
-                "agent_to_interview": ctx.robot_agents[robot_agent_names.index(robot_agent_name)],
+                "agent_to_interview": ctx.robot_agents[
+                    robot_agent_names.index(robot_agent_name)
+                ],
             }
         elif action == "exit":
             console.print("SkyAGI exiting...", style="yellow")

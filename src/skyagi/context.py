@@ -1,7 +1,9 @@
 from typing import List
+
 from rich.console import Console
 
 from skyagi.simulation.agent import GenerativeAgent
+
 
 class Context:
     def __init__(self, console: Console, openai_key: str) -> None:
