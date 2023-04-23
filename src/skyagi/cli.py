@@ -1,6 +1,5 @@
 import json
 import os
-import time
 from pathlib import Path
 
 import typer
@@ -160,13 +159,13 @@ def run():
                 agent_config = util.load_json(Path(agent_file))
                 if agent_config == {}:
                     console.print(
-                        f"Empty configuration, please provide a valid one", style="red"
+                        "Empty configuration, please provide a valid one", style="red"
                     )
                     continue
                 break
-            except json.JSONDecodeError as e:
+            except json.JSONDecodeError:
                 console.print(
-                    f"Invalid configuration, please provide a valid one", style="red"
+                    "Invalid configuration, please provide a valid one", style="red"
                 )
                 continue
         agent_configs.append(agent_config)
