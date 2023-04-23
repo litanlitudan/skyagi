@@ -123,7 +123,7 @@ def run():
     verify_openai = util.verify_openai_token(config.load_openai_token())
     if verify_openai != "OK":
         console.print("Please config your OpenAI token before using this app", style="red")
-        console.print("Config by running: skyagi run openai", style="yellow")
+        console.print("Config by running: skyagi config openai or OPENAI_API_KEY=\"...\" skyagi", style="yellow")
         console.print(verify_openai)
         return
     # Get inputs from the user

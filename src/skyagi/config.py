@@ -34,6 +34,8 @@ def load_pinecone_token() -> str:
 
 
 def load_openai_token() -> str:
+    if "OPENAI_API_KEY" in os.environ:
+        return os.environ["OPENAI_API_KEY"]
     config_dir = Path(Path.home(), ".skyagi")
     if not config_dir.exists():
         return ""
