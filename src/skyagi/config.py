@@ -17,6 +17,7 @@ def set_pinecone_token(token: str):
     if not config_dir.exists():
         config_dir.mkdir(parents=True)
     config_file = Path(config_dir, "config.json")
+    set_json_value(config_file, "openai_token", token)
 
 
 def set_discord_token(token: str):
