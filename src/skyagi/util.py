@@ -1,10 +1,12 @@
-from typing import Any, Dict
-from pathlib import Path
-import os
 import json
+import os
+from pathlib import Path
+from typing import Any, Dict
+
 
 def verify_openai_token(token: str) -> str:
     import openai
+
     openai.api_key = token
     try:
         openai.Completion.create(
@@ -14,7 +16,7 @@ def verify_openai_token(token: str) -> str:
             max_tokens=10,
             top_p=1,
             frequency_penalty=0.5,
-            presence_penalty=0
+            presence_penalty=0,
         )
         return "OK"
     except Exception as e:

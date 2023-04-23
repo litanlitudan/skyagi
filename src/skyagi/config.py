@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
-from skyagi.util import set_json_value, load_json_value
+
+from skyagi.util import load_json_value, set_json_value
+
 
 def set_openai_token(token: str):
     config_dir = Path(Path.home(), ".skyagi")

@@ -1,17 +1,17 @@
 import os
-import openai
 from typing import List
+
+import openai
+from langchain.chat_models import ChatOpenAI
 from rich.console import Console
 from rich.prompt import Prompt
-
-from langchain.chat_models import ChatOpenAI
 
 from skyagi.context import Context
 from skyagi.simulation.agent import GenerativeAgent
 from skyagi.simulation.simulation import (
     create_new_memory_retriever,
-    run_conversation,
     interview_agent,
+    run_conversation,
 )
 
 

@@ -1,11 +1,14 @@
 from datetime import datetime, timedelta
 
+from langchain.chat_models import ChatOpenAI
 from termcolor import colored
 
-from langchain.chat_models import ChatOpenAI
-
 from skyagi.simulation.agent import GenerativeAgent
-from skyagi.simulation.simulation import create_new_memory_retriever, run_conversation, interview_agent
+from skyagi.simulation.simulation import (
+    create_new_memory_retriever,
+    interview_agent,
+    run_conversation,
+)
 
 LLM = ChatOpenAI(max_tokens=1500)  # Can be any LLM you want.
 

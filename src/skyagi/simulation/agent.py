@@ -1,17 +1,15 @@
 # Reference: https://python.langchain.com/en/latest/use_cases/agent_simulations
 
 import re
-from typing import List, Optional, Tuple
-from termcolor import colored
-
 from datetime import datetime
-
-from pydantic import BaseModel, Field
+from typing import List, Optional, Tuple
 
 from langchain import LLMChain
+from langchain.prompts import PromptTemplate
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import BaseLanguageModel, Document
-from langchain.prompts import PromptTemplate
+from pydantic import BaseModel, Field
+from termcolor import colored
 
 
 class GenerativeAgent(BaseModel):

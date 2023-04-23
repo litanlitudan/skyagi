@@ -1,9 +1,7 @@
+import math
 from typing import List
 
-import math
-
 import faiss
-
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
@@ -45,9 +43,14 @@ def create_new_memory_retriever():
     )
 
 
-def run_conversation(agents: List[GenerativeAgent], initial_observation: str, ctx: Context) -> None:
+def run_conversation(
+    agents: List[GenerativeAgent], initial_observation: str, ctx: Context
+) -> None:
     """Runs a conversation between agents."""
-    ctx.observations.append("A conversation happened among " + ",".join(list(map(lambda agent: agent.name, agents))))
+    ctx.observations.append(
+        "A conversation happened among "
+        + ",".join(list(map(lambda agent: agent.name, agents)))
+    )
     ctx.observations.append(initial_observation)
 
     _, observation = agents[1].generate_reaction(initial_observation)
