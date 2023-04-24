@@ -154,6 +154,7 @@ def agi_init(
 ) -> Context:
     ctx = Context(console, openai_key)
     os.environ["OPENAI_API_KEY"] = openai_key
+    console.print("Creating all the agents...", style="yellow")
     for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
         console.print(f"Creating agent {agent_name}", style="yellow")
