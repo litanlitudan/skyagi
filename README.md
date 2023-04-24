@@ -2,7 +2,8 @@
     <img src="images/background.png" alt=""/>
 </div>
 
-# SkyAGI: an End to End Application based on Generative Agents
+# SkyAGI: Emerging human-behavior simulation capability in LLM
+
 <p align="center">
     <a href="https://pypi.org/project/skyagi/">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/skyagi?color=gree">
