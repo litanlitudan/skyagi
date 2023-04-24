@@ -20,7 +20,7 @@ How to run
 ```sh
 export OPENAI_API_KEY="..."
 skyagi
-# or (choose 1)
+# or
 OPENAI_API_KEY="..." skyagi
 ```
 
@@ -30,6 +30,6 @@ For example if the OpenAI key is `sk-VXl2bPhNEeTaGBavUKRtT3BlbkFJjXm7ZCd8XUCMGsd
 # make sure no quote around the token
 export OPENAI_API_KEY=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
 skyagi
-# or (choose 1)
+# or
 OPENAI_KEY_KEY=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 skyagi
 ```
