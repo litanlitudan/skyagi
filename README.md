@@ -46,3 +46,8 @@ OPENAI_KEY_KEY=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 skyagi
 ```
 
 ## Interesting observations in this demo
+
+## References
+
+1. https://arxiv.org/abs/2304.03442
+2. https://python.langchain.com/en/latest/use_cases/agent_simulations/characters.html#create-a-generative-character
