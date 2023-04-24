@@ -9,7 +9,16 @@
     </a>
 </p>
 
-## Instructions
+`SkyAGI` is a python package that demonstrates LLM's emerging capability in simulating believable human behaviors.
+Specifically, `SkyAGI` implements the idea of [Generative Agents](https://arxiv.org/abs/2304.03442) and delivers a role-playing game that creates a very interesting user experience.
+
+Different from previous AI based NPC systems, `SkyAGI`'s NPC generates very interesting response and believable human behaviors.
+The interesting observations in this demo show a huge potential for rethinking game development in many aspects.
+
+To demonstrate this, `SkyAGI` provides example characters from `The Big Bang Theory` and `The Avengers` as a starting point.
+For more details about the observations, refer to the [observations section](https://github.com/litanlitudan/skyagi/#interesting-observations-in-this-demo)
+
+## Quick Start
 
 Installation
 
@@ -35,3 +44,10 @@ skyagi
 # or
 OPENAI_KEY_KEY=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 skyagi
 ```
+
+## Interesting observations in this demo
+
+## References
+
+1. https://arxiv.org/abs/2304.03442
+2. https://python.langchain.com/en/latest/use_cases/agent_simulations/characters.html#create-a-generative-character
