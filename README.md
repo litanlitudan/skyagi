@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="background.png" alt=""/>
+    <img src="images/background.png" alt=""/>
 </div>
 
 # SkyAGI: an End to End Application based on Generative Agents
