@@ -13,7 +13,7 @@
 Specifically, `SkyAGI` implements the idea of [Generative Agents](https://arxiv.org/abs/2304.03442) and delivers a role-playing game that creates a very interesting user experience.
 
 Different from previous AI based NPC systems, `SkyAGI`'s NPC generates very believable human responses.
-The interesting observations in this demo show a huge potential for rethinking game development in many aspects.
+The interesting observations in this demo show a huge potential for rethinking game development in many aspects, such as NPC script writing.
 
 To demonstrate this, `SkyAGI` provides example characters from `The Big Bang Theory` and `The Avengers` as a starting point.
 Users could also define customized characters by creating config json files like [customized_character.json](https://github.com/litanlitudan/skyagi/blob/main/examples/example_agent.json)
