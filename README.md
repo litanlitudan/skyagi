@@ -23,3 +23,10 @@ skyagi
 # or
 OPENAI_API_KEY="..." skyagi
 ```
+
+For example if the OpenAI key is `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`, then the exact command would be the following
+
+```sh
+# make sure no quote around the token
+OPENAI_KEY_KEY=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 skyagi
+```
