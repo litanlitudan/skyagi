@@ -24,7 +24,7 @@ skyagi
 OPENAI_API_KEY="..." skyagi
 ```
 
-For example if the OpenAI key is `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`
+For example if the OpenAI key is `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`, then the exact command would be the following
 
 ```sh
 # make sure no quote around the token
