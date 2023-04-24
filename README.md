@@ -9,7 +9,9 @@
     </a>
 </p>
 
-## Instructions
+
+
+## Quick Start
 
 Installation
 
@@ -17,7 +19,7 @@ Installation
 pip install --upgrade skyagi
 ```
 
-Quick Start
+How to run
 
 ```sh
 export OPENAI_API_KEY="..."
