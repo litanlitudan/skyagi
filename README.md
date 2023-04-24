@@ -16,7 +16,7 @@ Different from previous AI based NPC systems, `SkyAGI`'s NPC generates very inte
 The interesting observations in this demo show a huge potential for rethinking game development in many aspects.
 
 To demonstrate this, `SkyAGI` provides example characters from `The Big Bang Theory` and `The Avengers` as a starting point.
-For more details about the observations, refer to the [observations section](https://github.com/litanlitudan/skyagi/)
+For more details about the observations, refer to the [observations section](https://github.com/litanlitudan/skyagi/#interesting-observations-in-this-demo)
 
 ## Quick Start
 
