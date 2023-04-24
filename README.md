@@ -17,7 +17,7 @@ Installation
 pip install --upgrade skyagi
 ```
 
-How to run
+Quick Start
 
 ```sh
 export OPENAI_API_KEY="..."
