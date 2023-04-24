@@ -46,6 +46,9 @@ skyagi
 OPENAI_KEY_KEY=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 skyagi
 ```
 
+To use example agent configs, download it from here: https://github.com/litanlitudan/skyagi/tree/main/examples
+(pip install doesn't contain the agent configuration)
+
 ## Interesting observations in this demo
 
 ## References
