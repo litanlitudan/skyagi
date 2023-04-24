@@ -35,3 +35,5 @@ skyagi
 # or
 OPENAI_KEY_KEY=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 skyagi
 ```
+
+## Interesting observations in this demo
