@@ -50,7 +50,7 @@ OPENAI_API_KEY=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 skyagi
 To use example agent configs, download it from here: https://github.com/litanlitudan/skyagi/tree/main/examples
 (pip install doesn't contain the agent configuration)
 
-A example agent configuration (Sheldon) looks something like this:
+An example agent configuration (Sheldon) looks something like this:
 
 ```json
 {
