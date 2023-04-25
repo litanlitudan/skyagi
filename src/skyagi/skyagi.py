@@ -68,7 +68,7 @@ def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
             ctx.console.print(f"Interview with {agent_to_interview.name} finished")
             break
         ctx.observations.append(f"{ctx.user_agent.name} said: {user_message}")
-        with ctx.console.status("[bold green]Waiting response...") as status:
+        with ctx.console.status("[yellow]Waiting response...") as status:
             response = interview_agent(
                 agent_to_interview, user_message, ctx.user_agent.name
             )
@@ -113,33 +113,34 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 if respond == "yes":
                     user_robot_conversation(robot_agent, ctx)
 
-    # let the activities of non user robots happen
-    for idx in range(len(ctx.robot_agents) - 1):
-        amy = ctx.robot_agents[idx]
-        for bob in ctx.robot_agents[idx + 1 :]:
-            message = talks_to(amy, bob, ctx.observations)
-            if message:
-                ctx.console.print(
-                    f"{amy.name} just whispered to {bob.name}...", style="yellow"
-                )
-                with ctx.console.status(f"[yellow] {amy.name} is having a private dicussion with {bob.name}...") as status:
-                    run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
-                ctx.console.print(
-                    f"{amy.name} and {bob.name} finished their private conversation...",
-                    style="yellow",
-                )
-                continue
-            message = talks_to(bob, amy, ctx.observations)
-            if message:
-                ctx.console.print(
-                    f"{bob.name} just whispered to {amy.name}...", style="yellow"
-                )
-                run_conversation([bob, amy], f"{bob.name} said: {message}", ctx)
-                ctx.console.print(
-                    f"{bob.name} and {amy.name} finished their private conversation...",
-                    style="yellow",
-                )
-                continue
+    with ctx.console.status("[yellow]The world has something else happening...") as status:
+        # let the activities of non user robots happen
+        for idx in range(len(ctx.robot_agents) - 1):
+            amy = ctx.robot_agents[idx]
+            for bob in ctx.robot_agents[idx + 1 :]:
+                message = talks_to(amy, bob, ctx.observations)
+                if message:
+                    ctx.console.print(
+                        f"{amy.name} just whispered to {bob.name}...", style="yellow"
+                    )
+                    with ctx.console.status(f"[yellow] {amy.name} is having a private dicussion with {bob.name}...") as status:
+                        run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
+                    ctx.console.print(
+                        f"{amy.name} and {bob.name} finished their private conversation...",
+                        style="yellow",
+                    )
+                    continue
+                message = talks_to(bob, amy, ctx.observations)
+                if message:
+                    ctx.console.print(
+                        f"{bob.name} just whispered to {amy.name}...", style="yellow"
+                    )
+                    run_conversation([bob, amy], f"{bob.name} said: {message}", ctx)
+                    ctx.console.print(
+                        f"{bob.name} and {amy.name} finished their private conversation...",
+                        style="yellow",
+                    )
+                    continue
 
     # clean up context's observations based on the time window
     ctx.observations_size_history.append(len(ctx.observations))
