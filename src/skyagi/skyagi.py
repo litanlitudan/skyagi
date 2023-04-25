@@ -90,28 +90,29 @@ def agi_step(ctx: Context, instruction: dict) -> None:
         user_robot_conversation(instruction["agent_to_interview"], ctx)
 
     if instruction["command"] == "continue":
-        someone_asked = False
-        for robot_agent in ctx.robot_agents:
-            message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
-            if message:
-                if someone_asked:
-                    ctx.console.print(
-                        f"{robot_agent.name} also whispered to you({ctx.user_agent.name}): {message}",
-                        style="yellow",
+        with ctx.console.status("") as status:
+            someone_asked = False
+            for robot_agent in ctx.robot_agents:
+                message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
+                if message:
+                    if someone_asked:
+                        ctx.console.print(
+                            f"{robot_agent.name} also whispered to you({ctx.user_agent.name}): {message}",
+                            style="yellow",
+                        )
+                    else:
+                        ctx.console.print(
+                            f"{robot_agent.name} whispered to you ({ctx.user_agent.name}): {message}",
+                            style="yellow",
+                        )
+                    someone_asked = True
+                    respond = Prompt.ask(
+                        f"Do you want to respond to {robot_agent.name}?",
+                        choices=["yes", "no"],
+                        default="yes",
                     )
-                else:
-                    ctx.console.print(
-                        f"{robot_agent.name} whispered to you ({ctx.user_agent.name}): {message}",
-                        style="yellow",
-                    )
-                someone_asked = True
-                respond = Prompt.ask(
-                    f"Do you want to respond to {robot_agent.name}?",
-                    choices=["yes", "no"],
-                    default="yes",
-                )
-                if respond == "yes":
-                    user_robot_conversation(robot_agent, ctx)
+                    if respond == "yes":
+                        user_robot_conversation(robot_agent, ctx)
 
     with ctx.console.status("[yellow]The world has something else happening...") as status:
         # let the activities of non user robots happen
