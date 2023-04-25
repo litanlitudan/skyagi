@@ -50,6 +50,24 @@ OPENAI_KEY_KEY=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 skyagi
 To use example agent configs, download it from here: https://github.com/litanlitudan/skyagi/tree/main/examples
 (pip install doesn't contain the agent configuration)
 
+A example agent configuration (Sheldon) looks something like this:
+
+```json
+{
+    "name": "Sheldon",
+    "age": 27,
+    "personality": "Intelligent, rigid, socially challenged, quirky, and arrogant.",
+    "memories": [
+        "Sheldon is a theoretical physicist who works at Caltech.",
+        "Sheldon has an eidetic memory and is highly intelligent, but struggles with social skills and sarcasm.",
+        ...
+        "Knock, knock, knock, Penny - This is the specific knock that Sheldon uses when he visits Penny's apartment, which he repeats three times.",
+        "Bazinga! - This is Sheldon's catchphrase that he uses to indicate he was joking or playing a prank on someone."
+    ],
+    "current_status": "Sheldon is at the Cheesecake Factory"
+}
+```
+
 ## Interesting observations in this demo
 
 Here is a screenshot of a live demo using The Big Bang Theory example.
