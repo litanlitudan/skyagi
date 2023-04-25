@@ -175,7 +175,7 @@ def run():
         agent_names.append(agent_config["name"])
 
     user_role = Prompt.ask(
-        "Pick which role you want to perform? (type in the exact name, case sensitive)",
+        "Pick which role you want to perform? (input the exact name, case sensitive)",
         choices=agent_names,
         default=agent_names[0],
     )
@@ -191,7 +191,7 @@ def run():
         if action == "interview":
             robot_agent_names = list(map(lambda agent: agent.name, ctx.robot_agents))
             robot_agent_name = Prompt.ask(
-                f"As {ctx.user_agent.name}, which agent do you want to talk to? (type in the exact name, case sensitive)",
+                f"As {ctx.user_agent.name}, which agent do you want to talk to? (input the exact name, case sensitive)",
                 choices=robot_agent_names,
                 default=robot_agent_names[0],
             )
