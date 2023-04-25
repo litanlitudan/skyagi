@@ -72,7 +72,9 @@ def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
             agent_to_interview, user_message, ctx.user_agent.name
         )
         if "GOODBYE" in response:
-            ctx.console.print(f"{agent_to_interview.name} said Goodbye and ended the conversation")
+            ctx.console.print(
+                f"{agent_to_interview.name} said Goodbye and ended the conversation"
+            )
             break
         ctx.console.print(response)
         ctx.observations.append(response)
