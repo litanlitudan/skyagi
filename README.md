@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="images/background.png" alt=""/>
+    <img src="images/background.png" height=600 alt=""/>
 </div>
 
 # SkyAGI: Emerging human-behavior simulation capability in LLM
