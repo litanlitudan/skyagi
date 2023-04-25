@@ -193,7 +193,7 @@ def run():
         if action == "interview":
             robot_agent_names = list(map(lambda agent: agent.name, ctx.robot_agents))
             robot_agent_name = Prompt.ask(
-                f"As {ctx.user_agent.name}, which agent do you want to talk to? (input the exact name, case sensitive)",
+                f"As {ctx.user_agent.name}, which agent do you want to talk to?",
                 choices=robot_agent_names,
                 default=robot_agent_names[0],
             )
