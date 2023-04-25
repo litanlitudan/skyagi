@@ -161,19 +161,19 @@ def agi_init(
     console.print("Creating all agents one by one...", style="yellow")
     for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
-        console.print(f"Creating agent {agent_name}", style="yellow")
-        agent = GenerativeAgent(
-            name=agent_config["name"],
-            age=agent_config["age"],
-            traits=agent_config["personality"],
-            status="N/A",  # When connected to a virtual world, we can have the characters update their status
-            memory_retriever=create_new_memory_retriever(),
-            llm=ChatOpenAI(max_tokens=1500),
-            daily_summaries=[(agent_config["current_status"])],
-            reflection_threshold=8,
-        )
-        for memory in agent_config["memories"]:
-            agent.add_memory(memory)
+        with ctx.console.status(f"[yellow] Creating agent {agent_name}...") as status:
+            agent = GenerativeAgent(
+                name=agent_config["name"],
+                age=agent_config["age"],
+                traits=agent_config["personality"],
+                status="N/A",  # When connected to a virtual world, we can have the characters update their status
+                memory_retriever=create_new_memory_retriever(),
+                llm=ChatOpenAI(max_tokens=1500),
+                daily_summaries=[(agent_config["current_status"])],
+                reflection_threshold=8,
+            )
+            for memory in agent_config["memories"]:
+                agent.add_memory(memory)
         if idx == user_idx:
             ctx.user_agent = agent
         else:
