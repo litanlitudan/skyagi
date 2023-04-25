@@ -142,7 +142,9 @@ def run():
         console.print(verify_openai)
         return
     # Get inputs from the user
-    agent_count = IntPrompt.ask("Number of agents to create (at least 2 agents)?", default=3)
+    agent_count = IntPrompt.ask(
+        "Number of agents to create (at least 2 agents)?", default=3
+    )
     if agent_count < 2:
         console.print("Please config at least 2 agents, exiting", style="red")
         return
@@ -175,7 +177,7 @@ def run():
         agent_names.append(agent_config["name"])
 
     user_role = Prompt.ask(
-        "Pick which role you want to perform?",
+        "Pick which role you want to perform? (input the exact name, case sensitive)",
         choices=agent_names,
         default=agent_names[0],
     )
