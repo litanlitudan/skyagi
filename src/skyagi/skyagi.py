@@ -90,7 +90,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
         user_robot_conversation(instruction["agent_to_interview"], ctx)
 
     if instruction["command"] == "continue":
-        with ctx.console.status("") as status:
+        with ctx.console.status(""):
             someone_asked = False
             for robot_agent in ctx.robot_agents:
                 message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
