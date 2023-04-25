@@ -68,9 +68,10 @@ def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
             ctx.console.print(f"Interview with {agent_to_interview.name} finished")
             break
         ctx.observations.append(f"{ctx.user_agent.name} said: {user_message}")
-        response = interview_agent(
-            agent_to_interview, user_message, ctx.user_agent.name
-        )
+        with ctx.console.status("[bold green]Waiting response...") as status:
+            response = interview_agent(
+                agent_to_interview, user_message, ctx.user_agent.name
+            )
         if "GOODBYE" in response:
             ctx.console.print(
                 f"{agent_to_interview.name} said Goodbye and ended the conversation"
@@ -121,7 +122,8 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 ctx.console.print(
                     f"{amy.name} just whispered to {bob.name}...", style="yellow"
                 )
-                run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
+                with ctx.console.status(f"[yellow] {amy.name} is having a private dicussion with {bob.name}...") as status:
+                    run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
                 ctx.console.print(
                     f"{amy.name} and {bob.name} finished their private conversation...",
                     style="yellow",
