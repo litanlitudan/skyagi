@@ -18,7 +18,7 @@ The interesting observations in this demo show a huge potential for rethinking g
 
 To demonstrate this, `SkyAGI` provides example characters from `The Big Bang Theory` and `The Avengers` as a starting point.
 Users could also define customized characters by creating config json files like [customized_character.json](https://github.com/litanlitudan/skyagi/blob/main/examples/example_agent.json)
-For more details about the observations, refer to the [observations section](https://github.com/litanlitudan/skyagi/#interesting-observations-in-this-demo).
+For details about the interesting observations, refer to the [observations section](https://github.com/litanlitudan/skyagi/#interesting-observations-in-this-demo).
 
 ## Quick Start
 
