@@ -91,7 +91,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
     if instruction["command"] == "continue":
         someone_asked = False
         for robot_agent in ctx.robot_agents:
-            ctx.console.log("Something is going on...", style="yellow")
+            ctx.console.print("Something is going on...", style="yellow")
             message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
             if message:
                 if someone_asked:
