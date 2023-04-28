@@ -68,10 +68,9 @@ def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
             ctx.console.print(f"Interview with {agent_to_interview.name} finished")
             break
         ctx.observations.append(f"{ctx.user_agent.name} said: {user_message}")
-        with ctx.console.status("[yellow]Waiting response..."):
-            response = interview_agent(
-                agent_to_interview, user_message, ctx.user_agent.name
-            )
+        response = interview_agent(
+            agent_to_interview, user_message, ctx.user_agent.name
+        )
         if "GOODBYE" in response:
             ctx.console.print(
                 f"{agent_to_interview.name} said Goodbye and ended the conversation"
@@ -92,8 +91,8 @@ def agi_step(ctx: Context, instruction: dict) -> None:
     if instruction["command"] == "continue":
         someone_asked = False
         for robot_agent in ctx.robot_agents:
-            with ctx.console.status(""):
-                message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
+            ctx.console.log("Something is going on...", style="yellow")
+            message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
             if message:
                 if someone_asked:
                     ctx.console.print(
@@ -114,36 +113,34 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 if respond == "yes":
                     user_robot_conversation(robot_agent, ctx)
 
-    with ctx.console.status("[yellow]The world has something else happening..."):
-        # let the activities of non user robots happen
-        for idx in range(len(ctx.robot_agents) - 1):
-            amy = ctx.robot_agents[idx]
-            for bob in ctx.robot_agents[idx + 1 :]:
-                message = talks_to(amy, bob, ctx.observations)
-                if message:
-                    ctx.console.print(
-                        f"{amy.name} just whispered to {bob.name}...", style="yellow"
-                    )
-                    with ctx.console.status(
-                        f"[yellow] {amy.name} is having a private dicussion with {bob.name}..."
-                    ):
-                        run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
-                    ctx.console.print(
-                        f"{amy.name} and {bob.name} finished their private conversation...",
-                        style="yellow",
-                    )
-                    continue
-                message = talks_to(bob, amy, ctx.observations)
-                if message:
-                    ctx.console.print(
-                        f"{bob.name} just whispered to {amy.name}...", style="yellow"
-                    )
-                    run_conversation([bob, amy], f"{bob.name} said: {message}", ctx)
-                    ctx.console.print(
-                        f"{bob.name} and {amy.name} finished their private conversation...",
-                        style="yellow",
-                    )
-                    continue
+    ctx.console.print("The world has something else happening...", style="yellow")
+    # let the activities of non user robots happen
+    for idx in range(len(ctx.robot_agents) - 1):
+        amy = ctx.robot_agents[idx]
+        for bob in ctx.robot_agents[idx + 1 :]:
+            message = talks_to(amy, bob, ctx.observations)
+            if message:
+                ctx.console.print(
+                    f"{amy.name} just whispered to {bob.name}...", style="yellow"
+                )
+                ctx.console.print(f"{amy.name} is having a private dicussion with {bob.name}...", style="yellow")
+                run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
+                ctx.console.print(
+                    f"{amy.name} and {bob.name} finished their private conversation...",
+                    style="yellow",
+                )
+                continue
+            message = talks_to(bob, amy, ctx.observations)
+            if message:
+                ctx.console.print(
+                    f"{bob.name} just whispered to {amy.name}...", style="yellow"
+                )
+                run_conversation([bob, amy], f"{bob.name} said: {message}", ctx)
+                ctx.console.print(
+                    f"{bob.name} and {amy.name} finished their private conversation...",
+                    style="yellow",
+                )
+                continue
 
     # clean up context's observations based on the time window
     ctx.observations_size_history.append(len(ctx.observations))
@@ -165,19 +162,19 @@ def agi_init(
     console.print("Creating all agents one by one...", style="yellow")
     for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
-        with ctx.console.status(f"[yellow] Creating agent {agent_name}..."):
-            agent = GenerativeAgent(
-                name=agent_config["name"],
-                age=agent_config["age"],
-                traits=agent_config["personality"],
-                status="N/A",  # When connected to a virtual world, we can have the characters update their status
-                memory_retriever=create_new_memory_retriever(),
-                llm=ChatOpenAI(max_tokens=1500),
-                daily_summaries=[(agent_config["current_status"])],
-                reflection_threshold=8,
-            )
-            for memory in agent_config["memories"]:
-                agent.add_memory(memory)
+        console.print(f"Creating agent {agent_name}...", style="yellow")
+        agent = GenerativeAgent(
+            name=agent_config["name"],
+            age=agent_config["age"],
+            traits=agent_config["personality"],
+            status="N/A",  # When connected to a virtual world, we can have the characters update their status
+            memory_retriever=create_new_memory_retriever(),
+            llm=ChatOpenAI(max_tokens=1500),
+            daily_summaries=[(agent_config["current_status"])],
+            reflection_threshold=8,
+        )
+        for memory in agent_config["memories"]:
+            agent.add_memory(memory)
         if idx == user_idx:
             ctx.user_agent = agent
         else:
