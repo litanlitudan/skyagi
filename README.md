@@ -72,11 +72,11 @@ An example agent configuration (Sheldon) looks something like this:
 
 Here is a screenshot of a live demo using The Big Bang Theory example.
 ![demo](./images/demo.png)
-From the conversaion, we can observe three interesting points that not been widely seen in previous systems:
+From the conversation, we can observe three interesting points that have not been widely seen in previous systems:
 
-1. Leonard remembered that Penny asked him to persuade Sheldon go for a hiking, which shows the capability of some kind of memory.
-2. Leonard changed his mind after Sheldon whispered to him and even tried to convince Penny to join the scientific effort. Which shows that the agents had meaningful progress in the story even without human intervention.
-3. All the responses are quite human like. As an user, it's quite hard to tell whether it's actual an AI beind the response.
+1. Leonard remembered that Penny had asked him to persuade Sheldon to go for a hike, which shows the capability of some kind of memory.
+2. Leonard changed his mind after Sheldon whispered to him and even tried to convince Penny to join the scientific effort, which shows that the agents had meaningful progress in the story even without human intervention.
+3. All the responses are quite human-like. As a user, it's quite hard to tell whether it's actually an AI behind the responses.
 
 ## References
 
