@@ -19,7 +19,7 @@ from skyagi.simulation.simulation import (
 def talks_to(
     amy: GenerativeAgent, bob: GenerativeAgent, observations: List[str]
 ) -> str:
-    instruct = "Here are the timeline of events happend for these NPC characters:\n"
+    instruct = "Here are the timeline of events happened for these NPC characters:\n"
     instruct += "\n".join(observations)
     instruct += "\n"
     instruct += (
