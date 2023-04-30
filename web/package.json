@@ -33,6 +33,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@sveltejs/adapter-vercel": "^2.4.3",
 		"@vercel/analytics": "^1.0.0",
 		"web-vitals": "^3.3.1"
 	}
