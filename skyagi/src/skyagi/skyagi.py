@@ -123,7 +123,10 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 ctx.console.print(
                     f"{amy.name} just whispered to {bob.name}...", style="yellow"
                 )
-                ctx.console.print(f"{amy.name} is having a private dicussion with {bob.name}...", style="yellow")
+                ctx.console.print(
+                    f"{amy.name} is having a private dicussion with {bob.name}...",
+                    style="yellow",
+                )
                 run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
                 ctx.console.print(
                     f"{amy.name} and {bob.name} finished their private conversation...",

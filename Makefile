@@ -4,10 +4,11 @@ setup-package:
 
 build-package:
 	make setup-package
-	python -m build
+	cp README.md skyagi
+	cd skyagi && python -m build
 
 install:
-	pip install -e .[dev]
+	cd skyagi && pip install -e .[dev]
 
 setup-dev:
 	cp scripts/pre-commit .git/hooks
@@ -17,7 +18,7 @@ lint:
 	flake8 .
 
 format:
-	isort . && black .
+	cd skyagi && isort . && black .
 
 format-staged-files:
 	echo "Auto-formatting not implemented"
