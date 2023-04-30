@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { page } from '$app/stores';
 	import { webVitals } from '$lib/vitals';
 
 	// Vercel Analytics
