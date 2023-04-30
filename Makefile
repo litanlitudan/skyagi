@@ -1,9 +1,10 @@
 setup-package:
-	cd skyagi && pip install virtualenv
-	cd skyagi && pip install build
+	pip install virtualenv
+	pip install build
 
 build-package:
 	make setup-package
+	cp README.md skyagi
 	cd skyagi && python -m build
 
 install:
