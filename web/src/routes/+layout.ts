@@ -1,5 +1,6 @@
 import { inject } from '@vercel/analytics';
 
-export const load: LayoutLoad = async ({ fetch, data, depends }) => {
+export const load: LayoutLoad = async ({}) => {
 	inject();
+    return {};
 };
