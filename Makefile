@@ -1,13 +1,13 @@
 setup-package:
-	pip install virtualenv
-	pip install build
+	cd skyagi && pip install virtualenv
+	cd skyagi && pip install build
 
 build-package:
 	make setup-package
-	python -m build
+	cd skyagi && python -m build
 
 install:
-	pip install -e .[dev]
+	cd skyagi && pip install -e .[dev]
 
 setup-dev:
 	cp scripts/pre-commit .git/hooks
@@ -17,7 +17,7 @@ lint:
 	flake8 .
 
 format:
-	isort . && black .
+	cd skyagi && isort . && black .
 
 format-staged-files:
 	echo "Auto-formatting not implemented"
