@@ -114,39 +114,6 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 if respond == "yes":
                     user_robot_conversation(robot_agent, ctx)
 
-<<<<<<< HEAD:skyagi/src/skyagi/skyagi.py
-    ctx.console.print("The world has something else happening...", style="yellow")
-    # let the activities of non user robots happen
-    for idx in range(len(ctx.robot_agents) - 1):
-        amy = ctx.robot_agents[idx]
-        for bob in ctx.robot_agents[idx + 1 :]:
-            message = talks_to(amy, bob, ctx.observations)
-            if message:
-                ctx.console.print(
-                    f"{amy.name} just whispered to {bob.name}...", style="yellow"
-                )
-                ctx.console.print(
-                    f"{amy.name} is having a private dicussion with {bob.name}...",
-                    style="yellow",
-                )
-                run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
-                ctx.console.print(
-                    f"{amy.name} and {bob.name} finished their private conversation...",
-                    style="yellow",
-                )
-                continue
-            message = talks_to(bob, amy, ctx.observations)
-            if message:
-                ctx.console.print(
-                    f"{bob.name} just whispered to {amy.name}...", style="yellow"
-                )
-                run_conversation([bob, amy], f"{bob.name} said: {message}", ctx)
-                ctx.console.print(
-                    f"{bob.name} and {amy.name} finished their private conversation...",
-                    style="yellow",
-                )
-                continue
-=======
     with ctx.console.status("[yellow]The world has something else happening..."):
         # let the activities of non user robots happen
         for idx in range(len(ctx.robot_agents) - 1):
@@ -177,7 +144,6 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                         style="yellow",
                     )
                     continue
->>>>>>> parent of 803110f... [cli] avoid crashing with lousy openai connection (#57):src/skyagi/skyagi.py
 
     # clean up context's observations based on the time window
     ctx.observations_size_history.append(len(ctx.observations))
