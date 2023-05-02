@@ -114,6 +114,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 if respond == "yes":
                     user_robot_conversation(robot_agent, ctx)
 
+    ctx.console.print("The world has something else happening...", style="yellow")
     # let the activities of non user robots happen
     for idx in range(len(ctx.robot_agents) - 1):
         amy = ctx.robot_agents[idx]
