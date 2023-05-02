@@ -5,6 +5,8 @@ import openai
 from langchain.chat_models import ChatOpenAI
 from rich.console import Console
 from rich.prompt import Prompt
+from rich.live import Live
+from rich.spinner import Spinner
 
 from skyagi.context import Context
 from skyagi.simulation.agent import GenerativeAgent
@@ -114,36 +116,35 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 if respond == "yes":
                     user_robot_conversation(robot_agent, ctx)
 
-    with ctx.console.status("[yellow]The world has something else happening..."):
-        # let the activities of non user robots happen
-        for idx in range(len(ctx.robot_agents) - 1):
-            amy = ctx.robot_agents[idx]
-            for bob in ctx.robot_agents[idx + 1 :]:
-                message = talks_to(amy, bob, ctx.observations)
-                if message:
-                    ctx.console.print(
-                        f"{amy.name} just whispered to {bob.name}...", style="yellow"
-                    )
-                    with ctx.console.status(
-                        f"[yellow] {amy.name} is having a private dicussion with {bob.name}..."
-                    ):
-                        run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
-                    ctx.console.print(
-                        f"{amy.name} and {bob.name} finished their private conversation...",
-                        style="yellow",
-                    )
-                    continue
-                message = talks_to(bob, amy, ctx.observations)
-                if message:
-                    ctx.console.print(
-                        f"{bob.name} just whispered to {amy.name}...", style="yellow"
-                    )
-                    run_conversation([bob, amy], f"{bob.name} said: {message}", ctx)
-                    ctx.console.print(
-                        f"{bob.name} and {amy.name} finished their private conversation...",
-                        style="yellow",
-                    )
-                    continue
+    # let the activities of non user robots happen
+    for idx in range(len(ctx.robot_agents) - 1):
+        amy = ctx.robot_agents[idx]
+        for bob in ctx.robot_agents[idx + 1 :]:
+            message = talks_to(amy, bob, ctx.observations)
+            if message:
+                ctx.console.print(
+                    f"{amy.name} just whispered to {bob.name}...", style="yellow"
+                )
+                with ctx.console.status(
+                    f"[yellow] {amy.name} is having a private dicussion with {bob.name}..."
+                ):
+                    run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
+                ctx.console.print(
+                    f"{amy.name} and {bob.name} finished their private conversation...",
+                    style="yellow",
+                )
+                continue
+            message = talks_to(bob, amy, ctx.observations)
+            if message:
+                ctx.console.print(
+                    f"{bob.name} just whispered to {amy.name}...", style="yellow"
+                )
+                run_conversation([bob, amy], f"{bob.name} said: {message}", ctx)
+                ctx.console.print(
+                    f"{bob.name} and {amy.name} finished their private conversation...",
+                    style="yellow",
+                )
+                continue
 
     # clean up context's observations based on the time window
     ctx.observations_size_history.append(len(ctx.observations))
