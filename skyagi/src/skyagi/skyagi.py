@@ -5,8 +5,6 @@ import openai
 from langchain.chat_models import ChatOpenAI
 from rich.console import Console
 from rich.prompt import Prompt
-from rich.live import Live
-from rich.spinner import Spinner
 
 from skyagi.context import Context
 from skyagi.simulation.agent import GenerativeAgent
