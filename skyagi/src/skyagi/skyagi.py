@@ -125,7 +125,8 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                     f"{amy.name} just whispered to {bob.name}...", style="yellow"
                 )
                 with ctx.console.status(
-                    f"{amy.name} is having a private dicussion with {bob.name}...", style="yellow"
+                    f"{amy.name} is having a private dicussion with {bob.name}...",
+                    style="yellow",
                 ):
                     run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
                 ctx.console.print(
