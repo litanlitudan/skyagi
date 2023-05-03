@@ -2,8 +2,15 @@ import math
 from typing import List
 
 import faiss
+from langchain import LLMChain
 from langchain.docstore import InMemoryDocstore
 from langchain.embeddings import OpenAIEmbeddings
+from langchain.prompts.chat import (
+    AIMessagePromptTemplate,
+    ChatPromptTemplate,
+    HumanMessagePromptTemplate,
+    SystemMessagePromptTemplate,
+)
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
 
@@ -77,3 +84,61 @@ def interview_agent(agent: GenerativeAgent, message: str, username: str) -> str:
     """Help the notebook user interact with the agent."""
     new_message = f"{username} says {message}"
     return agent.generate_dialogue_response(new_message)[1]
+
+
+# whether initiator wants to talk to recipient based on the observations
+def talks_to(
+    initiator: GenerativeAgent, recipient: GenerativeAgent, observations: List[str]
+) -> str:
+    instruct = "Here are the timeline of events happened for these NPC characters:\n{observation}\n"
+    instruct += "I want to you to behave as {initiator_name} and talk to me as I am {recipient_name}.\n"
+    instruct += (
+        "If you do not want to or can not talk to {recipient_name}, just output NOTHING"
+    )
+    messages = [
+        SystemMessagePromptTemplate.from_template(
+            "You are the AI behind a NPC character called {initiator_name}"
+        ),
+        HumanMessagePromptTemplate.from_template(instruct),
+    ]
+    observation = "\n".join(observations)
+
+    message = (
+        LLMChain(
+            llm=initiator.llm,
+            prompt=ChatPromptTemplate.from_messages(messages),
+            verbose=True,
+        )
+        .run(
+            observation=observation,
+            initiator_name=initiator.name,
+            recipient_name=recipient.name,
+        )
+        .strip()
+    )
+    if "NOTHING" in message:
+        return ""
+
+    messages.append(AIMessagePromptTemplate.from_template(message))
+    messages.append(
+        HumanMessagePromptTemplate.from_template(
+            "Did {initiator_name} talk to {recipient_name}, please answer yes or no"
+        )
+    )
+    resp = (
+        LLMChain(
+            llm=initiator.llm,
+            prompt=ChatPromptTemplate.from_messages(messages),
+            verbose=True,
+        )
+        .run(
+            observation=observation,
+            initiator_name=initiator.name,
+            recipient_name=recipient.name,
+        )
+        .strip()
+    )
+    if "no" in resp:
+        return ""
+
+    return message
