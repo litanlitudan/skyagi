@@ -107,7 +107,6 @@ def talks_to(
         LLMChain(
             llm=initiator.llm,
             prompt=ChatPromptTemplate.from_messages(messages),
-            verbose=True,
         )
         .run(
             observation=observation,
@@ -129,7 +128,6 @@ def talks_to(
         LLMChain(
             llm=initiator.llm,
             prompt=ChatPromptTemplate.from_messages(messages),
-            verbose=True,
         )
         .run(
             observation=observation,
