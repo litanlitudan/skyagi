@@ -163,7 +163,7 @@ def agi_init(
 ) -> Context:
     ctx = Context(console, openai_key)
     os.environ["OPENAI_API_KEY"] = openai_key
-    console.print("Creating all agents one by one...", style="yellow")
+    ctx.console.print("Creating all agents one by one...", style="yellow")
     for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
         with ctx.console.status(f"Creating agent {agent_name}...", style="yellow"):
@@ -185,8 +185,8 @@ def agi_init(
             ctx.robot_agents.append(agent)
         ctx.agents.append(agent)
         ctx.observations.append(agent_config["current_status"])
-        console.print(f"Agent {agent_name} successfully created", style="green")
+        ctx.console.print(f"Agent {agent_name} successfully created", style="green")
 
-    console.print("SkyAGI started...")
-    console.print(f"You are going to behave as {ctx.user_agent.name}", style="yellow")
+    ctx.console.print("SkyAGI started...")
+    ctx.console.print(f"You are going to behave as {ctx.user_agent.name}", style="yellow")
     return ctx
