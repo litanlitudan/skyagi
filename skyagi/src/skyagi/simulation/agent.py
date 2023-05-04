@@ -5,9 +5,10 @@ from datetime import datetime
 from typing import List, Optional, Tuple
 
 from langchain import LLMChain
+from langchain.base_language import BaseLanguageModel
 from langchain.prompts import PromptTemplate
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
-from langchain.schema import BaseLanguageModel, Document
+from langchain.schema import Document
 from pydantic import BaseModel, Field
 from termcolor import colored
 

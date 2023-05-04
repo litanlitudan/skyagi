@@ -29,9 +29,10 @@ def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
             ctx.console.print(f"Interview with {agent_to_interview.name} finished")
             break
         ctx.observations.append(f"{ctx.user_agent.name} said: {user_message}")
-        response = interview_agent(
-            agent_to_interview, user_message, ctx.user_agent.name
-        )
+        with ctx.console.status("Waiting response...", style="yellow"):
+            response = interview_agent(
+                agent_to_interview, user_message, ctx.user_agent.name
+            )
         if "GOODBYE" in response:
             ctx.console.print(
                 f"{agent_to_interview.name} said Goodbye and ended the conversation"
@@ -52,8 +53,8 @@ def agi_step(ctx: Context, instruction: dict) -> None:
     if instruction["command"] == "continue":
         someone_asked = False
         for robot_agent in ctx.robot_agents:
-            ctx.console.print("Something is going on...", style="yellow")
-            message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
+            with ctx.console.status("Something is going on...", style="yellow"):
+                message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
             if message:
                 if someone_asked:
                     ctx.console.print(
@@ -84,11 +85,11 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 ctx.console.print(
                     f"{amy.name} just whispered to {bob.name}...", style="yellow"
                 )
-                ctx.console.print(
+                with ctx.console.status(
                     f"{amy.name} is having a private dicussion with {bob.name}...",
                     style="yellow",
-                )
-                run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
+                ):
+                    run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
                 ctx.console.print(
                     f"{amy.name} and {bob.name} finished their private conversation...",
                     style="yellow",
@@ -126,19 +127,19 @@ def agi_init(
     console.print("Creating all agents one by one...", style="yellow")
     for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
-        console.print(f"Creating agent {agent_name}...", style="yellow")
-        agent = GenerativeAgent(
-            name=agent_config["name"],
-            age=agent_config["age"],
-            traits=agent_config["personality"],
-            status="N/A",  # When connected to a virtual world, we can have the characters update their status
-            memory_retriever=create_new_memory_retriever(),
-            llm=ChatOpenAI(max_tokens=1500),
-            daily_summaries=[(agent_config["current_status"])],
-            reflection_threshold=8,
-        )
-        for memory in agent_config["memories"]:
-            agent.add_memory(memory)
+        with ctx.console.status(f"Creating agent {agent_name}...", style="yellow"):
+            agent = GenerativeAgent(
+                name=agent_config["name"],
+                age=agent_config["age"],
+                traits=agent_config["personality"],
+                status="N/A",  # When connected to a virtual world, we can have the characters update their status
+                memory_retriever=create_new_memory_retriever(),
+                llm=ChatOpenAI(max_tokens=1500),
+                daily_summaries=[(agent_config["current_status"])],
+                reflection_threshold=8,
+            )
+            for memory in agent_config["memories"]:
+                agent.add_memory(memory)
         if idx == user_idx:
             ctx.user_agent = agent
         else:
