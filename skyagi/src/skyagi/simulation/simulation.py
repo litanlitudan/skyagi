@@ -91,7 +91,7 @@ def talks_to(
     initiator: GenerativeAgent, recipient: GenerativeAgent, observations: List[str]
 ) -> str:
     instruct = "Here are the timeline of events happened for these NPC characters:\n{observation}\n"
-    instruct += "I want to you to behave as {initiator_name} and talk to me as I am {recipient_name}.\n"
+    instruct += "I want you to behave as {initiator_name} and talk to me as I am {recipient_name}.\n"
     instruct += (
         "If you do not want to or can not talk to {recipient_name}, just output NOTHING"
     )
