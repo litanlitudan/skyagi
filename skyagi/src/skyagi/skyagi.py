@@ -29,7 +29,7 @@ def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
             ctx.console.print(f"Interview with {agent_to_interview.name} finished")
             break
         ctx.observations.append(f"{ctx.user_agent.name} said: {user_message}")
-        with ctx.console.status("Waiting response...", style="yellow"):
+        with ctx.console.status("[yellow]Waiting response..."):
             response = interview_agent(
                 agent_to_interview, user_message, ctx.user_agent.name
             )
@@ -53,7 +53,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
     if instruction["command"] == "continue":
         someone_asked = False
         for robot_agent in ctx.robot_agents:
-            with ctx.console.status("Something is going on...", style="yellow"):
+            with ctx.console.status("[yellow]Something is going on..."):
                 message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
             if message:
                 if someone_asked:
@@ -86,8 +86,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                     f"{amy.name} just whispered to {bob.name}...", style="yellow"
                 )
                 with ctx.console.status(
-                    f"{amy.name} is having a private dicussion with {bob.name}...",
-                    style="yellow",
+                    f"[yellow]{amy.name} is having a private dicussion with {bob.name}..."
                 ):
                     run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
                 ctx.console.print(
@@ -127,7 +126,7 @@ def agi_init(
     console.print("Creating all agents one by one...", style="yellow")
     for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
-        with ctx.console.status(f"Creating agent {agent_name}...", style="yellow"):
+        with ctx.console.status(f"[yellow]Creating agent {agent_name}..."):
             agent = GenerativeAgent(
                 name=agent_config["name"],
                 age=agent_config["age"],
