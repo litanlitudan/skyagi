@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from skyagi.util import load_json_value, set_json_value
+from skyagi.util import load_json_value, load_yaml, set_json_value
 
 
 def set_openai_token(token: str):
@@ -52,3 +52,11 @@ def load_discord_token() -> str:
         return ""
     config_file = Path(config_dir, "config.json")
     return load_json_value(config_file, "discord_token", "")
+
+
+def load_model_config() -> dict:
+    config_dir = Path(Path.home(), ".skyagi")
+    if not config_dir.exists():
+        return {}
+    config_file = Path(config_dir, "model_config.yaml")
+    return load_yaml(config_file)

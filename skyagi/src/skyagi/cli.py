@@ -130,6 +130,7 @@ def run():
     Run SkyAGI
     """
     # Verify the OpenAI token before anything else
+    # TODO: (kejiez) verify all other API tokens
     verify_openai = util.verify_openai_token(config.load_openai_token())
     if verify_openai != "OK":
         console.print(

@@ -1,0 +1,6 @@
+vendor: openai
+openai:
+  max_tokens: 1500
+hug:
+  apikey: abc
+  bar: foo
