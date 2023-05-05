@@ -28,11 +28,18 @@ class WebContext:
 
 
     def ask_human(self, message: str, choices: List[str]):
-        ask_human_prompt = f"{message} ({'/'.join(choices)}): "
+        if choices:
+            ask_human_prompt = f"{message} ({'/'.join(choices)}): "
+        else:
+            ask_human_prompt = f"{message}: "
         self.add_response(ask_human_prompt)
         asyncio.run(self.send_ws_message(self.accumulated_responses))
         self.accumulated_responses = ""
-        return Prompt.ask(message, choices=choices, default=choices[0])
+        
+        if choices:
+            return Prompt.ask(message, choices=choices, default=choices[0])
+        else:
+            return Prompt.ask(message)
 
 
 @serving(websocket=True)

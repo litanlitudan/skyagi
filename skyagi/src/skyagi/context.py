@@ -28,8 +28,11 @@ class Context:
         if self.webcontext:
             self.webcontext.add_response(message)
     
-    def ask(self, message: str, choices: List[str]):
+    def ask(self, message: str = "", choices: List[str] = None) -> str:
         if self.webcontext:
             return self.webcontext.ask_human(message, choices)
         else:
-            return Prompt.ask(message, choices=choices, default=choices[0])
+            if choices:
+                return Prompt.ask(message, choices=choices, default=choices[0])
+            else:
+                return Prompt.ask(message)

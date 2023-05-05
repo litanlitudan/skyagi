@@ -3,7 +3,6 @@ from typing import List
 
 from langchain.chat_models import ChatOpenAI
 from rich.console import Console
-from rich.prompt import Prompt
 
 from skyagi.context import Context
 from skyagi.simulation.agent import GenerativeAgent
@@ -25,7 +24,7 @@ def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
         f"{ctx.user_agent.name} now is having a conversation with {agent_to_interview.name}"
     )
     while True:
-        user_message = Prompt.ask()
+        user_message = ctx.ask()
         if user_message == "":
             ctx.print(f"Interview with {agent_to_interview.name} finished")
             break
@@ -68,10 +67,9 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                         style="yellow",
                     )
                 someone_asked = True
-                respond = Prompt.ask(
+                respond = ctx.ask(
                     f"Do you want to respond to {robot_agent.name}?",
-                    choices=["yes", "no"],
-                    default="yes",
+                    choices=["yes", "no"]
                 )
                 if respond == "yes":
                     user_robot_conversation(robot_agent, ctx)
