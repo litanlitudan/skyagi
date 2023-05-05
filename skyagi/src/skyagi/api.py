@@ -31,8 +31,6 @@ def ask_human(websocket, message: str, choices: List[str]):
     return res
 
 
-#@serving(websocket=True)
-#def runskyagi(question: str, **kwargs):
 @serving(websocket=True)
 def runskyagi(agent_configs: List[dict], **kwargs):
     """
@@ -50,14 +48,13 @@ def runskyagi(agent_configs: List[dict], **kwargs):
 
     # ask for the user's role
     user_role = ask_human(websocket, "Pick which role you want to perform? (input the exact name, case sensitive)", choices=agent_names).strip()
-    print("user_role:", user_role)
     if user_role not in agent_names:
+        # TODO: return error code
         return "[error] Please pick a valid agent, exiting" 
     user_index = agent_names.index(user_role)
 
     # set up the agents
     ctx = agi_init(agent_configs, console, None, user_index)
-    return "close cmd"
 
     # main loop
     actions = ["continue", "interview", "exit"]
@@ -85,3 +82,4 @@ def runskyagi(agent_configs: List[dict], **kwargs):
             break
         #agi_step(ctx, instruction)
         break
+    return "close cmd"
