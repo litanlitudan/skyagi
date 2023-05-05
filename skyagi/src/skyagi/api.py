@@ -11,25 +11,28 @@ from typing import List
 
 console = Console()
 
+class WebContext:
+    def __init__(self, websocket):
+        self.websocket = websocket
+        self.accumulated_responses = ""
+    
+    def add_response(self, response):
+        self.accumulated_responses += (response + "\n")
 
-async def send_ws_message(websocket, message: str):
-    if websocket is not None:
-        await websocket.send_json(
-            {'result': message, 'error': '', 'stdout': ''}
-        )
-    print(message)
+    async def send_ws_message(self, message: str):
+        if self.websocket is not None:
+            await self.websocket.send_json(
+                {'result': message, 'error': '', 'stdout': ''}
+            )
+        #print(message)
 
 
-def report_error(websocket, err_msg: str):
-    asyncio.run(send_ws_message(websocket, err_msg))
-
-# TODO: wrapper for Prompt.ask
-def ask_human(websocket, message: str, choices: List[str]):
-    choice_prompt = f"{message} ({'/'.join(choices)}): "
-    asyncio.run(send_ws_message(websocket, choice_prompt))
-    res = Prompt.ask()
-    print(res)
-    return res
+    def ask_human(self, message: str, choices: List[str]):
+        ask_human_prompt = f"{message} ({'/'.join(choices)}): "
+        self.add_response(ask_human_prompt)
+        asyncio.run(self.send_ws_message(self.accumulated_responses))
+        self.accumulated_responses = ""
+        return Prompt.ask(message, choices=choices, default=choices[0])
 
 
 @serving(websocket=True)
@@ -38,6 +41,7 @@ def runskyagi(agent_configs: List[dict], **kwargs):
     Run SkyAGI
     """
     websocket = kwargs.get('websocket')
+    wc = WebContext(websocket)
 
     if len(agent_configs) <= 2:
         # TODO: return error
@@ -48,27 +52,25 @@ def runskyagi(agent_configs: List[dict], **kwargs):
         agent_names.append(agent_config["name"])
 
     # ask for the user's role
-    user_role = ask_human(websocket, "Pick which role you want to perform? (input the exact name, case sensitive)", choices=agent_names).strip()
+    user_role = wc.ask_human("Pick which role you want to perform? (input the exact name, case sensitive)", choices=agent_names).strip()
     if user_role not in agent_names:
         # TODO: return error code
         return "[error] Please pick a valid agent, exiting" 
     user_index = agent_names.index(user_role)
 
     # set up the agents
-    ctx = agi_init(agent_configs, console, None, user_index)
+    ctx = agi_init(agent_configs, console, None, user_index, wc)
 
     # main loop
     actions = ["continue", "interview", "exit"]
     while True:
         instruction = {"command": "continue"}
-        action = ask_human(
-            websocket,
+        action = wc.ask_human(
             "Pick an action to perform?", choices=actions
         )
         if action == "interview":
             robot_agent_names = list(map(lambda agent: agent.name, ctx.robot_agents))
-            robot_agent_name = ask_human(
-                websocket,
+            robot_agent_name = wc.ask_human(
                 f"As {ctx.user_agent.name}, which agent do you want to talk to?",
                 choices=robot_agent_names
             )
