@@ -66,7 +66,6 @@ async def client(url: str, name: str, envs: Dict = {}):
                             try:
                                 prompt = HumanPrompt.parse_raw(msg.data)
                                 answer = input(prompt.prompt + '\n')
-                                print("answer: ", answer)
                                 await ws.send_str(answer)
                             except ValidationError:
                                 print(f'Unknown message: {msg.data}')

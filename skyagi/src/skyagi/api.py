@@ -90,6 +90,5 @@ def runskyagi(agent_configs: List[dict], **kwargs):
         elif action == "exit":
             console.print("SkyAGI exiting...", style="yellow")
             break
-        #agi_step(ctx, instruction)
-        break
+        agi_step(ctx, instruction)
     return "close cmd"
