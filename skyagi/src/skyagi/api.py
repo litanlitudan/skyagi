@@ -39,7 +39,6 @@ def runskyagi(agent_configs: List[dict], **kwargs):
     Run SkyAGI
     """
     websocket = kwargs.get('websocket')
-    openai_token = kwargs.get('openai_token') #TODO: make this more general
 
     if len(agent_configs) <= 2:
         # TODO: return error
@@ -55,10 +54,9 @@ def runskyagi(agent_configs: List[dict], **kwargs):
     if user_role not in agent_names:
         return "[error] Please pick a valid agent, exiting" 
     user_index = agent_names.index(user_role)
-    return "close cmd"
 
     # set up the agents
-    ctx = agi_init(agent_configs, console, openai_token, user_index)
+    ctx = agi_init(agent_configs, console, None, user_index)
     return "close cmd"
 
     # main loop
