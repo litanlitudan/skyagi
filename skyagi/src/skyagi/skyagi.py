@@ -1,7 +1,6 @@
 import os
 from typing import List
 
-import openai
 from langchain.chat_models import ChatOpenAI
 from rich.console import Console
 from rich.prompt import Prompt
@@ -12,46 +11,8 @@ from skyagi.simulation.simulation import (
     create_new_memory_retriever,
     interview_agent,
     run_conversation,
+    talks_to,
 )
-
-
-# whether amy wants to talk to bob based on the observations
-def talks_to(
-    amy: GenerativeAgent, bob: GenerativeAgent, observations: List[str]
-) -> str:
-    instruct = "Here are the timeline of events happened for these NPC characters:\n"
-    instruct += "\n".join(observations)
-    instruct += "\n"
-    instruct += (
-        f"I want to you to behave as {amy.name} and talk to me as I am {bob.name}.\n"
-    )
-    instruct += (
-        f"If you do not want to or can not talk to {bob.name}, just output NOTHING"
-    )
-
-    prompts = [
-        {
-            "role": "system",
-            "content": f"You are the AI behind a NPC character called {amy.name}",
-        },
-        {"role": "user", "content": instruct},
-    ]
-    resp = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=prompts)
-    message = resp["choices"][0]["message"]["content"]
-    if "NOTHING" in message:
-        return ""
-
-    prompts.append(resp["choices"][0]["message"])
-    prompts.append(
-        {
-            "role": "user",
-            "content": f"Did {amy.name} talk to {bob.name}, please answer yes or no",
-        }
-    )
-    resp = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=prompts)
-    if "no" in resp["choices"][0]["message"]["content"]:
-        return ""
-    return message
 
 
 def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
@@ -68,7 +29,7 @@ def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
             ctx.console.print(f"Interview with {agent_to_interview.name} finished")
             break
         ctx.observations.append(f"{ctx.user_agent.name} said: {user_message}")
-        with ctx.console.status("Waiting response...", style="yellow"):
+        with ctx.console.status("[yellow]Waiting response..."):
             response = interview_agent(
                 agent_to_interview, user_message, ctx.user_agent.name
             )
@@ -92,7 +53,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
     if instruction["command"] == "continue":
         someone_asked = False
         for robot_agent in ctx.robot_agents:
-            with ctx.console.status("Something is going on...", style="yellow"):
+            with ctx.console.status("[yellow]Something is going on..."):
                 message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
             if message:
                 if someone_asked:
@@ -125,8 +86,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                     f"{amy.name} just whispered to {bob.name}...", style="yellow"
                 )
                 with ctx.console.status(
-                    f"{amy.name} is having a private dicussion with {bob.name}...",
-                    style="yellow",
+                    f"[yellow]{amy.name} is having a private dicussion with {bob.name}..."
                 ):
                     run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
                 ctx.console.print(
@@ -167,7 +127,7 @@ def agi_init(
     ctx.console.print("Creating all agents one by one...", style="yellow")
     for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
-        with ctx.console.status(f"Creating agent {agent_name}...", style="yellow"):
+        with ctx.console.status(f"[yellow]Creating agent {agent_name}..."):
             agent = GenerativeAgent(
                 name=agent_config["name"],
                 age=agent_config["age"],
