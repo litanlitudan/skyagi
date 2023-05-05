@@ -9,6 +9,7 @@ from rich.prompt import IntPrompt, Prompt
 from skyagi import config, util
 from skyagi.discord import client
 from skyagi.skyagi import agi_init, agi_step
+from skyagi.util import ModelFactory
 
 cli = typer.Typer()
 console = Console()
@@ -103,6 +104,36 @@ def config_main(ctx: typer.Context):
 
 
 cli.add_typer(config_cli, name="config")
+
+#######################################################################################
+# Model CLI
+
+model_cli = typer.Typer(help="Models")
+
+
+@model_cli.command("list")
+def model_list():
+    """
+    List all supported models
+    """
+    console.print("Supported models:")
+    console.print(ModelFactory.get_all_models())
+
+
+@model_cli.callback(invoke_without_command=True)
+def model_main(ctx: typer.Context):
+    """
+    Models
+    """
+    # only run without a command specified
+    if ctx.invoked_subcommand is not None:
+        return
+
+    # by default just print all supported models
+    model_list()
+
+
+cli.add_typer(model_cli, name="model")
 
 #######################################################################################
 # Main CLI

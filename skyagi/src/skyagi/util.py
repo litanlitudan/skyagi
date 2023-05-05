@@ -4,9 +4,9 @@ from pathlib import Path
 from typing import Any, Dict
 
 import yaml
-from langchain.llms import type_to_cls_dict as langchain_models
+from langchain import chat_models
+from langchain.llms import type_to_cls_dict as langchain_llms
 from langchain.llms.base import BaseLLM
-from pydantic import BaseModel
 
 
 def verify_openai_token(token: str) -> str:
@@ -76,7 +76,7 @@ def load_yaml(filepath: Path) -> dict:
         return yaml.safe_load(file)
 
 
-class LLMFactory:
+class ModelFactory:
     """LLM factory based on configuration"""
 
     class LUT(dict):
@@ -89,9 +89,14 @@ class LLMFactory:
 
     _LUT = LUT()
     # langchain supported models
-    _LUT.update(langchain_models)
-    # TODO: (kejiez) load langchain chat_models
-    
+    _LUT.update(langchain_llms)
+    # langchain chat_models
+    _LUT.update(
+        {
+            chat_model_type.lower(): getattr(chat_models, chat_model_type)
+            for chat_model_type in chat_models.__all__
+        }
+    )
     # skyagi builtin models
     _LUT.update({})
 
@@ -101,7 +106,7 @@ class LLMFactory:
             raise ValueError("Must specify the LLM `vendor` in config")
 
         vendor = config["vendor"]
-        if vendor not in LLMFactory._LUT:
+        if vendor not in ModelFactory._LUT:
             raise ValueError(f"LLM {vendor} is not supported yet")
 
         if vendor not in config:
@@ -110,4 +115,8 @@ class LLMFactory:
             )
 
         vendor_config = config[vendor]
-        return LLMFactory._LUT[vendor](**vendor_config)
+        return ModelFactory._LUT[vendor](**vendor_config)
+
+    @classmethod
+    def get_all_models(cls) -> list[str]:
+        return list(cls._LUT.keys())
