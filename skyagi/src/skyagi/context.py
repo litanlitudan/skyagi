@@ -16,3 +16,9 @@ class Context:
         self.observations = ["Beginning of the day, people are living their lives."]
         self.timewindow_size = 3
         self.observations_size_history = []
+    
+    def print(self, message:str, style: str = None):
+        if style:
+            self.console.print(message, style=style)
+        else:
+            self.console.print(message)

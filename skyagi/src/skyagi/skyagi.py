@@ -15,8 +15,9 @@ from skyagi.simulation.simulation import (
 )
 
 
+
 def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
-    ctx.console.print(
+    ctx.print(
         f"Interview with {agent_to_interview.name} start, input empty line to exit",
         style="yellow",
     )
@@ -26,7 +27,7 @@ def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
     while True:
         user_message = Prompt.ask()
         if user_message == "":
-            ctx.console.print(f"Interview with {agent_to_interview.name} finished")
+            ctx.print(f"Interview with {agent_to_interview.name} finished")
             break
         ctx.observations.append(f"{ctx.user_agent.name} said: {user_message}")
         with ctx.console.status("[yellow]Waiting response..."):
@@ -34,11 +35,11 @@ def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
                 agent_to_interview, user_message, ctx.user_agent.name
             )
         if "GOODBYE" in response:
-            ctx.console.print(
+            ctx.print(
                 f"{agent_to_interview.name} said Goodbye and ended the conversation"
             )
             break
-        ctx.console.print(response)
+        ctx.print(response)
         ctx.observations.append(response)
     ctx.observations.append(
         f"The conversation between {ctx.user_agent.name} and {agent_to_interview.name} is ended."
@@ -57,12 +58,12 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 message = talks_to(robot_agent, ctx.user_agent, ctx.observations)
             if message:
                 if someone_asked:
-                    ctx.console.print(
+                    ctx.print(
                         f"{robot_agent.name} also whispered to you({ctx.user_agent.name}): {message}",
                         style="yellow",
                     )
                 else:
-                    ctx.console.print(
+                    ctx.print(
                         f"{robot_agent.name} whispered to you ({ctx.user_agent.name}): {message}",
                         style="yellow",
                     )
@@ -75,32 +76,32 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 if respond == "yes":
                     user_robot_conversation(robot_agent, ctx)
 
-    ctx.console.print("The world has something else happening...", style="yellow")
+    ctx.print("The world has something else happening...", style="yellow")
     # let the activities of non user robots happen
     for idx in range(len(ctx.robot_agents) - 1):
         amy = ctx.robot_agents[idx]
         for bob in ctx.robot_agents[idx + 1 :]:
             message = talks_to(amy, bob, ctx.observations)
             if message:
-                ctx.console.print(
+                ctx.print(
                     f"{amy.name} just whispered to {bob.name}...", style="yellow"
                 )
                 with ctx.console.status(
                     f"[yellow]{amy.name} is having a private dicussion with {bob.name}..."
                 ):
                     run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
-                ctx.console.print(
+                ctx.print(
                     f"{amy.name} and {bob.name} finished their private conversation...",
                     style="yellow",
                 )
                 continue
             message = talks_to(bob, amy, ctx.observations)
             if message:
-                ctx.console.print(
+                ctx.print(
                     f"{bob.name} just whispered to {amy.name}...", style="yellow"
                 )
                 run_conversation([bob, amy], f"{bob.name} said: {message}", ctx)
-                ctx.console.print(
+                ctx.print(
                     f"{bob.name} and {amy.name} finished their private conversation...",
                     style="yellow",
                 )
@@ -124,7 +125,7 @@ def agi_init(
     ctx = Context(console, openai_key)
     if os.getenv("OPENAI_API_KEY") is None:
         os.environ["OPENAI_API_KEY"] = openai_key
-    ctx.console.print("Creating all agents one by one...", style="yellow")
+    ctx.print("Creating all agents one by one...", style="yellow")
     for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
         with ctx.console.status(f"[yellow]Creating agent {agent_name}..."):
@@ -146,8 +147,8 @@ def agi_init(
             ctx.robot_agents.append(agent)
         ctx.agents.append(agent)
         ctx.observations.append(agent_config["current_status"])
-        ctx.console.print(f"Agent {agent_name} successfully created", style="green")
+        ctx.print(f"Agent {agent_name} successfully created", style="green")
 
-    ctx.console.print("SkyAGI started...")
-    ctx.console.print(f"You are going to behave as {ctx.user_agent.name}", style="yellow")
+    ctx.print("SkyAGI started...")
+    ctx.print(f"You are going to behave as {ctx.user_agent.name}", style="yellow")
     return ctx
