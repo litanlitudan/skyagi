@@ -30,7 +30,12 @@ class WebContext:
             await self.websocket.send_json(
                 {'result': message, 'error': '', 'stdout': ''}
             )
-        #print(message)
+        
+    async def report_error(self, error_msg: str):
+        if self.websocket is not None:
+            await self.websocket.send_json(
+                {'result': '', 'error': error_msg, 'stdout': ''}
+            )
 
 
     def ask_human(self, message: str, choices: List[str]):
@@ -41,11 +46,7 @@ class WebContext:
         self.add_response(ask_human_prompt)
         asyncio.run(self.send_ws_message(self.accumulated_responses))
         self.accumulated_responses = ""
-        
-        if choices:
-            return Prompt.ask(message, choices=choices, default=choices[0])
-        else:
-            return Prompt.ask(message)
+        return Prompt.ask(message)
 
 
 @serving(websocket=True)
@@ -68,7 +69,7 @@ def runskyagi(agent_configs: List[dict], **kwargs):
     user_role = wc.ask_human("Pick which role you want to perform? (input the exact name, case sensitive)", choices=agent_names).strip()
     if user_role not in agent_names:
         # TODO: return error code
-        return "[error] Please pick a valid agent, exiting" 
+        return "[error] Please pick a valid agent, exiting"
     user_index = agent_names.index(user_role)
 
     # set up the agents
