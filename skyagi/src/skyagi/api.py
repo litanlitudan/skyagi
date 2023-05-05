@@ -1,3 +1,9 @@
+#TODO:
+# - try on Jina cloud: requires new skyagi package release
+# - error mesage return
+# - refactor api related codes to skyagi-api
+# - stream output back to client
+
 from pathlib import Path
 
 from rich.console import Console
