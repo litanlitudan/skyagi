@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from rich.console import Console
+from rich.prompt import Prompt
 
 from skyagi.skyagi import agi_init, agi_step
 
@@ -26,7 +27,7 @@ def report_error(websocket, err_msg: str):
 def ask_human(websocket, message: str, choices: List[str]):
     choice_prompt = f"{message} ({'/'.join(choices)}): "
     asyncio.run(send_ws_message(websocket, choice_prompt))
-    res = input()
+    res = Prompt.ask()
     print(res)
     return res
 
