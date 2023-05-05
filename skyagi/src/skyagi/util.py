@@ -28,6 +28,14 @@ def verify_openai_token(token: str) -> str:
         return str(e)
 
 
+def verify_model_initialization(config: dict):
+    try:
+        ModelFactory.create_from_config(config)
+        return "OK"
+    except Exception as e:
+        return str(e)
+
+
 def verify_pinecone_token(token: str) -> str:
     return "OK"
 
@@ -101,21 +109,28 @@ class ModelFactory:
     _LUT.update({})
 
     @staticmethod
-    def create(config: dict) -> BaseLLM:
-        if "vendor" not in config:
-            raise ValueError("Must specify the LLM `vendor` in config")
+    def create_from_config(config: dict) -> BaseLLM:
+        if "model" not in config:
+            raise ValueError(f"Must specify the `model` field in {config}")
+        model_configs = config["model"]
 
-        vendor = config["vendor"]
-        if vendor not in ModelFactory._LUT:
-            raise ValueError(f"LLM {vendor} is not supported yet")
+        if "type" not in model_configs:
+            raise ValueError(f"Must specify the `type` field in {model_configs}")
+        selected_model = model_configs["type"]
 
-        if vendor not in config:
+        if selected_model not in model_configs:
             raise ValueError(
-                f"Must specify the LLM specific config for vendor {vendor}"
+                f"Must specify the {selected_model} model specific config in {model_configs}"
             )
 
-        vendor_config = config[vendor]
-        return ModelFactory._LUT[vendor](**vendor_config)
+        model_config = model_configs[selected_model]
+        return ModelFactory.create(selected_model, **model_config)
+
+    @staticmethod
+    def create(model_type: str, **kwargs) -> BaseLLM:
+        if model_type not in ModelFactory._LUT:
+            raise ValueError(f"LLM {model_type} is not supported yet")
+        return ModelFactory._LUT[model_type](**kwargs)
 
     @classmethod
     def get_all_models(cls) -> list[str]:

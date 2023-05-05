@@ -161,17 +161,11 @@ def run():
     Run SkyAGI
     """
     # Verify the OpenAI token before anything else
-    # TODO: (kejiez) verify all other API tokens
-    verify_openai = util.verify_openai_token(config.load_openai_token())
-    if verify_openai != "OK":
-        console.print(
-            "Please config your OpenAI token before using this app", style="red"
-        )
-        console.print(
-            'Config by running: skyagi config openai or OPENAI_API_KEY="..." skyagi',
-            style="yellow",
-        )
-        console.print(verify_openai)
+    # TODO: (kejiez) create a Config class
+    res = util.verify_model_initialization(config.load_config())
+    if res != "OK":
+        console.print("Model initilization check failed:\n", style="red")
+        console.print(res)
         return
     # Get inputs from the user
     agent_count = IntPrompt.ask(
