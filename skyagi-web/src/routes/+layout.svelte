@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '../app.postcss';
 	import '../styles.css';
 	import { browser } from '$app/environment';
 	import { page } from '$app/stores';

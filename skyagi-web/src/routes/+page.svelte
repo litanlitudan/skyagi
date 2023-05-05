@@ -8,7 +8,7 @@
 </script>
 
 <svelte:head>
-	<title>User Management</title>
+	<title>SkyAGI</title>
 </svelte:head>
 
 <div class="row flex-center flex">
