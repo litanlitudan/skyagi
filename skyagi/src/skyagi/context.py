@@ -7,7 +7,7 @@ from skyagi.simulation.agent import GenerativeAgent
 
 
 class Context:
-    def __init__(self, console: Console, openai_key: str, webcontext = None) -> None:
+    def __init__(self, console: Console, openai_key: str, webcontext=None) -> None:
         self.clock: int = 0
         self.console: Console = console
         self.openai_key: str = openai_key
@@ -18,8 +18,8 @@ class Context:
         self.timewindow_size = 3
         self.observations_size_history = []
         self.webcontext = webcontext
-    
-    def print(self, message:str, style: str = None):
+
+    def print(self, message: str, style: str = None):
         if style:
             self.console.print(message, style=style)
         else:
@@ -27,7 +27,7 @@ class Context:
 
         if self.webcontext:
             self.webcontext.send_response(message)
-    
+
     def ask(self, message: str = "", choices: List[str] = None) -> str:
         if self.webcontext:
             return self.webcontext.ask_human(message, choices)

@@ -14,7 +14,6 @@ from skyagi.simulation.simulation import (
 )
 
 
-
 def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
     ctx.print(
         f"Interview with {agent_to_interview.name} start, input empty line to exit",
@@ -69,7 +68,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 someone_asked = True
                 respond = ctx.ask(
                     f"Do you want to respond to {robot_agent.name}?",
-                    choices=["yes", "no"]
+                    choices=["yes", "no"],
                 )
                 if respond == "yes":
                     user_robot_conversation(robot_agent, ctx)
@@ -81,9 +80,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
         for bob in ctx.robot_agents[idx + 1 :]:
             message = talks_to(amy, bob, ctx.observations)
             if message:
-                ctx.print(
-                    f"{amy.name} just whispered to {bob.name}...", style="yellow"
-                )
+                ctx.print(f"{amy.name} just whispered to {bob.name}...", style="yellow")
                 with ctx.console.status(
                     f"[yellow]{amy.name} is having a private dicussion with {bob.name}..."
                 ):
@@ -95,9 +92,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 continue
             message = talks_to(bob, amy, ctx.observations)
             if message:
-                ctx.print(
-                    f"{bob.name} just whispered to {amy.name}...", style="yellow"
-                )
+                ctx.print(f"{bob.name} just whispered to {amy.name}...", style="yellow")
                 run_conversation([bob, amy], f"{bob.name} said: {message}", ctx)
                 ctx.print(
                     f"{bob.name} and {amy.name} finished their private conversation...",
@@ -118,7 +113,11 @@ def agi_step(ctx: Context, instruction: dict) -> None:
 
 
 def agi_init(
-    agent_configs: List[dict], console: Console, openai_key: str, user_idx: int = 0, webcontext = None
+    agent_configs: List[dict],
+    console: Console,
+    openai_key: str,
+    user_idx: int = 0,
+    webcontext=None,
 ) -> Context:
     ctx = Context(console, openai_key, webcontext)
     if os.getenv("OPENAI_API_KEY") is None:
