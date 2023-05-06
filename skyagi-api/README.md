@@ -42,4 +42,5 @@ python skyagi-api-client.py
 ## TODO
 - [X] Return the error message with termination
 - [X] Stream output back to client
+- [ ] Extend the client example to match the BigBangTheory from the example folder
 - [ ] Deployment on Jina cloud: requires new SkyAGI python package release
