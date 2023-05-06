@@ -5,7 +5,6 @@ from typing import Any, Dict
 
 from langchain import chat_models, embeddings
 from langchain.embeddings.base import Embeddings
-from langchain.llms import type_to_cls_dict as langchain_llms
 from langchain.llms.base import BaseLLM
 
 from skyagi.config import EmbeddingSettings, LLMSettings, Settings
@@ -93,23 +92,13 @@ class ModelFactory:
 
     # ------------------------- LLM/Chat models registry ------------------------- #
     _LLM_LUT = LUT()
-    # langchain supported LLM models
-    _LLM_LUT.update(langchain_llms)
-    # langchain supported Chat models
-    _LLM_LUT.update(
-        {type_.lower(): getattr(chat_models, type_) for type_ in chat_models.__all__}
-    )
-    # skyagi builtin LLM/Chat models
-    _LLM_LUT.update({})
+    # skyagi supported LLM/Chat models
+    _LLM_LUT.update({"chatopenai": chat_models.ChatOpenAI})
 
     # ------------------------- Embedding models registry ------------------------ #
     _EMBEDDING_LUT = LUT()
-    # langchain supported Embedding models
-    _EMBEDDING_LUT.update(
-        {type_.lower(): getattr(embeddings, type_) for type_ in embeddings.__all__}
-    )
-    # skyagi builtin Embedding models
-    _EMBEDDING_LUT.update({})
+    # skyagi supported Embedding models
+    _EMBEDDING_LUT.update({"openaiembeddings": embeddings.OpenAIEmbeddings})
 
     # ---------------------------------------------------------------------------- #
     #                                LLM/Chat models                               #
