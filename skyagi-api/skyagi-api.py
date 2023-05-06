@@ -1,8 +1,3 @@
-#TODO:
-# 1. error mesage return
-# 2. stream output back to client
-# 3. try on Jina cloud: requires new skyagi package release
-
 from pathlib import Path
 
 from rich.console import Console

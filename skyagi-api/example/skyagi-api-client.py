@@ -48,7 +48,6 @@ async def client(url: str, name: str, envs: Dict = {}):
             await ws.send_json(
                 {
                     "agent_configs": agent_configs,
-                    "openai_key": os.environ['OPENAI_API_KEY'],
                     "envs": envs if envs else {},
                 }
             )
