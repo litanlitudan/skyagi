@@ -30,6 +30,12 @@ Installation
 pip install --upgrade skyagi
 ```
 
+Or
+
+```sh
+make install
+```
+
 How to run
 
 ```sh
