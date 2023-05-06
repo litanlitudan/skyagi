@@ -54,7 +54,7 @@ async def client(url: str, name: str, envs: Dict = {}):
 
             async for msg in ws:
                 if msg.type == aiohttp.WSMsgType.TEXT:
-                    if msg.data == 'close cmd':
+                    if 'exiting' in msg.data:
                         await ws.close()
                         break
                     else:

@@ -40,6 +40,6 @@ python skyagi-api-client.py
 ```
 
 ## TODO
-- [ ] Return the error message with termination
+- [X] Return the error message with termination
 - [X] Stream output back to client
 - [ ] Deployment on Jina cloud: requires new skyagi package release

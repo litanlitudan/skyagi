@@ -24,13 +24,6 @@ class WebContext:
                 {'result': message, 'error': '', 'stdout': ''}
             )
         
-    async def report_error(self, error_msg: str):
-        if self.websocket is not None:
-            await self.websocket.send_json(
-                {'result': '', 'error': error_msg, 'stdout': ''}
-            )
-
-
     def ask_human(self, message: str, choices: List[str]):
         if choices:
             ask_human_prompt = f"{message} ({'/'.join(choices)}): "
@@ -49,7 +42,6 @@ def runskyagi(agent_configs: List[dict], **kwargs):
     wc = WebContext(websocket)
 
     if len(agent_configs) <= 2:
-        # TODO: return error
         return "[error] Please config at least 2 agents, exiting"
     
     agent_names = []
@@ -59,7 +51,6 @@ def runskyagi(agent_configs: List[dict], **kwargs):
     # ask for the user's role
     user_role = wc.ask_human("Pick which role you want to perform? (input the exact name, case sensitive)", choices=agent_names).strip()
     if user_role not in agent_names:
-        # TODO: return error code
         return "[error] Please pick a valid agent, exiting"
     user_index = agent_names.index(user_role)
 
@@ -89,4 +80,4 @@ def runskyagi(agent_configs: List[dict], **kwargs):
             console.print("SkyAGI exiting...", style="yellow")
             break
         agi_step(ctx, instruction)
-    return "close cmd"
+    return "existing"
