@@ -2,14 +2,14 @@
 
 Skyagi-API is the web API endpoint of Skyagi, which would allow users to interact with Skyagi through web interface. With Skyagi-API, anyone can convinienlty build interactive application that incorporates the emerging human-like capability from LLM.
 
-Skyagi-API is built on top of langchain-serve with websocket, and makes use of the Human-in-the-loop capability to provide an interactive API experience just like running the Skyagi application through python natively and locally.
+Skyagi-API is built on top of [langchain-serve](https://github.com/jina-ai/langchain-serve/tree/main) with websocket, and makes use of the [Human-in-the-loop](https://github.com/jina-ai/langchain-serve/tree/main/examples/websockets/hitl) capability to provide an interactive API experience just like running the Skyagi application through python natively and locally.
 
 ## Endpoint
 
-`/runskyagi`
+### `/runskyagi`
 The endpoint to start a Skyagi session.
 
-### How it works
+#### How the enpoint works
 
 To initialize the Skyagi session, a user needs to send the agent configurations in the json format.
 
@@ -17,11 +17,11 @@ Once the session is initiated, the endpoint will return the instructions of what
 
 More information about how to use the `/runskyagi` endpoint can be found through the example app.
 
-## Usage
+#### How to use the endpoint 
 
-### Use public cloud deployment (WIP)
+##### Use public cloud deployment (WIP)
 
-### Use local deployment for testing
+##### Use local deployment for testing
 
 Skyagi-API supports a local deployment for testing. To run the endpoint locally, follow the steps blew:
 * Install langchain-serve
