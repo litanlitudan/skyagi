@@ -3,10 +3,11 @@ import os
 from pathlib import Path
 from typing import Any, Dict
 
-import yaml
 from langchain import chat_models
 from langchain.llms import type_to_cls_dict as langchain_llms
 from langchain.llms.base import BaseLLM
+
+from skyagi.config import ModelSettings
 
 
 def verify_openai_token(token: str) -> str:
@@ -28,9 +29,9 @@ def verify_openai_token(token: str) -> str:
         return str(e)
 
 
-def verify_model_initialization(config: dict):
+def verify_model_initialization(model_settings: ModelSettings):
     try:
-        ModelFactory.create_from_config(config)
+        ModelFactory.create_from_config(model_settings)
         return "OK"
     except Exception as e:
         return str(e)
@@ -77,13 +78,6 @@ def load_json(filepath: Path) -> Dict:
                 raise e
 
 
-def load_yaml(filepath: Path) -> dict:
-    if not Path(filepath).exists():
-        return {}
-    with open(filepath, "r") as file:
-        return yaml.safe_load(file)
-
-
 class ModelFactory:
     """LLM factory based on configuration"""
 
@@ -109,22 +103,10 @@ class ModelFactory:
     _LUT.update({})
 
     @staticmethod
-    def create_from_config(config: dict) -> BaseLLM:
-        if "model" not in config:
-            raise ValueError(f"Must specify the `model` field in {config}")
-        model_configs = config["model"]
-
-        if "type" not in model_configs:
-            raise ValueError(f"Must specify the `type` field in {model_configs}")
-        selected_model = model_configs["type"]
-
-        if selected_model not in model_configs:
-            raise ValueError(
-                f"Must specify the {selected_model} model specific config in {model_configs}"
-            )
-
-        model_config = model_configs[selected_model]
-        return ModelFactory.create(selected_model, **model_config)
+    def create_from_config(model_settings: ModelSettings) -> BaseLLM:
+        model_settings_dict = model_settings.dict()
+        model_type = model_settings_dict.pop("type")
+        return ModelFactory.create(model_type, **model_settings_dict)
 
     @staticmethod
     def create(model_type: str, **kwargs) -> BaseLLM:

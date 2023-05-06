@@ -1,10 +1,13 @@
 import os
 from pathlib import Path
+from typing import Any
 
-from skyagi.util import load_json_value, load_yaml, set_json_value
+from pydantic import BaseModel, BaseSettings, Extra
 
 
 def set_openai_token(token: str):
+    from skyagi.util import set_json_value
+
     config_dir = Path(Path.home(), ".skyagi")
     if not config_dir.exists():
         config_dir.mkdir(parents=True)
@@ -13,6 +16,8 @@ def set_openai_token(token: str):
 
 
 def set_pinecone_token(token: str):
+    from skyagi.util import set_json_value
+
     config_dir = Path(Path.home(), ".skyagi")
     if not config_dir.exists():
         config_dir.mkdir(parents=True)
@@ -21,6 +26,8 @@ def set_pinecone_token(token: str):
 
 
 def set_discord_token(token: str):
+    from skyagi.util import set_json_value
+
     config_dir = Path(Path.home(), ".skyagi")
     if not config_dir.exists():
         config_dir.mkdir(parents=True)
@@ -29,6 +36,8 @@ def set_discord_token(token: str):
 
 
 def load_pinecone_token() -> str:
+    from skyagi.util import load_json_value
+
     config_dir = Path(Path.home(), ".skyagi")
     if not config_dir.exists():
         return ""
@@ -37,6 +46,8 @@ def load_pinecone_token() -> str:
 
 
 def load_openai_token() -> str:
+    from skyagi.util import load_json_value
+
     if "OPENAI_API_KEY" in os.environ:
         return os.environ["OPENAI_API_KEY"]
     config_dir = Path(Path.home(), ".skyagi")
@@ -47,6 +58,8 @@ def load_openai_token() -> str:
 
 
 def load_discord_token() -> str:
+    from skyagi.util import load_json_value
+
     config_dir = Path(Path.home(), ".skyagi")
     if not config_dir.exists():
         return ""
@@ -54,10 +67,50 @@ def load_discord_token() -> str:
     return load_json_value(config_file, "discord_token", "")
 
 
-def load_config() -> dict:
-    # TODO: (kejiez) save and load all configs to/from config.yaml or config.json
+def json_config_settings_source(settings: BaseSettings) -> dict[str, Any]:
+    from skyagi.util import load_json
+
+    # Load settings from JSON config file
     config_dir = Path(Path.home(), ".skyagi")
     if not config_dir.exists():
-        return {}
-    config_file = Path(config_dir, "config.yaml")
-    return load_yaml(config_file)
+        return ""
+    config_file = Path(config_dir, "config.json")
+    return load_json(config_file)
+
+
+class ModelSettings(BaseModel):
+    """
+    Model related settings
+    """
+
+    type: str = "chatopenai"
+
+    class Config:
+        extra = Extra.allow
+
+
+class Settings(BaseSettings):
+    """
+    Root settings
+    """
+
+    model: ModelSettings = ModelSettings(type="chatopenai")
+
+    class Config:
+        env_prefix = "skyagi_"
+        env_file_encoding = "utf-8"
+        extra = Extra.allow
+
+        @classmethod
+        def customise_sources(
+            cls,
+            init_settings,
+            env_settings,
+            file_secret_settings,
+        ):
+            return (
+                init_settings,
+                json_config_settings_source,
+                env_settings,
+                file_secret_settings,
+            )

@@ -9,7 +9,6 @@ from rich.prompt import IntPrompt, Prompt
 from skyagi import config, util
 from skyagi.discord import client
 from skyagi.skyagi import agi_init, agi_step
-from skyagi.util import ModelFactory
 
 cli = typer.Typer()
 console = Console()
@@ -117,7 +116,7 @@ def model_list():
     List all supported models
     """
     console.print("Supported models:")
-    console.print(ModelFactory.get_all_models())
+    console.print(util.ModelFactory.get_all_models())
 
 
 @model_cli.callback(invoke_without_command=True)
@@ -160,9 +159,9 @@ def run():
     """
     Run SkyAGI
     """
-    # Verify the OpenAI token before anything else
-    # TODO: (kejiez) create a Config class
-    res = util.verify_model_initialization(config.load_config())
+    # Model initialization verification
+    settings = config.Settings()
+    res = util.verify_model_initialization(settings.model)
     if res != "OK":
         console.print("Model initilization check failed:\n", style="red")
         console.print(res)

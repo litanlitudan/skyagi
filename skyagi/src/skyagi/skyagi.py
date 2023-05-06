@@ -4,7 +4,7 @@ from typing import List
 from rich.console import Console
 from rich.prompt import Prompt
 
-from skyagi.config import load_config
+from skyagi.config import Settings
 from skyagi.context import Context
 from skyagi.simulation.agent import GenerativeAgent
 from skyagi.simulation.simulation import (
@@ -123,6 +123,7 @@ def agi_init(
     agent_configs: List[dict], console: Console, openai_key: str, user_idx: int = 0
 ) -> Context:
     ctx = Context(console, openai_key)
+    settings = Settings()
     os.environ["OPENAI_API_KEY"] = openai_key
     console.print("Creating all agents one by one...", style="yellow")
     for idx, agent_config in enumerate(agent_configs):
@@ -134,7 +135,7 @@ def agi_init(
                 traits=agent_config["personality"],
                 status="N/A",  # When connected to a virtual world, we can have the characters update their status
                 memory_retriever=create_new_memory_retriever(),
-                llm=ModelFactory.create_from_config(load_config()),
+                llm=ModelFactory.create_from_config(settings.model),
                 daily_summaries=[(agent_config["current_status"])],
                 reflection_threshold=8,
             )

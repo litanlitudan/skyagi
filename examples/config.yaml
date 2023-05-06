@@ -1,4 +1,0 @@
-model:
-  type: chatopenai
-  chatopenai:
-    max_tokens: 1500

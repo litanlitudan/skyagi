@@ -1,0 +1,6 @@
+{
+    "model": {
+        "type": "chatopenai",
+        "max_tokens": 1500
+    }
+}
