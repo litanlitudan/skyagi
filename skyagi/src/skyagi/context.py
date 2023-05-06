@@ -6,10 +6,9 @@ from skyagi.simulation.agent import GenerativeAgent
 
 
 class Context:
-    def __init__(self, console: Console, openai_key: str) -> None:
+    def __init__(self, console: Console) -> None:
         self.clock: int = 0
         self.console: Console = console
-        self.openai_key: str = openai_key
         self.agents: List[GenerativeAgent] = []
         self.user_agent: GenerativeAgent = None
         self.robot_agents: List[GenerativeAgent] = []

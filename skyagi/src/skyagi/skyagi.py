@@ -120,11 +120,10 @@ def agi_step(ctx: Context, instruction: dict) -> None:
 
 
 def agi_init(
-    agent_configs: List[dict], console: Console, openai_key: str, user_idx: int = 0
+    agent_configs: List[dict], console: Console, user_idx: int = 0
 ) -> Context:
-    ctx = Context(console, openai_key)
+    ctx = Context(console)
     settings = Settings()
-    os.environ["OPENAI_API_KEY"] = openai_key
     console.print("Creating all agents one by one...", style="yellow")
     for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
