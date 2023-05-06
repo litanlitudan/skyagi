@@ -44,3 +44,4 @@ python skyagi-api-client.py
 - [X] Stream output back to client
 - [ ] Extend the client example to match the BigBangTheory from the example folder
 - [ ] Deployment on Jina cloud: requires new SkyAGI python package release
+- [ ] Implement API auth on Jina cloud
