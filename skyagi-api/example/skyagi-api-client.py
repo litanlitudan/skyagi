@@ -17,6 +17,7 @@ class Response(BaseModel):
 class HumanPrompt(BaseModel):
     prompt: str
 
+
 def get_agent_configs():
     parser = argparse.ArgumentParser(description='Get a path to agent configs')
     parser.add_argument('--folder', '-f', type=str, help='the folder of agent configs')
@@ -35,6 +36,7 @@ def get_agent_configs():
                     agent_configs.append(config)
 
     return agent_configs
+
 
 async def client(url: str, name: str, envs: Dict = {}):
     async with aiohttp.ClientSession() as session:
