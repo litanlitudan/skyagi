@@ -14,10 +14,9 @@ console = Console()
 class WebContext:
     def __init__(self, websocket):
         self.websocket = websocket
-        self.accumulated_responses = ""
     
-    def add_response(self, response):
-        self.accumulated_responses += (response + "\n")
+    def send_response(self, response):
+        asyncio.run(self.send_ws_message(response + '\n'))
 
     async def send_ws_message(self, message: str):
         if self.websocket is not None:
@@ -37,9 +36,7 @@ class WebContext:
             ask_human_prompt = f"{message} ({'/'.join(choices)}): "
         else:
             ask_human_prompt = f"{message}: "
-        self.add_response(ask_human_prompt)
-        asyncio.run(self.send_ws_message(self.accumulated_responses))
-        self.accumulated_responses = ""
+        asyncio.run(self.send_ws_message(ask_human_prompt))
         return Prompt.ask(message)
 
 

@@ -6,10 +6,9 @@ Skyagi-API is built on top of [langchain-serve](https://github.com/jina-ai/langc
 
 ## Endpoint
 
-### `/runskyagi`
-The endpoint to start a Skyagi session.
+`/runskyagi`: the endpoint to start and run a Skyagi session.
 
-#### How the enpoint works
+### How the enpoint works
 
 To initialize the Skyagi session, a user needs to send the agent configurations in the json format.
 
@@ -17,11 +16,11 @@ Once the session is initiated, the endpoint will return the instructions of what
 
 More information about how to use the `/runskyagi` endpoint can be found through the example app.
 
-#### How to use the endpoint 
+### How to use the endpoint 
 
-##### Use public cloud deployment (WIP)
+#### Use public cloud deployment (WIP)
 
-##### Use local deployment for testing
+#### Use local deployment for testing
 
 Skyagi-API supports a local deployment for testing. To run the endpoint locally, follow the steps blew:
 * Install langchain-serve
@@ -42,5 +41,5 @@ python skyagi-api-client.py
 
 ## TODO
 - [ ] Return the error message with termination
-- [ ] Stream output back to client
+- [X] Stream output back to client
 - [ ] Deployment on Jina cloud: requires new skyagi package release

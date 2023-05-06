@@ -26,7 +26,7 @@ class Context:
             self.console.print(message)
 
         if self.webcontext:
-            self.webcontext.add_response(message)
+            self.webcontext.send_response(message)
     
     def ask(self, message: str = "", choices: List[str] = None) -> str:
         if self.webcontext:
