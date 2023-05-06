@@ -107,7 +107,7 @@ cli.add_typer(config_cli, name="config")
 #######################################################################################
 # Model CLI
 
-model_cli = typer.Typer(help="Models")
+model_cli = typer.Typer(help="Models Management")
 
 
 @model_cli.command("list")
@@ -115,8 +115,10 @@ def model_list():
     """
     List all supported models
     """
-    console.print("Supported models:")
-    console.print(util.ModelFactory.get_all_models())
+    console.print("\n[green]Supported LLM/ChatModel:\n")
+    console.print(", ".join(util.ModelFactory.get_all_llms()))
+    console.print("\n[green]Supported Embedding:\n")
+    console.print(", ".join(util.ModelFactory.get_all_embeddings()))
 
 
 @model_cli.callback(invoke_without_command=True)
@@ -161,7 +163,7 @@ def run():
     """
     # Model initialization verification
     settings = config.Settings()
-    res = util.verify_model_initialization(settings.model)
+    res = util.verify_model_initialization(settings)
     if res != "OK":
         console.print("Model initilization check failed:\n", style="red")
         console.print(res)

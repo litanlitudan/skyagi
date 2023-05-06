@@ -78,12 +78,23 @@ def json_config_settings_source(settings: BaseSettings) -> dict[str, Any]:
     return load_json(config_file)
 
 
-class ModelSettings(BaseModel):
+class LLMSettings(BaseModel):
     """
-    Model related settings
+    LLM/ChatModel related settings
     """
 
     type: str = "chatopenai"
+
+    class Config:
+        extra = Extra.allow
+
+
+class EmbeddingSettings(BaseModel):
+    """
+    Embedding related settings
+    """
+
+    type: str = "openaiembeddings"
 
     class Config:
         extra = Extra.allow
@@ -94,7 +105,8 @@ class Settings(BaseSettings):
     Root settings
     """
 
-    model: ModelSettings = ModelSettings(type="chatopenai")
+    llm: LLMSettings = LLMSettings()
+    embedding: EmbeddingSettings = EmbeddingSettings()
 
     class Config:
         env_prefix = "skyagi_"

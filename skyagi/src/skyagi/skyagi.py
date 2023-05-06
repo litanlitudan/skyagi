@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 from rich.console import Console
@@ -119,9 +118,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
             )
 
 
-def agi_init(
-    agent_configs: List[dict], console: Console, user_idx: int = 0
-) -> Context:
+def agi_init(agent_configs: List[dict], console: Console, user_idx: int = 0) -> Context:
     ctx = Context(console)
     settings = Settings()
     console.print("Creating all agents one by one...", style="yellow")
@@ -134,7 +131,7 @@ def agi_init(
                 traits=agent_config["personality"],
                 status="N/A",  # When connected to a virtual world, we can have the characters update their status
                 memory_retriever=create_new_memory_retriever(),
-                llm=ModelFactory.create_from_config(settings.model),
+                llm=ModelFactory.create_llm_from_config(settings.llm),
                 daily_summaries=[(agent_config["current_status"])],
                 reflection_threshold=8,
             )
