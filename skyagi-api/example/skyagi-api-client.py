@@ -1,6 +1,8 @@
 import asyncio
 import os
 from typing import Dict
+import json
+import argparse
 
 import aiohttp
 from pydantic import BaseModel, ValidationError
@@ -15,31 +17,24 @@ class Response(BaseModel):
 class HumanPrompt(BaseModel):
     prompt: str
 
+def get_agent_configs():
+    parser = argparse.ArgumentParser(description='Get a path to agent configs')
+    parser.add_argument('--folder', '-f', type=str, help='the folder of agent configs')
+    args = parser.parse_args()
+    folder = args.folder
+    if not os.path.isdir(folder):
+        raise Exception(f"{folder} is not a directory")
 
-agent_configs = [
-    {
-        "name": "Penny",
-        "age": 22,
-        "personality": "Outgoing, friendly, compassionate, assertive, and determined.",
-        "memories": ["I'm happy"],
-        "current_status": "Penny is at the Cheesecake Factory",
-    },
-    {
-        "name": "Leonard",
-        "age": 27,
-        "personality": "Intelligent, neurotic, kind, analytical, loyal.",
-        "memories": ["I'm unhappy"],
-        "current_status": "Leonard is at the Cheesecake Factory",
-    },
-    {
-        "name": "Sheldon",
-        "age": 27,
-        "personality": "Intelligent, rigid, socially challenged, quirky, and arrogant.",
-        "memories": ["N/A"],
-        "current_status": "Sheldon is at the Cheesecake Factory",
-    },
-]
+    agent_configs = []
+    for root, dirs, files in os.walk(folder):
+        for filename in files:
+            if filename.endswith('.json'):
+                json_file = os.path.join(root, filename)
+                with open(json_file, 'r') as f:
+                    config = json.load(f)
+                    agent_configs.append(config)
 
+    return agent_configs
 
 async def client(url: str, name: str, envs: Dict = {}):
     async with aiohttp.ClientSession() as session:
@@ -48,7 +43,7 @@ async def client(url: str, name: str, envs: Dict = {}):
 
             await ws.send_json(
                 {
-                    "agent_configs": agent_configs,
+                    "agent_configs": get_agent_configs(),
                     "envs": envs if envs else {},
                 }
             )

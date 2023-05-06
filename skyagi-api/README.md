@@ -36,12 +36,12 @@ lc-serve deploy local skyagi-api
 * Run the example client app
 ```
 cd skyagi/skyagi-api/example
-python skyagi-api-client.py
+python skyagi-api-client.py -f <path-to-agent-config-json-files>
 ```
 
 ## TODO
 - [X] Return the error message with termination
 - [X] Stream output back to client
-- [ ] Extend the client example to match the BigBangTheory from the example folder
+- [X] Extend the client example to match the BigBangTheory from the example folder
 - [ ] Deployment on Jina cloud: requires new SkyAGI python package release
 - [ ] Implement API auth on Jina cloud
