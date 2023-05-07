@@ -115,12 +115,12 @@ def agi_step(ctx: Context, instruction: dict) -> None:
 def agi_init(
     agent_configs: List[dict],
     console: Console,
+    settings: Settings,
     user_idx: int = 0,
     webcontext=None,
 ) -> Context:
-    ctx = Context(console, webcontext)
+    ctx = Context(console, settings, webcontext)
     ctx.print("Creating all agents one by one...", style="yellow")
-    settings = Settings()
     for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
         with ctx.console.status(f"[yellow]Creating agent {agent_name}..."):
@@ -129,8 +129,8 @@ def agi_init(
                 age=agent_config["age"],
                 traits=agent_config["personality"],
                 status="N/A",  # When connected to a virtual world, we can have the characters update their status
-                memory_retriever=create_new_memory_retriever(),
-                llm=ModelFactory.create_llm_from_config(settings.llm),
+                memory_retriever=create_new_memory_retriever(ctx),
+                llm=ModelFactory.create_llm_from_config(ctx.settings.model.llm),
                 daily_summaries=[(agent_config["current_status"])],
                 reflection_threshold=8,
             )

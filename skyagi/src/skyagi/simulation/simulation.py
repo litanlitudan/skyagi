@@ -13,7 +13,6 @@ from langchain.prompts.chat import (
 from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
 
-from skyagi.config import Settings
 from skyagi.context import Context
 from skyagi.simulation.agent import GenerativeAgent
 from skyagi.util import ModelFactory
@@ -34,11 +33,12 @@ def relevance_score_fn(score: float) -> float:
 
 # reference:
 # https://python.langchain.com/en/latest/use_cases/agent_simulations/characters.html#create-a-generative-character
-def create_new_memory_retriever():
+def create_new_memory_retriever(ctx: Context):
     """Create a new vector store retriever unique to the agent."""
-    settings = Settings()
     # Define your embedding model
-    embeddings_model = ModelFactory.create_embedding_from_config(settings.embedding)
+    embeddings_model = ModelFactory.create_embedding_from_config(
+        ctx.settings.model.embedding
+    )
     # Initialize the vectorstore as empty
     embedding_size = 1536
     index = faiss.IndexFlatL2(embedding_size)

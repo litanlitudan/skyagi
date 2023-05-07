@@ -209,7 +209,7 @@ def run():
         default=agent_names[0],
     )
     user_index = agent_names.index(user_role)
-    ctx = agi_init(agent_configs, console, user_index)
+    ctx = agi_init(agent_configs, console, settings, user_index)
 
     actions = ["continue", "interview", "exit"]
     while True:

@@ -1,9 +1,11 @@
 {
-    "llm": {
-        "type": "chatopenai",
-        "max_tokens": 1500
-    },
-    "embedding": {
-        "type": "openaiembeddings"
+    "model": {
+        "llm": {
+            "type": "chatopenai",
+            "max_tokens": 1500
+        },
+        "embedding": {
+            "type": "openaiembeddings"
+        }
     }
 }

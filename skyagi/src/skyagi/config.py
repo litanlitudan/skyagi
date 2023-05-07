@@ -100,13 +100,24 @@ class EmbeddingSettings(BaseModel):
         extra = Extra.allow
 
 
+class ModelSettings(BaseModel):
+    """
+    Model related settings
+    """
+
+    llm: LLMSettings = LLMSettings()
+    embedding: EmbeddingSettings = EmbeddingSettings()
+
+    class Config:
+        extra = Extra.allow
+
+
 class Settings(BaseSettings):
     """
     Root settings
     """
 
-    llm: LLMSettings = LLMSettings()
-    embedding: EmbeddingSettings = EmbeddingSettings()
+    model: ModelSettings = ModelSettings()
 
     class Config:
         env_prefix = "skyagi_"

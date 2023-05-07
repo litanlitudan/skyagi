@@ -31,8 +31,8 @@ def verify_openai_token(token: str) -> str:
 
 def verify_model_initialization(settings: Settings):
     try:
-        ModelFactory.create_llm_from_config(settings.llm)
-        ModelFactory.create_embedding_from_config(settings.embedding)
+        ModelFactory.create_llm_from_config(settings.model.llm)
+        ModelFactory.create_embedding_from_config(settings.model.embedding)
         return "OK"
     except Exception as e:
         return str(e)

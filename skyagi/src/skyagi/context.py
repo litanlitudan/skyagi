@@ -3,11 +3,12 @@ from typing import List
 from rich.console import Console
 from rich.prompt import Prompt
 
+from skyagi.config import Settings
 from skyagi.simulation.agent import GenerativeAgent
 
 
 class Context:
-    def __init__(self, console: Console, openai_key: str, webcontext=None) -> None:
+    def __init__(self, console: Console, settings: Settings, webcontext=None) -> None:
         self.clock: int = 0
         self.console: Console = console
         self.agents: List[GenerativeAgent] = []
@@ -16,6 +17,7 @@ class Context:
         self.observations = ["Beginning of the day, people are living their lives."]
         self.timewindow_size = 3
         self.observations_size_history = []
+        self.settings = settings
         self.webcontext = webcontext
 
     def print(self, message: str, style: str = None):
