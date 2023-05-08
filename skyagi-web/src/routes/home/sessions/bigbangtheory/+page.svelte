@@ -1,5 +1,5 @@
 <script>
-	import Chatbot from '../../../../lib/chatbot.svelte';
+	import Chatbot from '../../../../lib/chatbot-websocket.svelte';
 	import { Heading } from 'flowbite-svelte';
 	import '../../../../app.postcss';
 </script>

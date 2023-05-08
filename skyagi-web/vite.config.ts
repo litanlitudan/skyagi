@@ -7,4 +7,5 @@ export default defineConfig({
 		include: ['src/**/*.{test,spec}.{js,ts}']
 	},
 	assetsInclude: ['**/*.md'],
+	optimizeDeps: { exclude: ["fsevents"] },
 });

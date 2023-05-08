@@ -3,28 +3,28 @@
 
 	export let role = '';
 	export let message = '';
-	const name = role === 'assistant' ? 'assistant' : 'you';
+	const name = role == 'assistant' ? 'assistant' : 'you';
+	const imgSrc = role == 'assistant' ? '/alfred-headshot.png' : '/batman-headshot.png';
 </script>
 
 <div
-	in:fly={{ y: 50, opacity: 0, duration: 250, delay: name === 'you' ? 20 : 200 }}
+	in:fly={{ y: 50, opacity: 0, duration: 250, delay: name == 'you' ? 20 : 200 }}
 	class="box {name}"
 >
-	<p class="text-sm font-medium">{name}</p>
-	<p>
-		{message}
-	</p>
+	<li class="flex py-4">
+		<img class="h-10 w-10 rounded-full" src={imgSrc} alt="" />
+		<div class="ml-3">
+			<p>
+				{message}
+			</p>
+		</div>
+	</li>
 </div>
 
 <style>
 	.box {
-		background-color: #eee;
-		border-radius: 5px;
 		font-family: helvetica;
-		background-color: #eee;
-		border-radius: 5px;
 		margin-bottom: 30px;
-		font-family: helvetica;
 	}
 
 	p {
@@ -35,7 +35,6 @@
 		border-bottom-right-radius: 0px;
 		float: right;
 		clear: both;
-		background: #3865f4;
 		color: #fff;
 	}
 
@@ -43,6 +42,5 @@
 		border-top-left-radius: 0px;
 		float: left;
 		clear: both;
-		background-color: darkgray;
 	}
 </style>

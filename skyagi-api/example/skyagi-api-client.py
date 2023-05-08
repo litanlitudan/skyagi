@@ -78,7 +78,7 @@ asyncio.run(
         url="ws://localhost:8080",
         name="runskyagi",
         envs={
-            "OPENAI_API_KEY": os.environ["OPENAI_API_KEY"],
+            "OPENAI_API_KEY": "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",
         },
     )
 )
