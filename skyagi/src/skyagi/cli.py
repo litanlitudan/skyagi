@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 
+import inquirer
 import typer
 from rich.console import Console
 from rich.prompt import IntPrompt, Prompt
@@ -161,8 +162,25 @@ def run():
     """
     Run SkyAGI
     """
-    # Model initialization verification
+    # Ask Model settings
+    questions = [
+        inquirer.List(
+            "llm-model",
+            message="What LLM model you want to use?",
+            choices=[
+                *[preset_config.name for preset_config in config.preset_configs],
+                *["From Config File"],
+            ],
+        )
+    ]
+    answers = inquirer.prompt(questions=questions)
     settings = config.Settings()
+    if "From Config File" not in answers["llm-model"]:
+        for preset_config in config.preset_configs:
+            if preset_config.name == answers["llm-model"]:
+                settings = preset_config
+
+    # Model initialization verification
     res = util.verify_model_initialization(settings)
     if res != "OK":
         console.print("Model initilization check failed:\n", style="red")

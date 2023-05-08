@@ -117,6 +117,7 @@ class Settings(BaseSettings):
     Root settings
     """
 
+    name: str = "default"
     model: ModelSettings = ModelSettings()
 
     class Config:
@@ -137,3 +138,25 @@ class Settings(BaseSettings):
                 env_settings,
                 file_secret_settings,
             )
+
+
+# ---------------------------------------------------------------------------- #
+#                             Preset configurations                            #
+# ---------------------------------------------------------------------------- #
+OpenAIGPT4Settings = Settings(
+    name="openai-gpt-4",
+    model=ModelSettings(
+        llm=LLMSettings(type="chatopenai", model="gpt-4", max_tokens=1500),
+        embedding=EmbeddingSettings(type="openaiembeddings"),
+    ),
+)
+
+OpenAIGPT3_5Settings = Settings(
+    name="openai-gpt-3.5-turbo",
+    model=ModelSettings(
+        llm=LLMSettings(type="chatopenai", model="gpt-3.5-turbo", max_tokens=1500),
+        embedding=EmbeddingSettings(type="openaiembeddings"),
+    ),
+)
+
+preset_configs = [OpenAIGPT3_5Settings, OpenAIGPT4Settings]
