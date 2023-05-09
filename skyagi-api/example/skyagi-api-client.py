@@ -75,8 +75,8 @@ async def client(url: str, name: str, envs: Dict = {}):
 
 asyncio.run(
     client(
-        url="ws://localhost:8080", # use local deployment
-        #url="wss://langchain-558b0f2c14.wolf.jina.ai", # use cloud deployment
+        url="ws://localhost:8080",  # use local deployment
+        # url="wss://langchain-558b0f2c14.wolf.jina.ai", # use cloud deployment
         name="runskyagi",
         envs={
             "OPENAI_API_KEY": os.environ["OPENAI_API_KEY"],
