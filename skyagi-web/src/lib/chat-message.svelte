@@ -4,20 +4,29 @@
 	export let role = '';
 	export let message = '';
 	const name = role == 'assistant' ? 'assistant' : 'you';
-	const imgSrc = role == 'assistant' ? '/alfred-headshot.png' : '/batman-headshot.png';
+	const imgSrc = role == 'assistant' ? '/robot.jpg' : '/woman.png';
 </script>
 
 <div
-	in:fly={{ y: 50, opacity: 0, duration: 250, delay: name == 'you' ? 20 : 200 }}
+	in:fly={{ y: 50, opacity: 0, duration: 250, delay: name === 'you' ? 20 : 200 }}
 	class="box {name}"
 >
 	<li class="flex py-4">
-		<img class="h-10 w-10 rounded-full" src={imgSrc} alt="" />
-		<div class="ml-3">
-			<p>
-				{message}
-			</p>
-		</div>
+		{#if name === 'you'}
+			<div class="ml-3 dark-bg-message">
+				<p>
+					{message}
+				</p>
+			</div>
+			<img class="h-10 w-10 rounded-full" src={imgSrc} alt="" />
+		{:else}
+			<img class="h-10 w-10 rounded-full" src={imgSrc} alt="" />
+			<div class="ml-3 light-bg-message">
+				<p>
+					{message}
+				</p>
+			</div>
+		{/if}
 	</li>
 </div>
 
@@ -42,5 +51,20 @@
 		border-top-left-radius: 0px;
 		float: left;
 		clear: both;
+	}
+
+	.dark-bg-message {
+		border-radius: 5px;
+		background-color: #003474;
+		color: #fff;
+		margin-right: 30px;
+	}
+
+	.light-bg-message {
+		border-radius: 5px;
+		border-color: #2f83e4;
+		border-style: solid;
+		border-width: thin;
+		color: #fff;
 	}
 </style>

@@ -10,8 +10,6 @@
 	let socket: WebSocket;
 	let messageStore = writable('');
 	let sendMessage;
-	let messageContent;
-	let role;
 
 	// Validation schema
 	const ajv = new Ajv();
@@ -207,12 +205,12 @@
 
 <div>
 	{#each messages as m}
-		{#if m}
-			{(messageContent = m.split('?role=')[0])}
-			{(role = m.split('?role=')[1])}
-			{#if messageContent && messageContent != '' && messageContent != ':' && role}
-				<Message message={messageContent} {role} />
+		{#if m && m.length > 0}
+			{#if m.split('?role=')[0] && m.split('?role=')[0] != '' && m.split('?role=')[0] != ':'}
+				<Message message={m.split('?role=')[0]} role={m.split('?role=')[1]} />
 			{/if}
+		{:else}
+			<div />
 		{/if}
 	{/each}
 </div>
