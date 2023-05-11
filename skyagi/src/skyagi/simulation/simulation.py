@@ -14,8 +14,8 @@ from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
 
 from skyagi.context import Context
+from skyagi.model import load_embedding_from_config
 from skyagi.simulation.agent import GenerativeAgent
-from skyagi.util import load_embedding_from_config
 
 
 # reference:

@@ -3,7 +3,7 @@ from typing import List
 from rich.console import Console
 from rich.prompt import Prompt
 
-from skyagi.config import Settings
+from skyagi.settings import Settings
 from skyagi.simulation.agent import GenerativeAgent
 
 

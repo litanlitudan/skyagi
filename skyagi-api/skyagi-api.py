@@ -5,7 +5,7 @@ from lcserve import serving
 from rich.console import Console
 from rich.prompt import Prompt
 from skyagi.skyagi import agi_init, agi_step
-from skyagi.config import Settings
+from skyagi.settings import Settings
 
 console = Console()
 

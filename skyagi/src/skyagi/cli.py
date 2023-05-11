@@ -9,6 +9,8 @@ from rich.prompt import IntPrompt, Prompt
 
 from skyagi import config, util
 from skyagi.discord import client
+from skyagi.model import get_all_embeddings, get_all_llms
+from skyagi.settings import Settings, get_all_model_settings, load_model_setting
 from skyagi.skyagi import agi_init, agi_step
 
 cli = typer.Typer()
@@ -117,9 +119,9 @@ def model_list():
     List all supported models
     """
     console.print("\n[green]Supported LLM/ChatModel:\n")
-    console.print(", ".join(util.get_all_llms()))
+    console.print(", ".join(get_all_llms()))
     console.print("\n[green]Supported Embedding:\n")
-    console.print(", ".join(util.get_all_embeddings()))
+    console.print(", ".join(get_all_embeddings()))
 
 
 @model_cli.callback(invoke_without_command=True)
@@ -162,18 +164,18 @@ def run():
     """
     Run SkyAGI
     """
-    settings = config.Settings()
+    settings = Settings()
 
     # Ask Model settings
     questions = [
         inquirer.List(
             "llm-model",
             message="What LLM model you want to use?",
-            choices=config.get_all_model_settings(),
+            choices=get_all_model_settings(),
         )
     ]
     answers = inquirer.prompt(questions=questions)
-    settings.model = config.load_model_setting(answers["llm-model"])
+    settings.model = load_model_setting(answers["llm-model"])
 
     # Model initialization verification
     res = util.verify_model_initialization(settings)

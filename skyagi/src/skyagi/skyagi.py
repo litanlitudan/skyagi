@@ -2,8 +2,9 @@ from typing import List
 
 from rich.console import Console
 
-from skyagi.config import Settings
 from skyagi.context import Context
+from skyagi.model import load_llm_from_config
+from skyagi.settings import Settings
 from skyagi.simulation.agent import GenerativeAgent
 from skyagi.simulation.simulation import (
     create_new_memory_retriever,
@@ -11,7 +12,6 @@ from skyagi.simulation.simulation import (
     run_conversation,
     talks_to,
 )
-from skyagi.util import load_llm_from_config
 
 
 def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
