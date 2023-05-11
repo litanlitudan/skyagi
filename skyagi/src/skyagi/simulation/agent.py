@@ -135,7 +135,7 @@ class GenerativeAgent(BaseModel):
         score = chain.run(memory_content=memory_content).strip()
         match = re.search(r"^\D*(\d+)", score)
         if match:
-            return (float(score[0]) / 10) * weight
+            return (float(match.group(1)) / 10) * weight
         else:
             return 0.0
 

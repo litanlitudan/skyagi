@@ -10,6 +10,7 @@ from skyagi.settings import EmbeddingSettings, LLMSettings
 llm_type_to_cls_dict: Dict[str, Type[BaseLanguageModel]] = {
     "chatopenai": chat_models.ChatOpenAI,
     "openai": llms.OpenAI,
+    "chatmodelz": chat_models.ChatModelz,
 }
 
 # ------------------------- Embedding models registry ------------------------ #

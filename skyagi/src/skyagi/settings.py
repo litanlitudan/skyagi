@@ -100,10 +100,19 @@ class OpenAIGPT3_5TextDavinci003Settings(ModelSettings):
     embedding = EmbeddingSettings(type="openaiembeddings")
 
 
-# ------------------------- Embedding models registry ------------------------ #
+class ChatModelzSettings(ModelSettings):
+    type = "chat-modelz"
+    llm = LLMSettings(
+        type="chatmodelz", deployment="glm-j9q4y0t9b7725upw", timeout=300000
+    )
+    embedding = EmbeddingSettings(type="openaiembeddings")
+
+
+# ------------------------- Model settings registry ------------------------ #
 model_setting_type_to_cls_dict: Dict[str, Type[ModelSettings]] = {
     "openai-gpt-3.5-turbo": OpenAIGPT3_5TurboSettings,
     "openai-gpt-3.5-text-davinci-003": OpenAIGPT3_5TextDavinci003Settings,
+    "chat-modelz": ChatModelzSettings,
 }
 
 
