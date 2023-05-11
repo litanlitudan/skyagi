@@ -84,17 +84,6 @@ From the conversation, we can observe three interesting points that have not bee
 2. Leonard changed his mind after Sheldon whispered to him and even tried to convince Penny to join the scientific effort, which shows that the agents had meaningful progress in the story even without human intervention.
 3. All the responses are quite human-like. As a user, it's quite hard to tell whether it's actually an AI behind the responses.
 
-## Models
-### List all supported models
-```sh
-skyagi model list
-```
-
-### Configuration
-Create the configuration file named `config.json` under `~/.skyagi`, see a starter example under `examples/config.json`
-- `llm`: LLM/ChatModel configuration
-- `embedding`: Embedding model configuration
-
 ## References
 
 1. https://arxiv.org/abs/2304.03442
