@@ -40,7 +40,7 @@ def runskyagi(agent_configs: List[dict], **kwargs):
     websocket = kwargs.get("websocket")
     wc = WebContext(websocket)
 
-    # TODO: (kejiez) get settings from request
+    # TODO: (kejiez) get model settings from request
     settings = Settings()
 
     if len(agent_configs) <= 2:
