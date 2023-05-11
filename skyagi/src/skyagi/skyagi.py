@@ -11,7 +11,7 @@ from skyagi.simulation.simulation import (
     run_conversation,
     talks_to,
 )
-from skyagi.util import ModelFactory
+from skyagi.util import load_llm_from_config
 
 
 def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
@@ -130,7 +130,7 @@ def agi_init(
                 traits=agent_config["personality"],
                 status="N/A",  # When connected to a virtual world, we can have the characters update their status
                 memory_retriever=create_new_memory_retriever(ctx),
-                llm=ModelFactory.create_llm_from_config(ctx.settings.model.llm),
+                llm=load_llm_from_config(ctx.settings.model.llm),
                 daily_summaries=[(agent_config["current_status"])],
                 reflection_threshold=8,
             )

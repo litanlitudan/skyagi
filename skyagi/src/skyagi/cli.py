@@ -117,9 +117,9 @@ def model_list():
     List all supported models
     """
     console.print("\n[green]Supported LLM/ChatModel:\n")
-    console.print(", ".join(util.ModelFactory.get_all_llms()))
+    console.print(", ".join(util.get_all_llms()))
     console.print("\n[green]Supported Embedding:\n")
-    console.print(", ".join(util.ModelFactory.get_all_embeddings()))
+    console.print(", ".join(util.get_all_embeddings()))
 
 
 @model_cli.callback(invoke_without_command=True)

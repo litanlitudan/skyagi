@@ -15,7 +15,7 @@ from langchain.vectorstores import FAISS
 
 from skyagi.context import Context
 from skyagi.simulation.agent import GenerativeAgent
-from skyagi.util import ModelFactory
+from skyagi.util import load_embedding_from_config
 
 
 # reference:
@@ -36,9 +36,7 @@ def relevance_score_fn(score: float) -> float:
 def create_new_memory_retriever(ctx: Context):
     """Create a new vector store retriever unique to the agent."""
     # Define your embedding model
-    embeddings_model = ModelFactory.create_embedding_from_config(
-        ctx.settings.model.embedding
-    )
+    embeddings_model = load_embedding_from_config(ctx.settings.model.embedding)
     # Initialize the vectorstore as empty
     embedding_size = 1536
     index = faiss.IndexFlatL2(embedding_size)

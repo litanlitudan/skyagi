@@ -1,13 +1,21 @@
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Type
 
 from langchain import chat_models, embeddings
 from langchain.embeddings.base import Embeddings
 from langchain.llms.base import BaseLLM
 
 from skyagi.config import EmbeddingSettings, LLMSettings, Settings
+
+# ------------------------- LLM/Chat models registry ------------------------- #
+llm_type_to_cls_dict: Dict[str, Type[BaseLLM]] = {"chatopenai": chat_models.ChatOpenAI}
+
+# ------------------------- Embedding models registry ------------------------ #
+embedding_type_to_cls_dict: Dict[str, Type[BaseLLM]] = {
+    "openaiembeddings": embeddings.OpenAIEmbeddings
+}
 
 
 def verify_openai_token(token: str) -> str:
@@ -31,8 +39,8 @@ def verify_openai_token(token: str) -> str:
 
 def verify_model_initialization(settings: Settings):
     try:
-        ModelFactory.create_llm_from_config(settings.model.llm)
-        ModelFactory.create_embedding_from_config(settings.model.embedding)
+        load_llm_from_config(settings.model.llm)
+        load_embedding_from_config(settings.model.embedding)
         return "OK"
     except Exception as e:
         return str(e)
@@ -79,61 +87,39 @@ def load_json(filepath: Path) -> Dict:
                 raise e
 
 
-class ModelFactory:
-    """Model factory based on configuration"""
+# ---------------------------------------------------------------------------- #
+#                                LLM/Chat models                               #
+# ---------------------------------------------------------------------------- #
+def load_llm_from_config(config: LLMSettings) -> BaseLLM:
+    """Load LLM from Config."""
+    config_type = config.pop("type")
 
-    class LUT(dict):
-        def __setitem__(self, __key: Any, __value: Any) -> None:
-            try:
-                self.__getitem__(__key)
-                raise ValueError(f"Duplicate LLM type {__key} is not allowed")
-            except KeyError:
-                return super().__setitem__(__key, __value)
+    if config_type not in llm_type_to_cls_dict:
+        raise ValueError(f"Loading {config_type} LLM not supported")
 
-    # ------------------------- LLM/Chat models registry ------------------------- #
-    _LLM_LUT = LUT()
-    # skyagi supported LLM/Chat models
-    _LLM_LUT.update({"chatopenai": chat_models.ChatOpenAI})
+    cls = llm_type_to_cls_dict[config_type]
+    return cls(**config)
 
-    # ------------------------- Embedding models registry ------------------------ #
-    _EMBEDDING_LUT = LUT()
-    # skyagi supported Embedding models
-    _EMBEDDING_LUT.update({"openaiembeddings": embeddings.OpenAIEmbeddings})
 
-    # ---------------------------------------------------------------------------- #
-    #                                LLM/Chat models                               #
-    # ---------------------------------------------------------------------------- #
-    @staticmethod
-    def create_llm_from_config(settings: LLMSettings) -> BaseLLM:
-        settings_dict = settings.dict()
-        type_ = settings_dict.pop("type")
-        return ModelFactory.create_llm(type_, **settings_dict)
+def get_all_llms() -> list[str]:
+    """Get all supported LLMs"""
+    return list(llm_type_to_cls_dict.keys())
 
-    @staticmethod
-    def create_llm(type_: str, **kwargs) -> BaseLLM:
-        if type_ not in ModelFactory._LLM_LUT:
-            raise ValueError(f"LLM {type_} is not supported yet")
-        return ModelFactory._LLM_LUT[type_](**kwargs)
 
-    @classmethod
-    def get_all_llms(cls) -> list[str]:
-        return list(cls._LLM_LUT.keys())
+# ---------------------------------------------------------------------------- #
+#                               Embeddings models                              #
+# ---------------------------------------------------------------------------- #
+def load_embedding_from_config(config: EmbeddingSettings) -> Embeddings:
+    """Load Embedding from Config."""
+    config_type = config.pop("type")
 
-    # ---------------------------------------------------------------------------- #
-    #                               Embeddings models                              #
-    # ---------------------------------------------------------------------------- #
-    @staticmethod
-    def create_embedding_from_config(settings: EmbeddingSettings) -> Embeddings:
-        settings_dict = settings.dict()
-        type_ = settings_dict.pop("type")
-        return ModelFactory.create_embedding(type_, **settings_dict)
+    if config_type not in embedding_type_to_cls_dict:
+        raise ValueError(f"Loading {config_type} Embedding not supported")
 
-    @staticmethod
-    def create_embedding(type_: str, **kwargs) -> Embeddings:
-        if type_ not in ModelFactory._EMBEDDING_LUT:
-            raise ValueError(f"Embedding {type_} is not supported yet")
-        return ModelFactory._EMBEDDING_LUT[type_](**kwargs)
+    cls = embedding_type_to_cls_dict[config_type]
+    return cls(**config)
 
-    @classmethod
-    def get_all_embeddings(cls) -> list[str]:
-        return list(cls._EMBEDDING_LUT.keys())
+
+def get_all_embeddings() -> list[str]:
+    """Get all supported Embeddings"""
+    return list(embedding_type_to_cls_dict.keys())
