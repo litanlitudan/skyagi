@@ -1,5 +1,5 @@
 import asyncio
-from typing import List
+from typing import List, Dict
 
 from lcserve import serving
 from rich.console import Console
@@ -14,9 +14,10 @@ class WebContext:
         self.websocket = websocket
 
     def send_response(self, response):
-        asyncio.run(self.send_ws_message(response + "\n"))
+        message = {"message": response + "\n"}
+        asyncio.run(self.send_ws_message(message))
 
-    async def send_ws_message(self, message: str):
+    async def send_ws_message(self, message: Dict):
         if self.websocket is not None:
             await self.websocket.send_json(
                 {"result": message, "error": "", "stdout": ""}
@@ -27,7 +28,8 @@ class WebContext:
             ask_human_prompt = f"{message} ({'/'.join(choices)}): "
         else:
             ask_human_prompt = f"{message}: "
-        asyncio.run(self.send_ws_message(ask_human_prompt))
+        json_message = {"message": ask_human_prompt}
+        asyncio.run(self.send_ws_message(json_message))
         return Prompt.ask(message)
 
 

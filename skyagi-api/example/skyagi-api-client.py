@@ -9,7 +9,7 @@ from pydantic import BaseModel, ValidationError
 
 
 class Response(BaseModel):
-    result: str
+    result: Dict
     error: str
     stdout: str
 
