@@ -162,29 +162,23 @@ def run():
     """
     Run SkyAGI
     """
+    settings = config.Settings()
+
     # Ask Model settings
     questions = [
         inquirer.List(
             "llm-model",
             message="What LLM model you want to use?",
-            choices=[
-                *[preset_config.name for preset_config in config.preset_configs],
-                *["From Config File"],
-            ],
+            choices=config.get_all_model_settings(),
         )
     ]
     answers = inquirer.prompt(questions=questions)
-    settings = config.Settings()
-    if "From Config File" not in answers["llm-model"]:
-        for preset_config in config.preset_configs:
-            if preset_config.name == answers["llm-model"]:
-                settings = preset_config
+    settings.model = config.load_model_setting(answers["llm-model"])
 
     # Model initialization verification
     res = util.verify_model_initialization(settings)
     if res != "OK":
-        console.print("Model initilization check failed:\n", style="red")
-        console.print(res)
+        console.print(res, style="red")
         return
     # Get inputs from the user
     agent_count = IntPrompt.ask(

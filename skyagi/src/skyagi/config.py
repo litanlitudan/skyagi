@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Dict, Type
 
 from pydantic import BaseModel, BaseSettings, Extra
 
@@ -105,6 +105,7 @@ class ModelSettings(BaseModel):
     Model related settings
     """
 
+    type: str = ""
     llm: LLMSettings = LLMSettings()
     embedding: EmbeddingSettings = EmbeddingSettings()
 
@@ -143,20 +144,40 @@ class Settings(BaseSettings):
 # ---------------------------------------------------------------------------- #
 #                             Preset configurations                            #
 # ---------------------------------------------------------------------------- #
-OpenAIGPT4Settings = Settings(
-    name="openai-gpt-4",
-    model=ModelSettings(
-        llm=LLMSettings(type="chatopenai", model="gpt-4", max_tokens=1500),
-        embedding=EmbeddingSettings(type="openaiembeddings"),
-    ),
-)
+class OpenAIGPT4Settings(ModelSettings):
+    # NOTE: GPT4 is in waitlist
+    type = "openai-gpt-4"
+    llm = LLMSettings(type="chatopenai", model="gpt-4", max_tokens=1500)
+    embedding = EmbeddingSettings(type="openaiembeddings")
 
-OpenAIGPT3_5Settings = Settings(
-    name="openai-gpt-3.5-turbo",
-    model=ModelSettings(
-        llm=LLMSettings(type="chatopenai", model="gpt-3.5-turbo", max_tokens=1500),
-        embedding=EmbeddingSettings(type="openaiembeddings"),
-    ),
-)
 
-preset_configs = [OpenAIGPT3_5Settings, OpenAIGPT4Settings]
+class OpenAIGPT3_5TurboSettings(ModelSettings):
+    type = "openai-gpt-3.5-turbo"
+    llm = LLMSettings(type="chatopenai", model="gpt-3.5-turbo", max_tokens=1500)
+    embedding = EmbeddingSettings(type="openaiembeddings")
+
+
+class OpenAIGPT3_5TextDavinci003Settings(ModelSettings):
+    type = "openai-gpt-3.5-text-davinci-003"
+    llm = LLMSettings(type="openai", model_name="text-davinci-003", max_tokens=1500)
+    embedding = EmbeddingSettings(type="openaiembeddings")
+
+
+# ------------------------- Embedding models registry ------------------------ #
+model_setting_type_to_cls_dict: Dict[str, Type[ModelSettings]] = {
+    "openai-gpt-3.5-turbo": OpenAIGPT3_5TurboSettings,
+    "openai-gpt-3.5-text-davinci-003": OpenAIGPT3_5TextDavinci003Settings,
+}
+
+
+def load_model_setting(type: str) -> ModelSettings:
+    if type not in model_setting_type_to_cls_dict:
+        raise ValueError(f"Loading {type} setting not supported")
+
+    cls = model_setting_type_to_cls_dict[type]
+    return cls()
+
+
+def get_all_model_settings() -> list[str]:
+    """Get all supported Embeddings"""
+    return list(model_setting_type_to_cls_dict.keys())

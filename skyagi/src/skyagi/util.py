@@ -3,17 +3,20 @@ import os
 from pathlib import Path
 from typing import Any, Dict, Type
 
-from langchain import chat_models, embeddings
+from langchain import chat_models, embeddings, llms
 from langchain.embeddings.base import Embeddings
-from langchain.llms.base import BaseLLM
+from langchain.llms.base import BaseLanguageModel
 
 from skyagi.config import EmbeddingSettings, LLMSettings, Settings
 
 # ------------------------- LLM/Chat models registry ------------------------- #
-llm_type_to_cls_dict: Dict[str, Type[BaseLLM]] = {"chatopenai": chat_models.ChatOpenAI}
+llm_type_to_cls_dict: Dict[str, Type[BaseLanguageModel]] = {
+    "chatopenai": chat_models.ChatOpenAI,
+    "openai": llms.OpenAI,
+}
 
 # ------------------------- Embedding models registry ------------------------ #
-embedding_type_to_cls_dict: Dict[str, Type[BaseLLM]] = {
+embedding_type_to_cls_dict: Dict[str, Type[Embeddings]] = {
     "openaiembeddings": embeddings.OpenAIEmbeddings
 }
 
@@ -37,13 +40,18 @@ def verify_openai_token(token: str) -> str:
         return str(e)
 
 
-def verify_model_initialization(settings: Settings):
+def verify_model_initialization(settings: Settings) -> str:
     try:
         load_llm_from_config(settings.model.llm)
-        load_embedding_from_config(settings.model.embedding)
-        return "OK"
     except Exception as e:
-        return str(e)
+        return f"LLM initialization check failed: {e}"
+
+    try:
+        load_embedding_from_config(settings.model.embedding)
+    except Exception as e:
+        return f"Embedding initialization check failed: {e}"
+
+    return "OK"
 
 
 def verify_pinecone_token(token: str) -> str:
@@ -90,15 +98,16 @@ def load_json(filepath: Path) -> Dict:
 # ---------------------------------------------------------------------------- #
 #                                LLM/Chat models                               #
 # ---------------------------------------------------------------------------- #
-def load_llm_from_config(config: LLMSettings) -> BaseLLM:
+def load_llm_from_config(config: LLMSettings) -> BaseLanguageModel:
     """Load LLM from Config."""
-    config_type = config.pop("type")
+    config_dict = config.dict()
+    config_type = config_dict.pop("type")
 
     if config_type not in llm_type_to_cls_dict:
         raise ValueError(f"Loading {config_type} LLM not supported")
 
     cls = llm_type_to_cls_dict[config_type]
-    return cls(**config)
+    return cls(**config_dict)
 
 
 def get_all_llms() -> list[str]:
@@ -111,13 +120,14 @@ def get_all_llms() -> list[str]:
 # ---------------------------------------------------------------------------- #
 def load_embedding_from_config(config: EmbeddingSettings) -> Embeddings:
     """Load Embedding from Config."""
-    config_type = config.pop("type")
+    config_dict = config.dict()
+    config_type = config_dict.pop("type")
 
     if config_type not in embedding_type_to_cls_dict:
         raise ValueError(f"Loading {config_type} Embedding not supported")
 
     cls = embedding_type_to_cls_dict[config_type]
-    return cls(**config)
+    return cls(**config_dict)
 
 
 def get_all_embeddings() -> list[str]:
