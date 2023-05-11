@@ -58,7 +58,7 @@ async def client(url: str, name: str, envs: Dict = {}):
                     else:
                         try:
                             response = Response.parse_raw(msg.data)
-                            print(response.result, end="")
+                            print(f"[{response.result['role']}][{response.result['msg_type']}] {response.result['message']}")
                         except ValidationError:
                             try:
                                 prompt = HumanPrompt.parse_raw(msg.data)
