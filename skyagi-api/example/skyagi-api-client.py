@@ -1,8 +1,8 @@
+import argparse
 import asyncio
+import json
 import os
 from typing import Dict
-import json
-import argparse
 
 import aiohttp
 from pydantic import BaseModel, ValidationError
@@ -18,20 +18,29 @@ class HumanPrompt(BaseModel):
     prompt: str
 
 
-def get_agent_configs():
-    parser = argparse.ArgumentParser(description='Get a path to agent configs')
-    parser.add_argument('--folder', '-f', type=str, help='the folder of agent configs')
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--folder", "-f", type=str, help="the folder of agent configs")
+    parser.add_argument(
+        "--llm-model",
+        "-m",
+        choices=["openai-gpt-3.5-turbo", "openai-gpt-3.5-text-davinci-003"],
+        help="select the LLM model",
+    )
     args = parser.parse_args()
-    folder = args.folder
+    return args
+
+
+def get_agent_configs(folder: str):
     if not os.path.isdir(folder):
         raise Exception(f"{folder} is not a directory")
 
     agent_configs = []
     for root, dirs, files in os.walk(folder):
         for filename in files:
-            if filename.endswith('.json'):
+            if filename.endswith(".json"):
                 json_file = os.path.join(root, filename)
-                with open(json_file, 'r') as f:
+                with open(json_file, "r") as f:
                     config = json.load(f)
                     agent_configs.append(config)
 
@@ -43,9 +52,12 @@ async def client(url: str, name: str, envs: Dict = {}):
         async with session.ws_connect(f"{url}/{name}") as ws:
             print(f"Connected to {url}/{name}.")
 
+            args = parse_args()
+
             await ws.send_json(
                 {
-                    "agent_configs": get_agent_configs(),
+                    "agent_configs": get_agent_configs(args.folder),
+                    "llm_model": args.llm_model,
                     "envs": envs if envs else {},
                 }
             )
