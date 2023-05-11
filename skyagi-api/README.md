@@ -34,6 +34,7 @@ git clone https://github.com/litanlitudan/skyagi.git
 cd skyagi/skyagi-api
 lc-serve deploy local skyagi-api
 ```
+#### Common steps to run a client app
 * Run the example client app
 ```
 cd skyagi/skyagi-api/example
