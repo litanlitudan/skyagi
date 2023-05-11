@@ -7,9 +7,11 @@
 	export let characters: CharacterType[];
 </script>
 
-{#each characters as character}
-	<Character {character} />
-{/each}
+<div>
+	{#each characters as character}
+		<Character {character} />
+	{/each}
+</div>
 
 <style>
 </style>
