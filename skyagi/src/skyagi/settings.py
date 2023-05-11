@@ -100,7 +100,7 @@ class OpenAIGPT3_5TextDavinci003Settings(ModelSettings):
     embedding = EmbeddingSettings(type="openaiembeddings")
 
 
-# ------------------------- Embedding models registry ------------------------ #
+# ------------------------- Model settings registry ------------------------ #
 model_setting_type_to_cls_dict: Dict[str, Type[ModelSettings]] = {
     "openai-gpt-3.5-turbo": OpenAIGPT3_5TurboSettings,
     "openai-gpt-3.5-text-davinci-003": OpenAIGPT3_5TextDavinci003Settings,
