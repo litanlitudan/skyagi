@@ -1,8 +1,8 @@
+import argparse
 import asyncio
+import json
 import os
 from typing import Dict
-import json
-import argparse
 
 import aiohttp
 from pydantic import BaseModel, ValidationError
@@ -19,8 +19,8 @@ class HumanPrompt(BaseModel):
 
 
 def get_agent_configs():
-    parser = argparse.ArgumentParser(description='Get a path to agent configs')
-    parser.add_argument('--folder', '-f', type=str, help='the folder of agent configs')
+    parser = argparse.ArgumentParser(description="Get a path to agent configs")
+    parser.add_argument("--folder", "-f", type=str, help="the folder of agent configs")
     args = parser.parse_args()
     folder = args.folder
     if not os.path.isdir(folder):
@@ -29,9 +29,9 @@ def get_agent_configs():
     agent_configs = []
     for root, dirs, files in os.walk(folder):
         for filename in files:
-            if filename.endswith('.json'):
+            if filename.endswith(".json"):
                 json_file = os.path.join(root, filename)
-                with open(json_file, 'r') as f:
+                with open(json_file, "r") as f:
                     config = json.load(f)
                     agent_configs.append(config)
 
@@ -58,7 +58,9 @@ async def client(url: str, name: str, envs: Dict = {}):
                     else:
                         try:
                             response = Response.parse_raw(msg.data)
-                            print(f"[{response.result['role']}][{response.result['msg_type']}] {response.result['message']}")
+                            print(
+                                f"[{response.result['role']}][{response.result['msg_type']}] {response.result['message']}"
+                            )
                         except ValidationError:
                             try:
                                 prompt = HumanPrompt.parse_raw(msg.data)

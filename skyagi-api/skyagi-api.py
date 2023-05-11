@@ -14,7 +14,9 @@ class WebContext:
         self.websocket = websocket
 
     def send_response(self, response, role, msg_type):
-        asyncio.run(self.send_ws_message(role=role, msg_type=msg_type, message=response))
+        asyncio.run(
+            self.send_ws_message(role=role, msg_type=msg_type, message=response)
+        )
 
     async def send_ws_message(self, message: str, role: str, msg_type: str):
         if self.websocket is not None:
@@ -29,7 +31,11 @@ class WebContext:
                 ask_human_prompt = f"{message} ({'/'.join(choices)}): "
             else:
                 ask_human_prompt = f"{message}: "
-            asyncio.run(self.send_ws_message(message=ask_human_prompt, role="system", msg_type="ask_human"))
+            asyncio.run(
+                self.send_ws_message(
+                    message=ask_human_prompt, role="system", msg_type="ask_human"
+                )
+            )
         return Prompt.ask(message)
 
 

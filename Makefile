@@ -19,6 +19,7 @@ lint:
 
 format:
 	cd skyagi && isort . && black .
+	cd skyagi-api && isort . && black .
 
 format-staged-files:
 	echo "Auto-formatting not implemented"
