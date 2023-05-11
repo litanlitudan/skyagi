@@ -18,6 +18,12 @@ class HumanPrompt(BaseModel):
     prompt: str
 
 
+class Error(BaseModel):
+    result: str
+    error: str
+    stdout: str
+
+
 def get_agent_configs():
     parser = argparse.ArgumentParser(description="Get a path to agent configs")
     parser.add_argument("--folder", "-f", type=str, help="the folder of agent configs")
@@ -53,13 +59,15 @@ async def client(url: str, name: str, envs: Dict = {}):
             async for msg in ws:
                 if msg.type == aiohttp.WSMsgType.TEXT:
                     if "exiting" in msg.data:
+                        response = Error.parse_raw(msg.data).result
+                        print(response)
                         await ws.close()
                         break
                     else:
                         try:
-                            response = Response.parse_raw(msg.data)
+                            response = Response.parse_raw(msg.data).result
                             print(
-                                f"[{response.result['role']}][{response.result['msg_type']}] {response.result['message']}"
+                                f"[{response['role']}][{response['msg_type']}] {response['message']}"
                             )
                         except ValidationError:
                             try:
