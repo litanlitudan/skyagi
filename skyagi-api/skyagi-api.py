@@ -1,5 +1,5 @@
 import asyncio
-from typing import List, Dict
+from typing import List
 
 from lcserve import serving
 from rich.console import Console
@@ -13,23 +13,23 @@ class WebContext:
     def __init__(self, websocket):
         self.websocket = websocket
 
-    def send_response(self, response):
-        message = {"message": response + "\n"}
-        asyncio.run(self.send_ws_message(message))
+    def send_response(self, response, role, msg_type):
+        asyncio.run(self.send_ws_message(role=role, msg_type=msg_type, message=response))
 
-    async def send_ws_message(self, message: Dict):
+    async def send_ws_message(self, message: str, role: str, msg_type: str):
         if self.websocket is not None:
+            json_message = {"role": role, "msg_type": msg_type, "message": message}
             await self.websocket.send_json(
-                {"result": message, "error": "", "stdout": ""}
+                {"result": json_message, "error": "", "stdout": ""}
             )
 
     def ask_human(self, message: str, choices: List[str]):
-        if choices:
-            ask_human_prompt = f"{message} ({'/'.join(choices)}): "
-        else:
-            ask_human_prompt = f"{message}: "
-        json_message = {"message": ask_human_prompt}
-        asyncio.run(self.send_ws_message(json_message))
+        if message:
+            if choices:
+                ask_human_prompt = f"{message} ({'/'.join(choices)}): "
+            else:
+                ask_human_prompt = f"{message}: "
+            asyncio.run(self.send_ws_message(message=ask_human_prompt, role="system", msg_type="ask_human"))
         return Prompt.ask(message)
 
 
@@ -81,4 +81,4 @@ def runskyagi(agent_configs: List[dict], **kwargs):
             console.print("SkyAGI exiting...", style="yellow")
             break
         agi_step(ctx, instruction)
-    return "existing"
+    return "exiting"

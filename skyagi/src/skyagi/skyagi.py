@@ -16,7 +16,9 @@ from skyagi.simulation.simulation import (
 
 def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
     ctx.print(
-        f"Interview with {agent_to_interview.name} start, input empty line to exit",
+        message=f"Interview with {agent_to_interview.name} start, input empty line to exit",
+        role="system",
+        msg_type="ask_human",
         style="yellow",
     )
     ctx.observations.append(
@@ -25,7 +27,7 @@ def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
     while True:
         user_message = ctx.ask()
         if user_message == "":
-            ctx.print(f"Interview with {agent_to_interview.name} finished")
+            ctx.print(message=f"Interview with {agent_to_interview.name} finished")
             break
         ctx.observations.append(f"{ctx.user_agent.name} said: {user_message}")
         with ctx.console.status("[yellow]Waiting response..."):
@@ -34,10 +36,14 @@ def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
             )
         if "GOODBYE" in response:
             ctx.print(
-                f"{agent_to_interview.name} said Goodbye and ended the conversation"
+                message=f"{agent_to_interview.name} said Goodbye and ended the conversation",
+                role=f"{agent_to_interview.name}",
+                msg_type="conversation",
             )
             break
-        ctx.print(response)
+        ctx.print(
+            message=response, role=f"{agent_to_interview.name}", msg_type="conversation"
+        )
         ctx.observations.append(response)
     ctx.observations.append(
         f"The conversation between {ctx.user_agent.name} and {agent_to_interview.name} is ended."
@@ -57,12 +63,16 @@ def agi_step(ctx: Context, instruction: dict) -> None:
             if message:
                 if someone_asked:
                     ctx.print(
-                        f"{robot_agent.name} also whispered to you({ctx.user_agent.name}): {message}",
+                        message=f"{robot_agent.name} also whispered to you({ctx.user_agent.name}): {message}",
+                        role=f"{robot_agent.name}",
+                        msg_type="whisper",
                         style="yellow",
                     )
                 else:
                     ctx.print(
-                        f"{robot_agent.name} whispered to you ({ctx.user_agent.name}): {message}",
+                        message=f"{robot_agent.name} whispered to you ({ctx.user_agent.name}): {message}",
+                        role=f"{robot_agent.name}",
+                        msg_type="whisper",
                         style="yellow",
                     )
                 someone_asked = True
@@ -73,29 +83,39 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                 if respond == "yes":
                     user_robot_conversation(robot_agent, ctx)
 
-    ctx.print("The world has something else happening...", style="yellow")
+    ctx.print(message="The world has something else happening...", style="yellow")
     # let the activities of non user robots happen
     for idx in range(len(ctx.robot_agents) - 1):
         amy = ctx.robot_agents[idx]
         for bob in ctx.robot_agents[idx + 1 :]:
             message = talks_to(amy, bob, ctx.observations)
             if message:
-                ctx.print(f"{amy.name} just whispered to {bob.name}...", style="yellow")
+                ctx.print(
+                    message=f"{amy.name} just whispered to {bob.name}...",
+                    style="yellow",
+                )
                 with ctx.console.status(
                     f"[yellow]{amy.name} is having a private dicussion with {bob.name}..."
                 ):
                     run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
                 ctx.print(
-                    f"{amy.name} and {bob.name} finished their private conversation...",
+                    message=f"{amy.name} and {bob.name} finished their private conversation...",
+                    role="system",
+                    msg_type="info",
                     style="yellow",
                 )
                 continue
             message = talks_to(bob, amy, ctx.observations)
             if message:
-                ctx.print(f"{bob.name} just whispered to {amy.name}...", style="yellow")
+                ctx.print(
+                    message=f"{bob.name} just whispered to {amy.name}...",
+                    style="yellow",
+                )
                 run_conversation([bob, amy], f"{bob.name} said: {message}", ctx)
                 ctx.print(
-                    f"{bob.name} and {amy.name} finished their private conversation...",
+                    message=f"{bob.name} and {amy.name} finished their private conversation...",
+                    role="system",
+                    msg_type="info",
                     style="yellow",
                 )
                 continue
@@ -122,7 +142,7 @@ def agi_init(
     ctx = Context(console, openai_key, webcontext)
     if os.getenv("OPENAI_API_KEY") is None:
         os.environ["OPENAI_API_KEY"] = openai_key
-    ctx.print("Creating all agents one by one...", style="yellow")
+    ctx.print(message="Creating all agents one by one...", style="yellow")
     for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
         with ctx.console.status(f"[yellow]Creating agent {agent_name}..."):
@@ -144,8 +164,10 @@ def agi_init(
             ctx.robot_agents.append(agent)
         ctx.agents.append(agent)
         ctx.observations.append(agent_config["current_status"])
-        ctx.print(f"Agent {agent_name} successfully created", style="green")
+        ctx.print(message=f"Agent {agent_name} successfully created", style="green")
 
-    ctx.print("SkyAGI started...")
-    ctx.print(f"You are going to behave as {ctx.user_agent.name}", style="yellow")
+    ctx.print(message="SkyAGI started...")
+    ctx.print(
+        message=f"You are going to behave as {ctx.user_agent.name}", style="yellow"
+    )
     return ctx

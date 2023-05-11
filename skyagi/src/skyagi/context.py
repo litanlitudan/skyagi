@@ -19,14 +19,22 @@ class Context:
         self.observations_size_history = []
         self.webcontext = webcontext
 
-    def print(self, message: str, style: str = None):
+    def print(
+        self,
+        message: str,
+        role: str = "system",
+        msg_type: str = "info",
+        style: str = None,
+    ):
         if style:
             self.console.print(message, style=style)
         else:
             self.console.print(message)
 
         if self.webcontext:
-            self.webcontext.send_response(message)
+            self.webcontext.send_response(
+                response=message, role=role, msg_type=msg_type
+            )
 
     def ask(self, message: str = "", choices: List[str] = None) -> str:
         if self.webcontext:
