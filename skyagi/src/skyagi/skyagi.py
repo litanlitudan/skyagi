@@ -65,14 +65,14 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                     ctx.print(
                         message=f"{robot_agent.name} also whispered to you({ctx.user_agent.name}): {message}",
                         role=f"{robot_agent.name}",
-                        msg_type="whisper",
+                        msg_type="conversation",
                         style="yellow",
                     )
                 else:
                     ctx.print(
                         message=f"{robot_agent.name} whispered to you ({ctx.user_agent.name}): {message}",
                         role=f"{robot_agent.name}",
-                        msg_type="whisper",
+                        msg_type="conversation",
                         style="yellow",
                     )
                 someone_asked = True
@@ -92,6 +92,7 @@ def agi_step(ctx: Context, instruction: dict) -> None:
             if message:
                 ctx.print(
                     message=f"{amy.name} just whispered to {bob.name}...",
+                    msg_type="whisper",
                     style="yellow",
                 )
                 with ctx.console.status(
@@ -100,8 +101,6 @@ def agi_step(ctx: Context, instruction: dict) -> None:
                     run_conversation([amy, bob], f"{amy.name} said: {message}", ctx)
                 ctx.print(
                     message=f"{amy.name} and {bob.name} finished their private conversation...",
-                    role="system",
-                    msg_type="info",
                     style="yellow",
                 )
                 continue
@@ -109,13 +108,12 @@ def agi_step(ctx: Context, instruction: dict) -> None:
             if message:
                 ctx.print(
                     message=f"{bob.name} just whispered to {amy.name}...",
+                    msg_type="whisper",
                     style="yellow",
                 )
                 run_conversation([bob, amy], f"{bob.name} said: {message}", ctx)
                 ctx.print(
                     message=f"{bob.name} and {amy.name} finished their private conversation...",
-                    role="system",
-                    msg_type="info",
                     style="yellow",
                 )
                 continue

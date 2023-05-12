@@ -72,7 +72,6 @@ def runskyagi(agent_configs: List[dict], **kwargs):
         instruction = {"command": "continue"}
         action = wc.ask_human("Pick an action to perform?", choices=actions)
         if action not in actions:
-            print("here")
             return "[error] Please pick a valid action, exiting"
         if action == "interview":
             robot_agent_names = list(map(lambda agent: agent.name, ctx.robot_agents))
