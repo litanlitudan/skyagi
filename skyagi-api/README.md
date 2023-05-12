@@ -19,7 +19,14 @@ More information about how to use the `/runskyagi` endpoint can be found through
 ### Return values from the API
 
 The API returns one of the following JSON messages.
-* Response: most messages created by the service are in this category 
+
+* Response: most messages created by the service are in this category
+    * `role` can be either `system` or one of the user created characters, indicating from whom the message is.
+    * `msg_type` can be:
+        * `conversation`: a conversation message from one of the user created characters.
+        * `info`: a system message for informative purpose.
+        * `whisper`: a system message indicating whispers between user created characters.
+
 ```
 {
     "result": {
@@ -30,58 +37,63 @@ The API returns one of the following JSON messages.
     "error": str,  // not used for now
     "stdout": str  // not used for now
 }
-``` 
-`role` can be either `system` or one of the user created characters, indicating from whom the message is.
-
-`msg_type` can be:
-* `conversation`: a conversation message from one of the user created characters. 
-* `info`: a system message for informative purpose.
-* `whisper`: a system message indicating whispers between user created characters.
+```
 
 * Error: the error message with termination (how it is implemented is due to the limitation of lc-server)
+
 ```
 {
     "result": str, // error message containing "exiting"
     "error": str,  // not used for now
     "stdout": str  // not used for now
 }
-``` 
+```
 
-* HumanPrompt: the message for human-in-the-loop 
+* HumanPrompt: the message for human-in-the-loop
+
 ```
 {
     "prompt": str
 }
-``` 
+```
 
-### How to use the endpoint 
+### How to use the endpoint
 
 #### Use public cloud deployment
+
 The cloud SkyAGI websocket API is deployed at wss://langchain-558b0f2c14.wolf.jina.ai.
 
 #### Use local deployment for testing
 
 SkyAGI-API supports a local deployment for testing. To run the endpoint locally, follow the steps blew:
+
 * Install langchain-serve
+
 ```
 pip install langchain-serve
 ```
+
 * Deploy SkyAGI-API locally
+
 ```
 git clone https://github.com/litanlitudan/skyagi.git
 cd skyagi/skyagi-api
 lc-serve deploy local skyagi-api
 ```
+
 #### Common steps to run a client app
+
 * Run the example client app
+
 ```
 cd skyagi/skyagi-api/example
 python skyagi-api-client.py -f <path-to-agent-config-json-files>
 ```
 
 ## TODO
-- [X] Return the error message with termination
-- [X] Stream output back to client
-- [X] Extend the client example to match the BigBangTheory from the example folder
-- [X] Deployment on Jina cloud: requires new SkyAGI python package release
-- [ ] Implement API auth on Jina cloud
+
+* [x] Return the error message with termination
+* [x] Stream output back to client
+* [x] Extend the client example to match the BigBangTheory from the example folder
+* [x] Deployment on Jina cloud: requires new SkyAGI python package release
+* [ ] Implement API auth on Jina cloud
