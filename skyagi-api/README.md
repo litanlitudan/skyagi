@@ -26,6 +26,7 @@ The API returns one of the following JSON messages.
         * `conversation`: a conversation message from one of the user created characters.
         * `info`: a system message for informative purpose.
         * `whisper`: a system message indicating whispers between user created characters.
+        * `error`: a system message indicating a error happening
 
 ```
 {
@@ -39,11 +40,11 @@ The API returns one of the following JSON messages.
 }
 ```
 
-* Error: the error message with termination (how it is implemented is due to the limitation of lc-server)
+* Termination: the message with termination (how it is implemented is due to the limitation of lc-server)
 
 ```
 {
-    "result": str, // error message containing "exiting"
+    "result": str, // a termination message containing "exiting"
     "error": str,  // not used for now
     "stdout": str  // not used for now
 }

@@ -13,17 +13,19 @@ class WebContext:
     def __init__(self, websocket):
         self.websocket = websocket
 
-    def send_response(self, response, role, msg_type):
-        asyncio.run(
-            self.send_ws_message(role=role, msg_type=msg_type, message=response)
-        )
-
     async def send_ws_message(self, message: str, role: str, msg_type: str):
         if self.websocket is not None:
             json_message = {"role": role, "msg_type": msg_type, "message": message}
             await self.websocket.send_json(
                 {"result": json_message, "error": "", "stdout": ""}
             )
+
+    def send_response(
+        self, response: str, role: str = "system", msg_type: str = "info"
+    ):
+        asyncio.run(
+            self.send_ws_message(role=role, msg_type=msg_type, message=response)
+        )
 
     def ask_human(self, message: str, choices: List[str]):
         if message:
@@ -55,12 +57,15 @@ def runskyagi(agent_configs: List[dict], **kwargs):
         agent_names.append(agent_config["name"])
 
     # ask for the user's role
-    user_role = wc.ask_human(
-        "Pick which role you want to perform? (input the exact name, case sensitive)",
-        choices=agent_names,
-    ).strip()
-    if user_role not in agent_names:
-        return "[error] Please pick a valid agent, exiting"
+    while True:
+        user_role = wc.ask_human(
+            "Pick which role you want to perform? (input the exact name, case sensitive)",
+            choices=agent_names,
+        ).strip()
+        if user_role not in agent_names:
+            wc.send_response(response="Please pick a valid agent", msg_type="error")
+        else:
+            break
     user_index = agent_names.index(user_role)
 
     # set up the agents
@@ -69,18 +74,28 @@ def runskyagi(agent_configs: List[dict], **kwargs):
     # main loop
     actions = ["continue", "interview", "exit"]
     while True:
+        while True:
+            action = wc.ask_human("Pick an action to perform?", choices=actions)
+            if action not in actions:
+                wc.send_response(
+                    response="Please pick a valid action", msg_type="error"
+                )
+            else:
+                break
         instruction = {"command": "continue"}
-        action = wc.ask_human("Pick an action to perform?", choices=actions)
-        if action not in actions:
-            return "[error] Please pick a valid action, exiting"
         if action == "interview":
             robot_agent_names = list(map(lambda agent: agent.name, ctx.robot_agents))
-            robot_agent_name = wc.ask_human(
-                f"As {ctx.user_agent.name}, which agent do you want to talk to?",
-                choices=robot_agent_names,
-            )
-            if robot_agent_name not in agent_names:
-                return "[error] Please pick a valid agent, exiting"
+            while True:
+                robot_agent_name = wc.ask_human(
+                    f"As {ctx.user_agent.name}, which agent do you want to talk to?",
+                    choices=robot_agent_names,
+                )
+                if robot_agent_name not in agent_names:
+                    wc.send_response(
+                        response="Please pick a valid agent", msg_type="error"
+                    )
+                else:
+                    break
             instruction = {
                 "command": "interview",
                 "agent_to_interview": ctx.robot_agents[
