@@ -16,6 +16,44 @@ Once the websocket session is initiated, the endpoint will return the instructio
 
 More information about how to use the `/runskyagi` endpoint can be found through the example app.
 
+### Return values from the API
+
+The API returns one of the following JSON messages.
+* Response: most messages created by the service are in this category 
+```
+{
+    "result": {
+        "role": str,
+        "msg_type": str,
+        "message": str
+    },
+    "error": str,  // not used for now
+    "stdout": str  // not used for now
+}
+``` 
+`role` can be either `system` or one of the user created characters, indicating from whom the message is.
+
+`msg_type` can be:
+* `conversation`: a conversation message from one of the user created characters. 
+* `info`: a system message for informative purpose.
+* `whisper`: a system message indicating whispers between user created characters.
+
+* Error: the error message with termination (how it is implemented is due to the limitation of lc-server)
+```
+{
+    "result": str, // error message containing "exiting"
+    "error": str,  // not used for now
+    "stdout": str  // not used for now
+}
+``` 
+
+* HumanPrompt: the message for human-in-the-loop 
+```
+{
+    "prompt": str
+}
+``` 
+
 ### How to use the endpoint 
 
 #### Use public cloud deployment
