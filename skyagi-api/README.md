@@ -37,7 +37,7 @@ lc-serve deploy local skyagi-api
 * Run the example client app
 ```
 cd skyagi/skyagi-api/example
-python skyagi-api-client.py -f <path-to-agent-config-json-files>
+python skyagi-api-client.py -f <path-to-agent-config-json-files> -m <llm-model>
 ```
 
 ## TODO

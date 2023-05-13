@@ -4,6 +4,8 @@ from typing import List
 from lcserve import serving
 from rich.console import Console
 from rich.prompt import Prompt
+
+from skyagi.settings import Settings, load_model_setting
 from skyagi.skyagi import agi_init, agi_step
 
 console = Console()
@@ -32,12 +34,15 @@ class WebContext:
 
 
 @serving(websocket=True)
-def runskyagi(agent_configs: List[dict], **kwargs):
+def runskyagi(agent_configs: List[dict], llm_model: str, **kwargs):
     """
     Run SkyAGI
     """
     websocket = kwargs.get("websocket")
     wc = WebContext(websocket)
+
+    settings = Settings()
+    settings.model = load_model_setting(llm_model)
 
     if len(agent_configs) <= 2:
         return "[error] Please config at least 2 agents, exiting"
@@ -56,7 +61,7 @@ def runskyagi(agent_configs: List[dict], **kwargs):
     user_index = agent_names.index(user_role)
 
     # set up the agents
-    ctx = agi_init(agent_configs, console, None, user_index, wc)
+    ctx = agi_init(agent_configs, console, settings, user_index, wc)
 
     # main loop
     actions = ["continue", "interview", "exit"]
