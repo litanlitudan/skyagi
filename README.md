@@ -18,8 +18,6 @@ To demonstrate this, `SkyAGI` provides example characters from `The Big Bang The
 Users could also define customized characters by creating config json files like [customized_character.json](https://github.com/litanlitudan/skyagi/blob/main/examples/example_agent.json)
 For details about the interesting observations, refer to the [observations section](https://github.com/litanlitudan/skyagi/#interesting-observations-in-this-demo).
 
-## Roadmap
-
 ## Quick Start
 
 Installation
