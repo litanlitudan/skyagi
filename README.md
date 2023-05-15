@@ -1,8 +1,6 @@
-<div align="center">
-    <img src="images/background.png" height=600 alt=""/>
-</div>
-
 # SkyAGI: Emerging human-behavior simulation capability in LLM
+
+https://github.com/litanlitudan/skyagi/assets/4970420/a584b364-e659-476d-a884-932b3c04df61
 
 <p align="center">
     <a href="https://pypi.org/project/skyagi/">
@@ -19,6 +17,8 @@ The interesting observations in this demo show a huge potential for rethinking g
 To demonstrate this, `SkyAGI` provides example characters from `The Big Bang Theory` and `The Avengers` as a starting point.
 Users could also define customized characters by creating config json files like [customized_character.json](https://github.com/litanlitudan/skyagi/blob/main/examples/example_agent.json)
 For details about the interesting observations, refer to the [observations section](https://github.com/litanlitudan/skyagi/#interesting-observations-in-this-demo).
+
+## Roadmap
 
 ## Quick Start
 
