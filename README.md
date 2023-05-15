@@ -1,12 +1,12 @@
 # SkyAGI: Emerging human-behavior simulation capability in LLM
 
+https://github.com/litanlitudan/skyagi/assets/4970420/a584b364-e659-476d-a884-932b3c04df61
+
 <p align="center">
     <a href="https://pypi.org/project/skyagi/">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/skyagi?color=gree">
     </a>
 </p>
-
-https://github.com/litanlitudan/skyagi/assets/4970420/a584b364-e659-476d-a884-932b3c04df61
 
 `SkyAGI` is a python package that demonstrates LLM's emerging capability in simulating believable human behaviors.
 Specifically, `SkyAGI` implements the idea of [Generative Agents](https://arxiv.org/abs/2304.03442) and delivers a role-playing game that creates a very interesting user experience.
