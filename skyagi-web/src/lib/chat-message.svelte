@@ -4,7 +4,7 @@
 	export let role = '';
 	export let message = '';
 	const name = role == 'assistant' ? 'assistant' : 'you';
-	const imgSrc = role == 'assistant' ? '/robot.jpg' : '/woman.png';
+	const imgSrc = role == 'assistant' ? '/robot.jpg' : '/Avatar1.png';
 </script>
 
 <div

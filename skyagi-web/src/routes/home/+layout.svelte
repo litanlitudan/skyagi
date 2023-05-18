@@ -10,7 +10,8 @@
 		SidebarWrapper,
 		Drawer,
 		CloseButton,
-		SidebarDropdownWrapper
+		SidebarDropdownWrapper,
+		SidebarCta
 	} from 'flowbite-svelte';
 	import { sineIn } from 'svelte/easing';
 	let transitionParams = {
@@ -101,6 +102,13 @@
 						active={activeUrl === `/home/sessions/avengers`}
 					/>
 				</SidebarDropdownWrapper>
+				<SidebarItem
+					label="+ New chat"
+					href={`/home/new`}
+					{spanClass}
+					on:click={toggleSide}
+					active={activeUrl === `/home/new`}
+				/>
 			</SidebarGroup>
 		</SidebarWrapper>
 	</Sidebar>
