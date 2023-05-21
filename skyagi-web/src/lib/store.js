@@ -130,7 +130,7 @@ const mockAgentConfigs = [
 	}
 ];
 const mockedEnvs = {
-	OPENAI_API_KEY: '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'
+	OPENAI_API_KEY: ''
 };
 
 // Connection opened
