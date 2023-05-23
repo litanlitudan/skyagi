@@ -1,4 +1,4 @@
-from typing import Dict, Type, List
+from typing import Dict, List, Type
 
 from langchain import chat_models, embeddings, llms
 from langchain.embeddings.base import Embeddings

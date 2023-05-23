@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, Type, List
+from typing import Any, Dict, List, Type
 
 from pydantic import BaseModel, BaseSettings, Extra
 
@@ -10,7 +10,7 @@ def json_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
     # Load settings from JSON config file
     config_dir = Path(Path.home(), ".skyagi")
     if not config_dir.exists():
-        return ""
+        return {}
     config_file = Path(config_dir, "config.json")
     return load_json(config_file)
 
