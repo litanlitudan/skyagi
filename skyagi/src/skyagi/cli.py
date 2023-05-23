@@ -178,7 +178,6 @@ def run():
     settings.model = load_model_setting(answers["llm-model"])
 
     openai_key = config.load_openai_token()
-    import os
     if os.getenv("OPENAI_API_KEY") is None:
         os.environ["OPENAI_API_KEY"] = openai_key
 
