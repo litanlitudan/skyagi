@@ -1,4 +1,4 @@
-from typing import Dict, Type
+from typing import Dict, Type, List
 
 from langchain import chat_models, embeddings, llms
 from langchain.embeddings.base import Embeddings
@@ -33,7 +33,7 @@ def load_llm_from_config(config: LLMSettings) -> BaseLanguageModel:
     return cls(**config_dict)
 
 
-def get_all_llms() -> list[str]:
+def get_all_llms() -> List[str]:
     """Get all supported LLMs"""
     return list(llm_type_to_cls_dict.keys())
 
@@ -53,6 +53,6 @@ def load_embedding_from_config(config: EmbeddingSettings) -> Embeddings:
     return cls(**config_dict)
 
 
-def get_all_embeddings() -> list[str]:
+def get_all_embeddings() -> List[str]:
     """Get all supported Embeddings"""
     return list(embedding_type_to_cls_dict.keys())

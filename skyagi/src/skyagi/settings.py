@@ -1,10 +1,10 @@
 from pathlib import Path
-from typing import Any, Dict, Type
+from typing import Any, Dict, Type, List
 
 from pydantic import BaseModel, BaseSettings, Extra
 
 
-def json_config_settings_source(settings: BaseSettings) -> dict[str, Any]:
+def json_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
     from skyagi.util import load_json
 
     # Load settings from JSON config file
@@ -115,6 +115,6 @@ def load_model_setting(type: str) -> ModelSettings:
     return cls()
 
 
-def get_all_model_settings() -> list[str]:
+def get_all_model_settings() -> List[str]:
     """Get all supported Embeddings"""
     return list(model_setting_type_to_cls_dict.keys())
