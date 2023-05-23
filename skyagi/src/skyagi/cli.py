@@ -177,6 +177,11 @@ def run():
     answers = inquirer.prompt(questions=questions)
     settings.model = load_model_setting(answers["llm-model"])
 
+    openai_key = config.load_openai_token()
+    import os
+    if os.getenv("OPENAI_API_KEY") is None:
+        os.environ["OPENAI_API_KEY"] = openai_key
+
     # Model initialization verification
     res = util.verify_model_initialization(settings)
     if res != "OK":

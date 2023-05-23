@@ -9,9 +9,11 @@ def json_config_settings_source(settings: BaseSettings) -> Dict[str, Any]:
 
     # Load settings from JSON config file
     config_dir = Path(Path.home(), ".skyagi")
-    if not config_dir.exists():
-        return ""
     config_file = Path(config_dir, "config.json")
+    if not config_dir.exists() or not config_file.exists():
+        print("[Error] Please config skyagi first by running `skyagi config --help`")
+        import sys
+        sys.exit(-1)
     return load_json(config_file)
 
 
