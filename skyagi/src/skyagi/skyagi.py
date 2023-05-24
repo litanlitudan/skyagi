@@ -1,10 +1,10 @@
-import os
 from typing import List
 
-from langchain.chat_models import ChatOpenAI
 from rich.console import Console
 
 from skyagi.context import Context
+from skyagi.model import load_llm_from_config
+from skyagi.settings import Settings
 from skyagi.simulation.agent import GenerativeAgent
 from skyagi.simulation.simulation import (
     create_new_memory_retriever,
@@ -115,13 +115,11 @@ def agi_step(ctx: Context, instruction: dict) -> None:
 def agi_init(
     agent_configs: List[dict],
     console: Console,
-    openai_key: str,
+    settings: Settings,
     user_idx: int = 0,
     webcontext=None,
 ) -> Context:
-    ctx = Context(console, openai_key, webcontext)
-    if os.getenv("OPENAI_API_KEY") is None:
-        os.environ["OPENAI_API_KEY"] = openai_key
+    ctx = Context(console, settings, webcontext)
     ctx.print("Creating all agents one by one...", style="yellow")
     for idx, agent_config in enumerate(agent_configs):
         agent_name = agent_config["name"]
@@ -131,8 +129,8 @@ def agi_init(
                 age=agent_config["age"],
                 traits=agent_config["personality"],
                 status="N/A",  # When connected to a virtual world, we can have the characters update their status
-                memory_retriever=create_new_memory_retriever(),
-                llm=ChatOpenAI(max_tokens=1500),
+                memory_retriever=create_new_memory_retriever(ctx),
+                llm=load_llm_from_config(ctx.settings.model.llm),
                 daily_summaries=[(agent_config["current_status"])],
                 reflection_threshold=8,
             )

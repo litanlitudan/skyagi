@@ -12,3 +12,4 @@ export interface AgentDataType {
     socialStatus: string;
     memories: string[];
 }
+

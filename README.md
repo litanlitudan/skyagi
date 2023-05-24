@@ -1,8 +1,6 @@
-<div align="center">
-    <img src="images/background.png" height=600 alt=""/>
-</div>
-
 # SkyAGI: Emerging human-behavior simulation capability in LLM
+
+https://github.com/litanlitudan/skyagi/assets/4970420/a584b364-e659-476d-a884-932b3c04df61
 
 <p align="center">
     <a href="https://pypi.org/project/skyagi/">

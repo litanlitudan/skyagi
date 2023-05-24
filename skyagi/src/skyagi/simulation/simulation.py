@@ -4,7 +4,6 @@ from typing import List
 import faiss
 from langchain import LLMChain
 from langchain.docstore import InMemoryDocstore
-from langchain.embeddings import OpenAIEmbeddings
 from langchain.prompts.chat import (
     AIMessagePromptTemplate,
     ChatPromptTemplate,
@@ -15,6 +14,7 @@ from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
 
 from skyagi.context import Context
+from skyagi.model import load_embedding_from_config
 from skyagi.simulation.agent import GenerativeAgent
 
 
@@ -33,10 +33,10 @@ def relevance_score_fn(score: float) -> float:
 
 # reference:
 # https://python.langchain.com/en/latest/use_cases/agent_simulations/characters.html#create-a-generative-character
-def create_new_memory_retriever():
+def create_new_memory_retriever(ctx: Context):
     """Create a new vector store retriever unique to the agent."""
     # Define your embedding model
-    embeddings_model = OpenAIEmbeddings()
+    embeddings_model = load_embedding_from_config(ctx.settings.model.embedding)
     # Initialize the vectorstore as empty
     embedding_size = 1536
     index = faiss.IndexFlatL2(embedding_size)

@@ -2,12 +2,15 @@ import json
 import os
 from pathlib import Path
 
+import inquirer
 import typer
 from rich.console import Console
 from rich.prompt import IntPrompt, Prompt
 
 from skyagi import config, util
 from skyagi.discord import client
+from skyagi.model import get_all_embeddings, get_all_llms
+from skyagi.settings import Settings, get_all_model_settings, load_model_setting
 from skyagi.skyagi import agi_init, agi_step
 
 cli = typer.Typer()
@@ -105,6 +108,38 @@ def config_main(ctx: typer.Context):
 cli.add_typer(config_cli, name="config")
 
 #######################################################################################
+# Model CLI
+
+model_cli = typer.Typer(help="Models Management")
+
+
+@model_cli.command("list")
+def model_list():
+    """
+    List all supported models
+    """
+    console.print("\n[green]Supported LLM/ChatModel:\n")
+    console.print(", ".join(get_all_llms()))
+    console.print("\n[green]Supported Embedding:\n")
+    console.print(", ".join(get_all_embeddings()))
+
+
+@model_cli.callback(invoke_without_command=True)
+def model_main(ctx: typer.Context):
+    """
+    Models
+    """
+    # only run without a command specified
+    if ctx.invoked_subcommand is not None:
+        return
+
+    # by default just print all supported models
+    model_list()
+
+
+cli.add_typer(model_cli, name="model")
+
+#######################################################################################
 # Main CLI
 
 
@@ -129,17 +164,27 @@ def run():
     """
     Run SkyAGI
     """
-    # Verify the OpenAI token before anything else
-    verify_openai = util.verify_openai_token(config.load_openai_token())
-    if verify_openai != "OK":
-        console.print(
-            "Please config your OpenAI token before using this app", style="red"
+    settings = Settings()
+
+    # Ask Model settings
+    questions = [
+        inquirer.List(
+            "llm-model",
+            message="What LLM model you want to use?",
+            choices=get_all_model_settings(),
         )
-        console.print(
-            'Config by running: skyagi config openai or OPENAI_API_KEY="..." skyagi',
-            style="yellow",
-        )
-        console.print(verify_openai)
+    ]
+    answers = inquirer.prompt(questions=questions)
+    settings.model = load_model_setting(answers["llm-model"])
+
+    openai_key = config.load_openai_token()
+    if os.getenv("OPENAI_API_KEY") is None:
+        os.environ["OPENAI_API_KEY"] = openai_key
+
+    # Model initialization verification
+    res = util.verify_model_initialization(settings)
+    if res != "OK":
+        console.print(res, style="red")
         return
     # Get inputs from the user
     agent_count = IntPrompt.ask(
@@ -182,7 +227,7 @@ def run():
         default=agent_names[0],
     )
     user_index = agent_names.index(user_role)
-    ctx = agi_init(agent_configs, console, config.load_openai_token(), user_index)
+    ctx = agi_init(agent_configs, console, settings, user_index)
 
     actions = ["continue", "interview", "exit"]
     while True:
