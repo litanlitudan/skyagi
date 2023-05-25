@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { AgentDataType } from './types';
+	import { Label, Input, Button } from 'flowbite-svelte';
 
 	export let agentData: AgentDataType = {
 		name: '',
@@ -15,47 +16,58 @@
 		agentData.memories = [...agentData.memories, ''];
 	}
 
-	function updateMemory(
-		index: number,
-		event: Event & { currentTarget: EventTarget & HTMLInputElement }
-	) {
+	function updateMemory(index: number, event: Event) {
 		agentData.memories[index] = (event.target as HTMLInputElement).value;
+		agentData.memories = [...agentData.memories];
+	}
+
+	function removeMemory(index: number) {
+		agentData.memories.splice(index, 1);
 		agentData.memories = [...agentData.memories];
 	}
 </script>
 
 <main>
 	<form on:submit|preventDefault={handleSubmit}>
-		<label>
+		<Label class="mb-8 w-1/4">
 			Name:
-			<input type="text" bind:value={agentData.name} />
-		</label>
+			<Input type="text" class="mt-5" bind:value={agentData.name} />
+		</Label>
 
-		<label>
+		<Label class="mb-8 w-1/4">
 			Age:
-			<input type="number" bind:value={agentData.age} />
-		</label>
+			<Input type="number" class="mt-5" bind:value={agentData.age} />
+		</Label>
 
-		<label>
+		<Label class="mb-8 w-1/4">
 			Personalities:
-			<input type="text" bind:value={agentData.personalities} />
-		</label>
+			<Input type="text" class="mt-5" bind:value={agentData.personalities} />
+		</Label>
 
-		<label>
+		<Label class="mb-8 w-1/4">
 			Social status:
-			<input type="text" bind:value={agentData.socialStatus} />
-		</label>
+			<Input type="text" class="mt-5" bind:value={agentData.socialStatus} />
+		</Label>
 
-		<label>
+		<Label class="mb-10 w-1/2">
 			Memories:
+
 			{#each agentData.memories as memory, index}
-				<div>
-					<input type="text" bind:value={memory} on:input={event => updateMemory(index, event)} />
+				<div class="mb-5 mt-5 flex">
+					<Input
+						type="text"
+						class="mr-2 dark:placeholder-gray-500"
+						placeholder="Social relationship, experience, catch phrase, ..."
+						bind:value={memory}
+						on:input={event => updateMemory(index, event)}
+					/>
+					<Button type="button" color="red" on:click={() => removeMemory(index)} class="">-</Button>
 				</div>
 			{/each}
-			<button type="button" on:click={addMemory}>+</button>
-		</label>
 
-		<button type="submit">Submit</button>
+			<Button type="button" on:click={addMemory}>+</Button>
+		</Label>
+
+		<Button type="submit" class="">Submit</Button>
 	</form>
 </main>
