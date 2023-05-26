@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
+import { GenerativeAgent } from '$lib/agent';
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
@@ -48,6 +49,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.eq('id', recipient_agent_id);
 
 	// create recipient agent
+	const agent = new GenerativeAgent(locals.supabase, conversation_id, recipient_agent_id, recipient_agent_model);
 
 	// get reaction
 	
