@@ -10,7 +10,9 @@
 		memories: ['']
 	};
 
-	function handleSubmit() {}
+	export let handleSubmit = () => {
+		console.log('submitted!');
+	};
 
 	function addMemory() {
 		agentData.memories = [...agentData.memories, ''];
