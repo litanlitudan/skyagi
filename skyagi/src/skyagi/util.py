@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 from skyagi.model import load_embedding_from_config, load_llm_from_config
-from skyagi.settings import Settings
+from skyagi.settings import Settings, LLMSettings, EmbeddingSettings
 
 
 def verify_openai_token(token: str) -> str:
@@ -39,6 +39,17 @@ def verify_model_initialization(settings: Settings) -> str:
 
     return "OK"
 
+def verify_llm_initialization(llm_settings: LLMSettings) -> str:
+    try:
+        load_llm_from_config(llm_settings)
+    except Exception as e:
+        return f"LLM initialization check failed: {e}"
+    
+def verify_embedding_initialization(embedding_settings: EmbeddingSettings) -> str:
+    try:
+        load_embedding_from_config(embedding_settings)
+    except Exception as e:
+        return f"Embedding initialization check failed: {e}"
 
 def verify_pinecone_token(token: str) -> str:
     return "OK"

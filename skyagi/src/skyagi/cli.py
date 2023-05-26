@@ -10,7 +10,7 @@ from rich.prompt import IntPrompt, Prompt
 from skyagi import config, util
 from skyagi.discord import client
 from skyagi.model import get_all_embeddings, get_all_llms
-from skyagi.settings import Settings, get_all_model_settings, load_model_setting
+from skyagi.settings import Settings, ModelSettings, load_llm_settings_template_from_name, load_embedding_settings_template_from_name, load_credentials_into_llm_settings, load_credentials_into_embedding_settings
 from skyagi.skyagi import agi_init, agi_step
 
 cli = typer.Typer()
@@ -165,23 +165,50 @@ def run():
     Run SkyAGI
     """
     settings = Settings()
+    breakpoint()
 
     # Ask Model settings
     questions = [
         inquirer.List(
             "llm-model",
             message="What LLM model you want to use?",
-            choices=get_all_model_settings(),
+            choices=get_all_llms(),
         )
     ]
     answers = inquirer.prompt(questions=questions)
-    settings.model = load_model_setting(answers["llm-model"])
-
-    # Model initialization verification
-    res = util.verify_model_initialization(settings)
+    llm_settings = load_llm_settings_template_from_name(answers["llm-model"])
+    
+    # Load Provider Credentials into LLM args
+    llm_settings = load_credentials_into_llm_settings(settings=settings, llm_settings=llm_settings)
+    
+    # Verify LLM initialization
+    res = util.verify_llm_initialization(llm_settings=llm_settings)
     if res != "OK":
         console.print(res, style="red")
         return
+    
+    # Ask Embedding settings
+    questions = [
+        inquirer.List(
+            "embedding-model",
+            message="What Embedding model you want to use?",
+            choices=get_all_embeddings(),
+        )
+    ]
+    answers = inquirer.prompt(questions=questions)
+    embedding_settings = load_embedding_settings_template_from_name(answers["embedding-model"])
+    
+    # Load Provider Credentials into Embedding args
+    embedding_settings = load_credentials_into_embedding_settings(settings=settings, embedding_settings=embedding_settings)
+    
+    # Verify Embedding initialization
+    res = util.verify_embedding_initialization(embedding_settings=embedding_settings)
+    if res != "OK":
+        console.print(res, style="red")
+        return
+    
+    settings.model = ModelSettings(llm=llm_settings, embedding=embedding_settings)
+
     # Get inputs from the user
     agent_count = IntPrompt.ask(
         "Number of agents to create (at least 2 agents)?", default=3
