@@ -1,10 +1,11 @@
 import { TimeWeightedVectorStoreRetriever } from "langchain/retrievers/time_weighted";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
-import { BaseLanguageModel } from "langchain/base_language";
 import { PromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
 import { Document } from "langchain/document";
+import { ChatOpenAI } from "langchain/chat_models/openai";
+import type { BaseLanguageModel } from "langchain/base_language";
 
 function parseList(text: string): string[] {
 	const lines = text.trim().split('\n');
@@ -28,8 +29,8 @@ export class GenerativeAgent {
     // * support embeddings from different LLM models
     // * may define our own queryfunction
     // * standardize sql query later
-    // * get the llm for the agent
-    constructor(supabase: any, conversationId: string, agentId: string, llm: string) {
+    // * config llm based on the user's request
+    constructor(supabase: any, conversationId: string, agentId: string, llm: any) {
         // get agent's profile
         const { data: profiles } = supabase
             .from('agent')
@@ -39,6 +40,7 @@ export class GenerativeAgent {
         this.name = profiles.name;
         this.age = profiles.age;
         this.personality = profiles.personality;
+        this.llm = new ChatOpenAI();
 
         // create retriever
         const vectorStore = new SupabaseVectorStore(
@@ -50,7 +52,7 @@ export class GenerativeAgent {
         );
         this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
             vectorStore,
-            otherScoreKeys: "importance",
+            otherScoreKeys: ["importance"],
             k: 15}
         );
 
@@ -83,7 +85,7 @@ export class GenerativeAgent {
 		);
 		const relevantMemories = this.fetchMemories(`${this.name}'s core characteristics`);
 		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
-		const chain = LLMChain(this.llm, prompt);
+		const chain = new LLMChain({llm: this.llm, prompt});
 		return chain.run({ name: this.name, relatedMemories: relevantMemoriesStr }).trim();
 	}
 
@@ -91,7 +93,7 @@ export class GenerativeAgent {
 		const prompt = PromptTemplate.fromTemplate(
 			`What is the observed entity in the following observation? ${observation}` + `\nEntity=`
 		);
-		const chain = LLMChain({llm: this.llm, prompt});
+		const chain = new LLMChain({llm: this.llm, prompt});
 		return chain.run({ observation: observation }).trim();
 	}
 
@@ -100,7 +102,7 @@ export class GenerativeAgent {
 			`What is the {entity} doing in the following observation? ${observation}` +
 				`\nThe {entity} is`
 		);
-		const chain = LLMChain({llm: this.llm, prompt});
+		const chain = new LLMChain({llm: this.llm, prompt});
 		return chain.run({ entity: entityName, observation: observation }).trim();
 	}
 
@@ -155,7 +157,7 @@ export class GenerativeAgent {
 			`${q1}?\nContext from memory:\n${contextStr}\nRelevant context: `
 		);
 
-		const chain = LLMChain({llm: this.llm, prompt});
+		const chain = new LLMChain({llm: this.llm, prompt});
 		return chain.run({ q1: q1, contextStr: contextStr.trim() }).trim();
 	}
 
@@ -187,7 +189,7 @@ export class GenerativeAgent {
 				`\nMemory: {memoryContent}` +
 				`\nRating: `
 		);
-		const chain = LLMChain({llm : this.llm, prompt});
+		const chain = new LLMChain({llm : this.llm, prompt});
 		const score = chain.run({ memoryContent: memoryContent }).trim();
 		const match = score.match(/^\D*(\d+)/);
 		if (match) {
@@ -204,7 +206,7 @@ export class GenerativeAgent {
 				` high-level questions we can answer about the subjects in the statements?` +
 				` Provide each question on a new line.\n\n`
 		);
-		const reflectionChain = LLMChain({llm : this.llm, prompt});
+		const reflectionChain = new LLMChain({llm : this.llm, prompt});
 		const observations = this.memoryRetriever.memoryStream.slice(-lastK);
 		const observationStr = observations.map(o => o.pageContent).join('\n');
 		const result = reflectionChain.run({ observations: observationStr });
@@ -223,7 +225,7 @@ export class GenerativeAgent {
 		const relatedStatements = relatedMemories
 			.map((memory, i) => `${i + 1}. ${memory.pageContent}`)
 			.join('\n');
-		const reflectionChain = LLMChain(
+		const reflectionChain = new LLMChain(
 			{llm : this.llm, prompt}
 		);
 		const result = reflectionChain.run({ topic: topic, relatedStatements: relatedStatements });
@@ -285,7 +287,7 @@ export class GenerativeAgent {
 		);
 		kwargs.recentObservations = this.getMemoriesUntilLimit(consumedTokens);
 
-		const actionPredictionChain = LLMChain({ llm: this.llm, prompt });
+		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
 		const result = actionPredictionChain.run(kwargs);
 		return result.trim();
 	}
@@ -313,7 +315,5 @@ export class GenerativeAgent {
 			this.memoryImportance = 0.0;
 			this.status = oldStatus;
 		}
-
-		return result;        
     }
 }
