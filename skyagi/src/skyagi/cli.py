@@ -190,14 +190,8 @@ def config_main(ctx: typer.Context):
 
     console.print("SkyAGI's Configuration")
 
-    # if config.load_openai_token():
-    #     console.print("OpenAI Token is configured, good job!", style="green")
-    # else:
-    #     console.print(
-    #         "OpenAI Token not configured yet! This is necessary to use SkyAGI",
-    #         style="red",
-    #     )
-    #     console.print("To config OpenAI token: [yellow]skyagi config openai[/yellow]")
+    list_credentials()
+    console.print("To config credentials: [yellow]skyagi config credentials[/yellow]")
 
     if config.load_pinecone_token():
         console.print("Pinecone Token is configured, good job!", style="green")
