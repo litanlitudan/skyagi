@@ -24,7 +24,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.select('name')
 		.eq('id', initiateAgentId);
 
-	return new Response(JSON.stringify({"success": 1}), { status: 200 });
+	return new Response(JSON.stringify({"success": 1, "AgentName": initiateAgentName}), { status: 200 });
 
 	// create recipient agent
 	const agent = new GenerativeAgent(locals.supabase, conversationId, recipientAgentId, recipientAgentModel);

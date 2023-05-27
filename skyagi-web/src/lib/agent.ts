@@ -170,6 +170,7 @@ export class GenerativeAgent {
     private async getMemoriesUntilLimit(consumedTokens: number): Promise<string> {
 		const result: string[] = [];
 
+        // Todo: figure out how to work around memoryStream retrieval
 		for (const doc of this.memoryRetriever.memoryStream.slice().reverse()) {
 			if (consumedTokens >= this.maxTokensLimit) {
 				break;
