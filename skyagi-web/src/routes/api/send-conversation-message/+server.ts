@@ -18,13 +18,13 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		message
 	} = await request.json();
 
-	return new Response(JSON.stringify({"success": 1}), { status: 200 });
-
 	// get initiate agent name
 	const { data: initiateAgentName } = await locals.supabase
 		.from('agent')
 		.select('name')
 		.eq('id', initiateAgentId);
+
+	return new Response(JSON.stringify({"success": 1}), { status: 200 });
 
 	// create recipient agent
 	const agent = new GenerativeAgent(locals.supabase, conversationId, recipientAgentId, recipientAgentModel);
