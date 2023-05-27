@@ -95,7 +95,7 @@ class Settings(BaseSettings):
         ):
             return (
                 init_settings,
-                env_settings,
                 json_config_settings_source,
+                env_settings,
                 file_secret_settings,
             )
