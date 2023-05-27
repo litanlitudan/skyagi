@@ -35,9 +35,9 @@ export class GenerativeAgent {
         // get agent's profile
         const { data: profiles } = supabase
             .from('agent')
-		    .select('id name age personality')
+		    .select('name age personality')
 		    .eq('id', agentId);
-        this.id = profiles.id;
+        this.id = agentId;
         this.name = profiles.name;
         this.age = profiles.age;
         this.personality = profiles.personality;
