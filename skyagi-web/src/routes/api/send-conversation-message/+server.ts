@@ -18,12 +18,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		message
 	} = await request.json();
 
-	console.log("before")
-	console.log(conversation_id, initiate_agent_id, initiate_agent_model, recipient_agent_id, recipient_agent_model, message);
-	console.log("after")
-	return new Response(JSON.stringify({"success": 1}), { status: 200 });
-
-
 	// get initiate agent name
 	const { data: initiateAgentName } = await locals.supabase
 		.from('agent')
