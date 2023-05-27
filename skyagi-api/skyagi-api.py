@@ -1,12 +1,19 @@
 import asyncio
-from typing import List
+from typing import Any, Dict, List
 
 from lcserve import serving
 from rich.console import Console
 from rich.prompt import Prompt
-
-from skyagi.settings import Settings, load_model_setting
+from skyagi.settings import (
+    ModelSettings,
+    Settings,
+    load_credentials_into_embedding_settings,
+    load_credentials_into_llm_settings,
+    load_embedding_settings_template_from_name,
+    load_llm_settings_template_from_name,
+)
 from skyagi.skyagi import agi_init, agi_step
+from skyagi.util import verify_embedding_initialization, verify_llm_initialization
 
 console = Console()
 
@@ -34,7 +41,7 @@ class WebContext:
 
 
 @serving(websocket=True)
-def runskyagi(agent_configs: List[dict], llm_model: str, **kwargs):
+def runskyagi(agent_configs: List[dict], model: Dict[str, Any], **kwargs):
     """
     Run SkyAGI
     """
@@ -42,7 +49,40 @@ def runskyagi(agent_configs: List[dict], llm_model: str, **kwargs):
     wc = WebContext(websocket)
 
     settings = Settings()
-    settings.model = load_model_setting(llm_model)
+
+    if model["llm_model"] == "openai-gpt-4":
+        wc.send_response(
+            "OpenAI GPT4 API is in waitlist, makes sure you are granted access."
+            " Check: https://openai.com/waitlist/gpt-4-api"
+        )
+
+    llm_settings = load_llm_settings_template_from_name(model["llm_model"])
+
+    # Load Provider Credentials into LLM args
+    llm_settings = load_credentials_into_llm_settings(
+        settings=settings, llm_settings=llm_settings
+    )
+
+    # Verify LLM initialization
+    res = verify_llm_initialization(llm_settings=llm_settings)
+    if res != "OK":
+        return f"[error] {res}"
+
+    embedding_settings = load_embedding_settings_template_from_name(
+        model["embedding_model"]
+    )
+
+    # Load Provider Credentials into Embedding args
+    embedding_settings = load_credentials_into_embedding_settings(
+        settings=settings, embedding_settings=embedding_settings
+    )
+
+    # Verify Embedding initialization
+    res = verify_embedding_initialization(embedding_settings=embedding_settings)
+    if res != "OK":
+        return f"[error] {res}"
+
+    settings.model = ModelSettings(llm=llm_settings, embedding=embedding_settings)
 
     if len(agent_configs) <= 2:
         return "[error] Please config at least 2 agents, exiting"
