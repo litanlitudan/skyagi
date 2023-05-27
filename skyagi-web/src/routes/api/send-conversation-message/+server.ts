@@ -24,10 +24,10 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.select('name')
 		.eq('id', initiate_agent_id);
 
-	return new Response(JSON.stringify({"success": 1, "AgentName": initiateAgentName, "ID": initiate_agent_id}), { status: 200 });
-
 	// create recipient agent
 	const agent = new GenerativeAgent(locals.supabase, conversation_id, recipient_agent_id, recipient_agent_model);
+
+	return new Response(JSON.stringify({"success": 1, "AgentName": initiateAgentName, "ID": initiate_agent_id}), { status: 200 });
 
 	// get reaction
 	const newMessage = `${initiateAgentName} says ${message}`;
