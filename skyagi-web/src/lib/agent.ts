@@ -6,6 +6,7 @@ import { LLMChain } from "langchain/chains";
 import { Document } from "langchain/document";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import type { BaseLanguageModel } from "langchain/base_language";
+import { _ } from "$env/static/private";
 
 function parseList(text: string): string[] {
 	const lines = text.trim().split('\n');
@@ -75,7 +76,7 @@ export class GenerativeAgent {
 		return this.memoryRetriever.getRelevantDocuments(observation);
 	}
 
-	private computeAgentSummary(): string {
+	private async computeAgentSummary(): Promise<string> {
 		const prompt = PromptTemplate.fromTemplate(
 			`How would you summarize ${this.name}'s core characteristics given the` +
 				` following statements:\n` +
@@ -86,15 +87,17 @@ export class GenerativeAgent {
 		const relevantMemories = this.fetchMemories(`${this.name}'s core characteristics`);
 		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
 		const chain = new LLMChain({llm: this.llm, prompt});
-		return chain.run({ name: this.name, relatedMemories: relevantMemoriesStr }).trim();
+		const res = await chain.run({ name: this.name, relatedMemories: relevantMemoriesStr });
+        return res.trim();
 	}
 
-    private getEntityFromObservation(observation: string): string {
+    private async getEntityFromObservation(observation: string): Promise<string> {
 		const prompt = PromptTemplate.fromTemplate(
 			`What is the observed entity in the following observation? ${observation}` + `\nEntity=`
 		);
 		const chain = new LLMChain({llm: this.llm, prompt});
-		return chain.run({ observation: observation }).trim();
+		const res = await chain.run({ observation: observation });
+        return res.trim();
 	}
 
     private getEntityAction(observation: string, entityName: string): string {
@@ -144,7 +147,7 @@ export class GenerativeAgent {
 		);
 	}
 
-    private summarizeRelatedMemories(observation: string): string {
+    private async summarizeRelatedMemories(observation: string): Promise<string> {
 		const entityName = this.getEntityFromObservation(observation);
 		const entityAction = this.getEntityAction(observation, entityName);
 		const q1 = `What is the relationship between ${this.name} and ${entityName}`;
@@ -158,18 +161,20 @@ export class GenerativeAgent {
 		);
 
 		const chain = new LLMChain({llm: this.llm, prompt});
-		return chain.run({ q1: q1, contextStr: contextStr.trim() }).trim();
+        const res = await chain.run({ q1: q1, contextStr: contextStr.trim() });
+        return res.trim();
 	}
 
-    private getMemoriesUntilLimit(consumedTokens: number): string {
+    private async getMemoriesUntilLimit(consumedTokens: number): Promise<string> {
 		const result: string[] = [];
 
 		for (const doc of this.memoryRetriever.memoryStream.slice().reverse()) {
 			if (consumedTokens >= this.maxTokensLimit) {
 				break;
 			}
-
-			consumedTokens += this.llm.getNumTokens(doc.pageContent);
+            
+            const ntokens = await this.llm.getNumTokens(doc.pageContent);
+            consumedTokens += ntokens;
 
 			if (consumedTokens < this.maxTokensLimit) {
 				result.push(doc.pageContent);
@@ -179,7 +184,7 @@ export class GenerativeAgent {
 		return result.reverse().join('; ');
 	}
 
-    private scoreMemoryImportance(memoryContent: string, weight: number = 0.15): number {
+    private async scoreMemoryImportance(memoryContent: string, weight: number = 0.15): Promise<number> {
 		const prompt = PromptTemplate.fromTemplate(
 			`On the scale of 1 to 10, where 1 is purely mundane` +
 				` (e.g., brushing teeth, making bed) and 10 is` +
@@ -190,7 +195,8 @@ export class GenerativeAgent {
 				`\nRating: `
 		);
 		const chain = new LLMChain({llm : this.llm, prompt});
-		const score = chain.run({ memoryContent: memoryContent }).trim();
+        const res = await chain.run({ memoryContent: memoryContent }); 
+		const score = res.trim();
 		const match = score.match(/^\D*(\d+)/);
 		if (match) {
 			return (parseFloat(match[1]) / 10) * weight;
@@ -199,7 +205,7 @@ export class GenerativeAgent {
 		}
 	}
 
-    private getTopicsOfReflection(lastK: number = 50): [string, string, string] {
+    private async getTopicsOfReflection(lastK: number = 50): Promise<[string, string, string]> {
 		const prompt = PromptTemplate.fromTemplate(
 			`{observations}\n\n` +
 				`Given only the information above, what are the 3 most salient` +
@@ -209,12 +215,12 @@ export class GenerativeAgent {
 		const reflectionChain = new LLMChain({llm : this.llm, prompt});
 		const observations = this.memoryRetriever.memoryStream.slice(-lastK);
 		const observationStr = observations.map(o => o.pageContent).join('\n');
-		const result = reflectionChain.run({ observations: observationStr });
+		const result = await reflectionChain.run({ observations: observationStr });
         const ress = parseList(result);
         return [ress[0], ress[1], ress[2]];
 	}
 
-    private getInsightsOnTopic(topic: string): string[] {
+    private async getInsightsOnTopic(topic: string): Promise<string[]> {
 		const prompt = PromptTemplate.fromTemplate(
 			`Statements about ${topic}\n` +
 				`{relatedStatements}\n\n` +
@@ -228,16 +234,16 @@ export class GenerativeAgent {
 		const reflectionChain = new LLMChain(
 			{llm : this.llm, prompt}
 		);
-		const result = reflectionChain.run({ topic: topic, relatedStatements: relatedStatements });
+		const result = await reflectionChain.run({ topic: topic, relatedStatements: relatedStatements });
 		// TODO: Parse the connections between memories and insights
 		return parseList(result);
 	}
 
-    private pauseToReflect(): string[] {
+    private async pauseToReflect(): Promise<string[]> {
 		const newInsights: string[] = [];
-		const topics = this.getTopicsOfReflection();
+		const topics = await this.getTopicsOfReflection();
 		for (const topic of topics) {
-			const insights = this.getInsightsOnTopic(topic);
+			const insights = await this.getInsightsOnTopic(topic);
 			for (const insight of insights) {
 				this.addMemory(insight);
 			}
@@ -248,7 +254,7 @@ export class GenerativeAgent {
     
     // TODO
     // * cache summary in supabase memory table
-    generateRspn(observation: string, suffix: string): string {
+    async generateRspn(observation: string, suffix: string): Promise<string> {
 		const prompt = PromptTemplate.fromTemplate(
 			'{agentSummaryDescription}' +
 				'\nIt is {currentTime}.' +
@@ -262,7 +268,7 @@ export class GenerativeAgent {
 		);
 
 		const agentSummaryDescription = this.getSummary();
-		const relevantMemoriesStr = this.summarizeRelatedMemories(observation);
+		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
 		const currentTimeStr = new Date().toLocaleString('en-US', {
 			month: 'long',
 			day: 'numeric',
@@ -282,13 +288,13 @@ export class GenerativeAgent {
             recentObservations: ""
 		};
 
-		const consumedTokens = this.llm.getNumTokens(
+		const consumedTokens = await this.llm.getNumTokens(
 			prompt.format({...kwargs })
 		);
-		kwargs.recentObservations = this.getMemoriesUntilLimit(consumedTokens);
+		kwargs.recentObservations = await this.getMemoriesUntilLimit(consumedTokens);
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
-		const result = actionPredictionChain.run(kwargs);
+		const result = await actionPredictionChain.run(kwargs);
 		return result.trim();
 	}
 
@@ -296,8 +302,8 @@ export class GenerativeAgent {
     // * need to add memory to vectorStore. Not sure if memoryRetriever would
     // do it automatically.
     // * If so, how to let the retriever know the schema of the table.
-    addMemory(content: string): void {
-        const importanceScore = this.scoreMemoryImportance(content);
+    async addMemory(content: string): Promise<void> {
+        const importanceScore = await this.scoreMemoryImportance(content);
 		this.memoryImportance += importanceScore;
 		const document = new Document({
 			pageContent: content,
