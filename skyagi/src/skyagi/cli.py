@@ -5,13 +5,23 @@ from pathlib import Path
 import inquirer
 import typer
 from rich.console import Console
+from rich.pretty import pprint
 from rich.prompt import IntPrompt, Prompt
 
 from skyagi import config, util
-from rich.pretty import pprint
 from skyagi.discord import client
 from skyagi.model import get_all_embeddings, get_all_llms, get_all_providers
-from skyagi.settings import Settings, ModelSettings, load_llm_settings_template_from_name, load_embedding_settings_template_from_name, load_credentials_into_llm_settings, load_credentials_into_embedding_settings, get_provider_credentials_fields, get_all_credentials, get_provider_credentials
+from skyagi.settings import (
+    ModelSettings,
+    Settings,
+    get_all_credentials,
+    get_provider_credentials,
+    get_provider_credentials_fields,
+    load_credentials_into_embedding_settings,
+    load_credentials_into_llm_settings,
+    load_embedding_settings_template_from_name,
+    load_llm_settings_template_from_name,
+)
 from skyagi.skyagi import agi_init, agi_step
 
 cli = typer.Typer()
@@ -22,13 +32,14 @@ console = Console()
 
 credentials_cli = typer.Typer(help="Credentials Management", no_args_is_help=True)
 
+
 @credentials_cli.command("set")
 def set_credentials():
     """
     Configure OpenAI API token
     """
     settings = Settings()
-    
+
     # Ask which provider to set
     questions = [
         inquirer.List(
@@ -40,17 +51,21 @@ def set_credentials():
     answers = inquirer.prompt(questions=questions)
     selected_provider = answers["provider"]
 
-    credentials = get_provider_credentials(settings=settings, provider=selected_provider)
-    
+    credentials = get_provider_credentials(
+        settings=settings, provider=selected_provider
+    )
+
     # Ask which credential feild to set
-    provider_credentials_fields = get_provider_credentials_fields(provider=selected_provider)
-    provider_credentials_fields.append("Done") # add an exit option
-    
+    provider_credentials_fields = get_provider_credentials_fields(
+        provider=selected_provider
+    )
+    provider_credentials_fields.append("Done")  # add an exit option
+
     while True:
-        # Show provider's credentials 
+        # Show provider's credentials
         console.print(f"[yellow]{selected_provider} credentials:\n")
         pprint(credentials, expand_all=True)
-        
+
         # Ask which credential field to set
         questions = [
             inquirer.List(
@@ -61,10 +76,10 @@ def set_credentials():
         ]
         answers = inquirer.prompt(questions=questions)
         selected_credential_field = answers["credential-field"]
-        
+
         if selected_credential_field == "Done":
             break
-        
+
         # Ask the operation
         questions = [
             inquirer.List(
@@ -75,22 +90,34 @@ def set_credentials():
         ]
         answers = inquirer.prompt(questions=questions)
         edit_or_clear = answers["edit-clear"]
-        
-        if edit_or_clear == "Edit":    
-            value = Prompt.ask(prompt=f"Enter your {selected_credential_field}", default=credentials[selected_credential_field]).strip()
+
+        if edit_or_clear == "Edit":
+            value = Prompt.ask(
+                prompt=f"Enter your {selected_credential_field}",
+                default=credentials[selected_credential_field],
+            ).strip()
             if bool(value):
                 credentials[selected_credential_field] = value
         elif edit_or_clear == "Clear":
             credentials[selected_credential_field] = None
-    
-    verify_resp = util.verify_provider_credentials(provider=selected_provider, credentials=credentials)
+
+    verify_resp = util.verify_provider_credentials(
+        provider=selected_provider, credentials=credentials
+    )
     if verify_resp != "OK":
-        console.print(f"[Error] Provider {selected_provider}'s credentials are invalid", style="red")
+        console.print(
+            f"[Error] Provider {selected_provider}'s credentials are invalid",
+            style="red",
+        )
         console.print(verify_resp)
         return
     config.set_provider_credentials(provider=selected_provider, credentials=credentials)
-    console.print(f"Provider {selected_provider}'s credentials are configured successfully!", style="green")
-    
+    console.print(
+        f"Provider {selected_provider}'s credentials are configured successfully!",
+        style="green",
+    )
+
+
 @credentials_cli.command("list")
 def list_credentials():
     """
@@ -99,6 +126,7 @@ def list_credentials():
     settings = Settings()
     console.print("\n[yellow]All credentials:\n")
     pprint(get_all_credentials(settings), expand_all=True)
+
 
 #######################################################################################
 # Config CLI
@@ -261,16 +289,18 @@ def run():
     ]
     answers = inquirer.prompt(questions=questions)
     llm_settings = load_llm_settings_template_from_name(answers["llm-model"])
-    
+
     # Load Provider Credentials into LLM args
-    llm_settings = load_credentials_into_llm_settings(settings=settings, llm_settings=llm_settings)
-    
+    llm_settings = load_credentials_into_llm_settings(
+        settings=settings, llm_settings=llm_settings
+    )
+
     # Verify LLM initialization
     res = util.verify_llm_initialization(llm_settings=llm_settings)
     if res != "OK":
         console.print(res, style="red")
         return
-    
+
     # Ask Embedding settings
     questions = [
         inquirer.List(
@@ -280,18 +310,22 @@ def run():
         )
     ]
     answers = inquirer.prompt(questions=questions)
-    embedding_settings = load_embedding_settings_template_from_name(answers["embedding-model"])
-    
+    embedding_settings = load_embedding_settings_template_from_name(
+        answers["embedding-model"]
+    )
+
     # Load Provider Credentials into Embedding args
-    embedding_settings = load_credentials_into_embedding_settings(settings=settings, embedding_settings=embedding_settings)
-    
+    embedding_settings = load_credentials_into_embedding_settings(
+        settings=settings, embedding_settings=embedding_settings
+    )
+
     # Verify Embedding initialization
     res = util.verify_embedding_initialization(embedding_settings=embedding_settings)
     if res != "OK":
         console.print(res, style="red")
         return
-    
-    # this model setting will apply to all agents 
+
+    # this model setting will apply to all agents
     settings.model = ModelSettings(llm=llm_settings, embedding=embedding_settings)
 
     # Get inputs from the user

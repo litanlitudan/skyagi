@@ -1,9 +1,9 @@
-import os
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Type, Mapping
+from typing import Any, Dict, Optional, Type
 
 from pydantic import BaseModel, BaseSettings, Extra, Field, create_model
 from pydantic.env_settings import EnvSettingsSource
+
 from skyagi.constants import ModelProvider
 
 
@@ -56,35 +56,46 @@ class ModelSettings(BaseModel):
 
     class Config:
         extra = Extra.allow
-        
+
+
 # class CredentialsSettings(BaseSettings):
-#     ModelProvider.OpenAI = 
+#     ModelProvider.OpenAI =
+
 
 class OpenAICredentials(BaseSettings):
-    openai_api_key: Optional[str] = Field(default=None, env='OPENAI_API_KEY')
-    
+    openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
+
+
 provider_to_crendentials_type: dict[ModelProvider, Type[BaseModel]] = {
     ModelProvider.OpenAI: OpenAICredentials
 }
 
-CredentialsSettings = create_model('CredentialsSettings', **{key.value: value() for key, value in provider_to_crendentials_type.items() })
-        
+CredentialsSettings = create_model(
+    "CredentialsSettings",
+    **{key.value: value() for key, value in provider_to_crendentials_type.items()}
+)
+
+
 class CustomEnvSettingsSource(EnvSettingsSource):
     def __call__(self, settings: BaseSettings) -> Dict[str, Any]:
         env_settings = super().__call__(settings=settings)
-        
+
         # put provider credentials to settings "credentials" field
         for provider, creds_type in provider_to_crendentials_type:
             if not settings.get("credentials", None):
                 settings["credentials"] = dict()
-            settings["credentials"][provider] = provider_to_crendentials_type.get(provider)()
-        
+            settings["credentials"][provider] = provider_to_crendentials_type.get(
+                provider
+            )()
+
         return env_settings
+
 
 class Settings(BaseSettings):
     """
     Root settings
     """
+
     model: Optional[ModelSettings] = None
     credentials = CredentialsSettings()
 
@@ -105,6 +116,7 @@ class Settings(BaseSettings):
                 json_config_settings_source,
                 file_secret_settings,
             )
+
 
 # ---------------------------------------------------------------------------- #
 #                             Preset configurations                            #
@@ -146,29 +158,29 @@ class Settings(BaseSettings):
 # def get_all_model_settings() -> List[str]:
 #     """Get all supported Embeddings"""
 #     return list(model_setting_type_to_cls_dict.keys())
-        
-    #     {
-    #     "crendentials": {
-    #         "openai_api_key": "",
-    #     },
-    #     "models": {
-    #         "llms": [
-    #             {
-    #                 "type": LLMType.ChatOpenAI,
-    #                 "name": "gpt-3.5-turbo",
-    #                 "args": {
-    #                     "model_name": "gpt-3.5-turbo",
-    #                     "max_tokens": 1500   
-    #                 }
-    #             },
-    #             {
-    #                 "type": LLMType.ChatOpenAI,
-    #                 "name": "gpt-3.5-turbo",
-    #                 "args": {
-    #                     "model_name": "gpt-4",
-    #                     "max_tokens": 1500   
-    #                 }
-    #             }
-    #         ]
-    #     }
-    # }
+
+#     {
+#     "crendentials": {
+#         "openai_api_key": "",
+#     },
+#     "models": {
+#         "llms": [
+#             {
+#                 "type": LLMType.ChatOpenAI,
+#                 "name": "gpt-3.5-turbo",
+#                 "args": {
+#                     "model_name": "gpt-3.5-turbo",
+#                     "max_tokens": 1500
+#                 }
+#             },
+#             {
+#                 "type": LLMType.ChatOpenAI,
+#                 "name": "gpt-3.5-turbo",
+#                 "args": {
+#                     "model_name": "gpt-4",
+#                     "max_tokens": 1500
+#                 }
+#             }
+#         ]
+#     }
+# }

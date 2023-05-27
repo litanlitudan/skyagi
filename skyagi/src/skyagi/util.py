@@ -3,9 +3,15 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List
 
-from skyagi.model import load_embedding_from_config, load_llm_from_config, get_all_llm_settings_by_provider
-from skyagi.settings import Settings, LLMSettings, EmbeddingSettings
+from langchain.prompts.chat import ChatPromptTemplate, HumanMessagePromptTemplate
+
 from skyagi.constants import ModelProvider
+from skyagi.model import (
+    get_all_llm_settings_by_provider,
+    load_embedding_from_config,
+    load_llm_from_config,
+)
+from skyagi.settings import EmbeddingSettings, LLMSettings, Settings
 
 
 def verify_openai_token(token: str) -> str:
@@ -40,23 +46,38 @@ def verify_model_initialization(settings: Settings) -> str:
 
     return "OK"
 
+
 def verify_llm_initialization(llm_settings: LLMSettings) -> str:
     try:
-        load_llm_from_config(llm_settings)
+        llm = load_llm_from_config(llm_settings)
+        llm.generate_prompt(
+            prompts=[
+                ChatPromptTemplate.from_messages(
+                    [HumanMessagePromptTemplate.from_template("{text}")]
+                ).format_prompt(text="ping")
+            ]
+        )
     except Exception as e:
-        return f"LLM initialization check failed: {e}"
-    
+        return (
+            f"LLM initialization check failed: {e}. This can happen if provider {llm_settings.provider}'s "
+            f"credentials are invalid, set the valid ones by running `skyagi config credentials set`"
+        )
+
     return "OK"
-    
+
+
 def verify_embedding_initialization(embedding_settings: EmbeddingSettings) -> str:
     try:
         load_embedding_from_config(embedding_settings)
     except Exception as e:
         return f"Embedding initialization check failed: {e}"
-    
+
     return "OK"
-    
-def verify_provider_credentials(provider: ModelProvider, credentials: Dict[str, Any]) -> str:
+
+
+def verify_provider_credentials(
+    provider: ModelProvider, credentials: Dict[str, Any]
+) -> str:
     llms_settings = get_all_llm_settings_by_provider(provider=provider)
     if len(llms_settings) == 0:
         return f"Empty LLM settings for provider: {provider}"
@@ -64,6 +85,7 @@ def verify_provider_credentials(provider: ModelProvider, credentials: Dict[str, 
     # merge credentials into LLM settings args field
     llm_settings.args.update(credentials)
     return verify_llm_initialization(llm_settings=llm_settings)
+
 
 def verify_pinecone_token(token: str) -> str:
     return "OK"
@@ -80,6 +102,7 @@ def load_json_value(filepath: Path, key: str, default_value: Any) -> Any:
     if key not in json_obj:
         return default_value
     return json_obj[key]
+
 
 def load_nested_json_value(filepath: Path, keys: List[str], default_value: Any) -> Any:
     if not Path(filepath).exists():
@@ -100,7 +123,8 @@ def set_json_value(filepath: Path, key: str, value: Any) -> None:
     with open(filepath, "w+") as json_file:
         json.dump(json_obj, json_file, sort_keys=True)
         json_file.flush()
-        
+
+
 def set_nested_json_value(filepath: Path, keys: List[str], value: Any) -> None:
     json_obj = load_json(filepath)
     current = json_obj
