@@ -1,4 +1,5 @@
 import { TimeWeightedVectorStoreRetriever } from "langchain/retrievers/time_weighted";
+import type { VectorStoreRetriever } from "langchain/vectorstores";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 import { PromptTemplate } from "langchain/prompts";
@@ -13,14 +14,31 @@ function parseList(text: string): string[] {
 	return lines.map(line => line.replace(/^\s*\d+\.\s*/, '').trim());
 }
 
+interface MemoryMetadata {
+  conversation_id: string;
+  agent_id: string;
+  last_access_time: string;
+  cur_status: string;
+  score: number;
+}
+
+interface Memory {
+    id: string;
+    content: string;
+    metadata: MemoryMetadata;
+}
+
 export class GenerativeAgent {
+    conv_id : string;
     id: string;
     name: string;
 	age: number;
 	personality: string;
 	status: string;
+    memories: Memory[];
 	llm: BaseLanguageModel;
-	memoryRetriever: TimeWeightedVectorStoreRetriever;
+    memoryRetriever: VectorStoreRetriever;
+	//memoryRetriever: TimeWeightedVectorStoreRetriever;
 
 	maxTokensLimit: number = 1200;
 	reflectionThreshold: number = 8;
@@ -34,6 +52,7 @@ export class GenerativeAgent {
     constructor(supabase: any, conversationId: string, agentId: string, llm: any) {
         // get agent's profile
         this.getAgentInfo(supabase, agentId);
+        this.conv_id = conversationId;
         this.llm = new ChatOpenAI();
 
         // create retriever
@@ -41,9 +60,12 @@ export class GenerativeAgent {
             new OpenAIEmbeddings(),
             {
                 client: supabase,
-                tableName: "memory"
+                tableName: "memory",
+                queryName: "match_documents"
             }
         );
+
+        this.memoryRetriever =  vectorStore.asRetriever();
 
         /*
         this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
@@ -51,14 +73,20 @@ export class GenerativeAgent {
             otherScoreKeys: ["importance"],
             k: 15}
         );
+        */
 
-        // get all memories
-        allMemories = this.getAgentMemories(supabase, conversationId, agentId);
-        this.status = allMemories[allMemories.length - 1].cur_status;
+        // get memories
+        this.getAgentMemories(supabase, conversationId, agentId);
  
-        // add all memories to retriever
+        /*
+        // Do I need to add all memories to retriever? -> don't think so
         for (const memory of allMemories) {
-            this.memoryRetriever.addDocuments(memory.content);
+            const doc = new Document({
+                pageContent: memory.content,
+                metadata: { importance: importanceScore }
+            });
+
+            this.memoryRetriever.addDocuments([doc]);
         }
         */
     }
@@ -75,14 +103,15 @@ export class GenerativeAgent {
         console.log(this.id, this.name, this.age, this.personality)
     }
 
-    private async getAgentMemories(supabase: any, conversationId: string, agentId: string): Promise<object[]> {
+    private async getAgentMemories(supabase: any, conversationId: string, agentId: string): Promise<void> {
         const { data: allMemories } = await supabase
             .from('memory')
-		    .select('id content cur_status last_access_time')
-		    .eq('conversation_id', conversationId)
-		    .eq('agent_id', agentId)
-            .order('last_access_time', { ascending: true });
-        return allMemories;
+		    .select('id content metadata')
+		    .eq('metadata:conversation_id', conversationId)
+		    .eq('metadata:agent_id', agentId)
+            .order('metadata:last_access_time', { ascending: true });
+        this.memories = allMemories;
+        this.status = this.memories[this.memories.length - 1].metadata.cur_status;
     }
 
     private async fetchMemories(observation: string): Promise<Document[]> {
@@ -324,9 +353,20 @@ export class GenerativeAgent {
 		this.memoryImportance += importanceScore;
 		const document = new Document({
 			pageContent: content,
-			metadata: { importance: importanceScore }
+			metadata: { 
+                conversation_id: this.conv_id,
+                agent_id: this.id,
+                last_access_time: new Date().toISOString(),
+                cur_status: this.status,
+                score: importanceScore
+            }
 		});
 		const result = this.memoryRetriever.addDocuments([document]);
+        const new_mem: Memory = {
+            content: content,
+        }
+ 
+        this.memories.push(new_mem)
 
 		if (
 			this.memoryImportance > this.reflectionThreshold &&
