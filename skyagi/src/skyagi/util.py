@@ -12,7 +12,7 @@ from skyagi.model import (
     load_embedding_from_config,
     load_llm_from_config,
 )
-from skyagi.settings import EmbeddingSettings, LLMSettings, Settings
+from skyagi.settings import EmbeddingSettings, LLMSettings
 
 
 def verify_openai_token(token: str) -> str:
@@ -32,20 +32,6 @@ def verify_openai_token(token: str) -> str:
         return "OK"
     except Exception as e:
         return str(e)
-
-
-def verify_model_initialization(settings: Settings) -> str:
-    try:
-        load_llm_from_config(settings.model.llm)
-    except Exception as e:
-        return f"LLM initialization check failed: {e}"
-
-    try:
-        load_embedding_from_config(settings.model.embedding)
-    except Exception as e:
-        return f"Embedding initialization check failed: {e}"
-
-    return "OK"
 
 
 def verify_llm_initialization(llm_settings: LLMSettings) -> str:
@@ -73,7 +59,7 @@ def verify_embedding_initialization(embedding_settings: EmbeddingSettings) -> st
     try:
         load_embedding_from_config(embedding_settings)
     except Exception as e:
-        return f"Embedding initialization check failed: {e}"
+        return f"Embedding initialization check failed: {repr(e)}"
 
     return "OK"
 
