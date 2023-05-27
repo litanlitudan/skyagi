@@ -267,6 +267,14 @@ def run():
         )
     ]
     answers = inquirer.prompt(questions=questions)
+
+    if answers["llm-model"] == "gpt-4":
+        console.print(
+            "OpenAI GPT4 API is in waitlist, makes sure you are granted access."
+            " Check: https://openai.com/waitlist/gpt-4-api",
+            style="yellow",
+        )
+
     llm_settings = load_llm_settings_template_from_name(answers["llm-model"])
 
     # Load Provider Credentials into LLM args
