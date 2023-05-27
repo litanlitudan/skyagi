@@ -1,8 +1,3 @@
-function interview_agent(agent: GenerativeAgent, message: string, username: string): string {
-	const new_message: string = `${username} says ${message}`;
-	return agent.generate_dialogue_response(new_message)[1];
-}
-
 function talks_to(
 	initiator: GenerativeAgent,
 	recipient: GenerativeAgent,
@@ -62,9 +57,6 @@ function talks_to(
 	return message;
 }
 
-import { BaseModel } from 'path/to/BaseModel';
-import { Optional, Field } from 'path/to/pydantic';
-
 class GenerativeAgent extends BaseModel {
 	name: string;
 	age: number;
@@ -89,20 +81,6 @@ class GenerativeAgent extends BaseModel {
 	static _parse_list(text: string): string[] {
 		const lines = text.trim().split('\n');
 		return lines.map(line => line.replace(/^\s*\d+\.\s*/, '').trim());
-	}
-
-	_compute_agent_summary(): string {
-		const prompt = PromptTemplate.from_template(
-			`How would you summarize ${this.name}'s core characteristics given the` +
-				` following statements:\n` +
-				`${related_memories}` +
-				`Do not embellish.` +
-				`\n\nSummary: `
-		);
-		const relevant_memories = this.fetch_memories(`${this.name}'s core characteristics`);
-		const relevant_memories_str = relevant_memories.map(mem => mem.page_content).join('\n');
-		const chain = LLMChain(this.llm, prompt, this.verbose);
-		return chain.run({ name: this.name, related_memories: relevant_memories_str }).trim();
 	}
 
 	_get_topics_of_reflection(last_k: number = 50): [string, string, string] {
@@ -202,158 +180,6 @@ class GenerativeAgent extends BaseModel {
 		return result;
 	}
 
-	fetch_memories(observation: string): Document[] {
-		return this.memory_retriever.get_relevant_documents(observation);
-	}
-
-	get_summary(force_refresh: boolean = false): string {
-		const current_time = new Date();
-		const since_refresh = (current_time - this.last_refreshed) / 1000;
-
-		if (!this.summary || since_refresh >= this.summary_refresh_seconds || force_refresh) {
-			this.summary = this._compute_agent_summary();
-			this.last_refreshed = current_time;
-		}
-
-		return (
-			`Name: ${this.name} (age: ${this.age})` +
-			`\nInnate traits: ${this.traits}` +
-			`\n${this.summary}`
-		);
-	}
-
-	get_full_header(force_refresh: boolean = false): string {
-		const summary = this.get_summary({ force_refresh: force_refresh });
-		const current_time_str = new Date().toLocaleString('en-US', {
-			month: 'long',
-			day: 'numeric',
-			year: 'numeric',
-			hour: 'numeric',
-			minute: 'numeric',
-			hour12: true
-		});
-		return `${summary}\nIt is ${current_time_str}.\n${this.name}'s status: ${this.status}`;
-	}
-
-	_get_entity_from_observation(observation: string): string {
-		const prompt = PromptTemplate.from_template(
-			`What is the observed entity in the following observation? ${observation}` + `\nEntity=`
-		);
-		const chain = LLMChain((llm = this.llm), (prompt = prompt), (verbose = this.verbose));
-		return chain.run({ observation: observation }).trim();
-	}
-
-	_get_entity_action(observation: string, entity_name: string): string {
-		const prompt = PromptTemplate.from_template(
-			`What is the {entity} doing in the following observation? ${observation}` +
-				`\nThe {entity} is`
-		);
-		const chain = LLMChain((llm = this.llm), (prompt = prompt), (verbose = this.verbose));
-		return chain.run({ entity: entity_name, observation: observation }).trim();
-	}
-
-	_format_memories_to_summarize(relevant_memories: Document[]): string {
-		const content_strs = new Set<string>();
-		const content: string[] = [];
-
-		for (const mem of relevant_memories) {
-			if (content_strs.has(mem.page_content)) {
-				continue;
-			}
-
-			content_strs.add(mem.page_content);
-			const created_time = mem.metadata.created_at.toLocaleString('en-US', {
-				month: 'long',
-				day: 'numeric',
-				year: 'numeric',
-				hour: 'numeric',
-				minute: 'numeric',
-				hour12: true
-			});
-
-			content.push(`- ${created_time}: ${mem.page_content.trim()}`);
-		}
-
-		return content.join('\n');
-	}
-
-	summarize_related_memories(observation: string): string {
-		const entity_name = this._get_entity_from_observation(observation);
-		const entity_action = this._get_entity_action(observation, entity_name);
-		const q1 = `What is the relationship between ${this.name} and ${entity_name}`;
-		let relevant_memories = this.fetch_memories(q1);
-		const q2 = `${entity_name} is ${entity_action}`;
-		relevant_memories += this.fetch_memories(q2);
-
-		const context_str = this._format_memories_to_summarize(relevant_memories);
-		const prompt = PromptTemplate.from_template(
-			`${q1}?\nContext from memory:\n${context_str}\nRelevant context: `
-		);
-
-		const chain = LLMChain((llm = this.llm), (prompt = prompt), (verbose = this.verbose));
-		return chain.run({ q1: q1, context_str: context_str.trim() }).trim();
-	}
-
-	_get_memories_until_limit(consumed_tokens: number): string {
-		const result: string[] = [];
-
-		for (const doc of this.memory_retriever.memory_stream.slice().reverse()) {
-			if (consumed_tokens >= this.max_tokens_limit) {
-				break;
-			}
-
-			consumed_tokens += this.llm.get_num_tokens(doc.page_content);
-
-			if (consumed_tokens < this.max_tokens_limit) {
-				result.push(doc.page_content);
-			}
-		}
-
-		return result.reverse().join('; ');
-	}
-
-	_generate_reaction(observation: string, suffix: string): string {
-		const prompt = PromptTemplate.from_template(
-			'{agent_summary_description}' +
-				'\nIt is {current_time}.' +
-				"\n{agent_name}'s status: {agent_status}" +
-				"\nSummary of relevant context from {agent_name}'s memory:" +
-				'\n{relevant_memories}' +
-				'\nMost recent observations: {recent_observations}' +
-				'\nObservation: {observation}' +
-				'\n\n' +
-				suffix
-		);
-
-		const agent_summary_description = this.get_summary();
-		const relevant_memories_str = this.summarize_related_memories(observation);
-		const current_time_str = new Date().toLocaleString('en-US', {
-			month: 'long',
-			day: 'numeric',
-			year: 'numeric',
-			hour: 'numeric',
-			minute: 'numeric',
-			hour12: true
-		});
-
-		const kwargs = {
-			agent_summary_description,
-			current_time: current_time_str,
-			relevant_memories: relevant_memories_str,
-			agent_name: this.name,
-			observation,
-			agent_status: this.status
-		};
-
-		const consumed_tokens = this.llm.get_num_tokens(
-			prompt.format({ recent_observations: '', ...kwargs })
-		);
-		kwargs.recent_observations = this._get_memories_until_limit(consumed_tokens);
-
-		const action_prediction_chain = LLMChain((llm = this.llm), (prompt = prompt));
-		const result = action_prediction_chain.run(kwargs);
-		return result.trim();
-	}
 	generate_reaction(observation: string): [boolean, string] {
 		const call_to_action_template =
 			`Should ${this.name} react to the observation, and if so, ` +
@@ -372,27 +198,6 @@ class GenerativeAgent extends BaseModel {
 		} else if (result.includes('SAY:')) {
 			const said_value = result.split('SAY:').pop()!.trim();
 			return [true, `${this.name} said ${said_value}`];
-		} else {
-			return [false, result];
-		}
-	}
-
-	generate_dialogue_response(observation: string): [boolean, string] {
-		const call_to_action_template =
-			`What would ${this.name} say? To end the conversation, ` +
-			`write: GOODBYE: "what to say". Otherwise to continue the conversation, write: SAY: "what to say next"\n\n`;
-
-		const full_result = this._generate_reaction(observation, call_to_action_template);
-		const result = full_result.trim().split('\n')[0];
-
-		if (result.includes('GOODBYE:')) {
-			const farewell = result.split('GOODBYE:').pop()!.trim();
-			this.add_memory(`${this.name} observed ${observation} and said ${farewell}`);
-			return [false, `${this.name} said ${farewell}`];
-		} else if (result.includes('SAY:')) {
-			const response_text = result.split('SAY:').pop()!.trim();
-			this.add_memory(`${this.name} observed ${observation} and said ${response_text}`);
-			return [true, `${this.name} said ${response_text}`];
 		} else {
 			return [false, result];
 		}
