@@ -1,4 +1,6 @@
-from .base import LLMSettings, EmbeddingSettings, Settings
+from typing import Any, Dict
+from .base import LLMSettings, EmbeddingSettings, Settings, CredentialsSettings, provider_to_crendentials_type
+from skyagi.constants import ModelProvider
 
 def load_llm_settings_template_from_name(name: str) -> LLMSettings:
     from skyagi.model import provider_templates
@@ -19,21 +21,35 @@ def load_embedding_settings_template_from_name(name: str) -> EmbeddingSettings:
 def load_credentials_into_llm_settings(settings: Settings, llm_settings: LLMSettings) -> LLMSettings:
     new_llm_settings = llm_settings
     provider = llm_settings.provider
-    all_credentials = settings.credentials
-    if provider not in all_credentials or not all_credentials[provider]:
+    all_credentials_dict = settings.credentials.dict()
+    if provider not in all_credentials_dict or not all_credentials_dict[provider]:
         raise ValueError(f"Did not find {provider} credentials in settings, please set them as environment variables, or run 'skyagi config credentials' to config.")
     
     # merge credentials into LLM settings args field
-    new_llm_settings.args.update(**all_credentials[provider])
+    new_llm_settings.args.update(**all_credentials_dict[provider])
     return new_llm_settings
 
 def load_credentials_into_embedding_settings(settings: Settings, embedding_settings: EmbeddingSettings) -> EmbeddingSettings:
     new_embedding_settings = embedding_settings
     provider = embedding_settings.provider
-    all_credentials = settings.credentials
-    if provider not in all_credentials or not all_credentials[provider]:
+    all_credentials_dict = settings.credentials.dict()
+    if provider not in all_credentials_dict or not all_credentials_dict[provider]:
         raise ValueError(f"Did not find {provider} credentials in settings, please set them as environment variables, or run 'skyagi config credentials' to config.")
     
     # merge credentials into LLM settings args field
-    new_embedding_settings.args.update(**all_credentials[provider])
+    new_embedding_settings.args.update(**all_credentials_dict[provider])
     return new_embedding_settings
+
+def get_provider_credentials_fields(provider: ModelProvider) -> list[str]:
+    if provider not in provider_to_crendentials_type:
+        raise ValueError(f"Not registered {provider}")
+    return list(provider_to_crendentials_type.get(provider).__fields__.keys())
+
+def get_provider_credentials(settings: Settings, provider: ModelProvider):
+    all_credentials_dict = get_all_credentials(settings)
+    if provider not in all_credentials_dict or not all_credentials_dict[provider]:
+        raise ValueError(f"Did not find {provider} credentials in settings, please set them as environment variables, or run 'skyagi config credentials' to config.")
+    return all_credentials_dict[provider]
+
+def get_all_credentials(settings: Settings) -> Dict[str, Any]:
+    return settings.credentials.dict()

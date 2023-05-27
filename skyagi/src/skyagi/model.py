@@ -64,6 +64,13 @@ provider_templates: Dict[ModelProvider, ProviderTemplate] = {
     )
 }
 
+def get_all_providers() -> List[str]:
+    """Get all providers"""
+    all_providers = []
+    for provider, template in provider_templates.items():
+        all_providers.append(provider)
+    return all_providers
+
 # ------------------------- LLM/Chat models registry ------------------------- #
 llm_type_to_cls_dict: Dict[str, Type[BaseLanguageModel]] = {
     LLMType.ChatOpenAI: chat_models.ChatOpenAI,
@@ -102,6 +109,11 @@ def load_llm_from_name(name: str):
                 return cls(**llm.args)
     
     raise ValueError(f'Fail to find the {name} LLM from "provider_templates"')
+
+def get_all_llm_settings_by_provider(provider: ModelProvider):
+    if provider not in provider_templates:
+        raise ValueError(f"Not registered {provider}")
+    return list(provider_templates[provider].models.llms)
 
 
 def get_all_llms() -> List[str]:

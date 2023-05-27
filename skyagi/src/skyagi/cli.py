@@ -8,13 +8,97 @@ from rich.console import Console
 from rich.prompt import IntPrompt, Prompt
 
 from skyagi import config, util
+from rich.pretty import pprint
 from skyagi.discord import client
-from skyagi.model import get_all_embeddings, get_all_llms
-from skyagi.settings import Settings, ModelSettings, load_llm_settings_template_from_name, load_embedding_settings_template_from_name, load_credentials_into_llm_settings, load_credentials_into_embedding_settings
+from skyagi.model import get_all_embeddings, get_all_llms, get_all_providers
+from skyagi.settings import Settings, ModelSettings, load_llm_settings_template_from_name, load_embedding_settings_template_from_name, load_credentials_into_llm_settings, load_credentials_into_embedding_settings, get_provider_credentials_fields, get_all_credentials, get_provider_credentials
 from skyagi.skyagi import agi_init, agi_step
 
 cli = typer.Typer()
 console = Console()
+
+#######################################################################################
+# Credentials CLI
+
+credentials_cli = typer.Typer(help="Credentials Management", no_args_is_help=True)
+
+@credentials_cli.command("set")
+def set_credentials():
+    """
+    Configure OpenAI API token
+    """
+    settings = Settings()
+    
+    # Ask which provider to set
+    questions = [
+        inquirer.List(
+            "provider",
+            message="Set which provider's credentials?",
+            choices=get_all_providers(),
+        )
+    ]
+    answers = inquirer.prompt(questions=questions)
+    selected_provider = answers["provider"]
+
+    credentials = get_provider_credentials(settings=settings, provider=selected_provider)
+    
+    # Ask which credential feild to set
+    provider_credentials_fields = get_provider_credentials_fields(provider=selected_provider)
+    provider_credentials_fields.append("Done") # add an exit option
+    
+    while True:
+        # Show provider's credentials 
+        console.print(f"[yellow]{selected_provider} credentials:\n")
+        pprint(credentials, expand_all=True)
+        
+        # Ask which credential field to set
+        questions = [
+            inquirer.List(
+                "credential-field",
+                message="Set which credential field? Select 'Done' to exit",
+                choices=provider_credentials_fields,
+            )
+        ]
+        answers = inquirer.prompt(questions=questions)
+        selected_credential_field = answers["credential-field"]
+        
+        if selected_credential_field == "Done":
+            break
+        
+        # Ask the operation
+        questions = [
+            inquirer.List(
+                "edit-clear",
+                message="Edit or Clear?",
+                choices=["Edit", "Clear"],
+            )
+        ]
+        answers = inquirer.prompt(questions=questions)
+        edit_or_clear = answers["edit-clear"]
+        
+        if edit_or_clear == "Edit":    
+            value = Prompt.ask(prompt=f"Enter your {selected_credential_field}", default=credentials[selected_credential_field]).strip()
+            if bool(value):
+                credentials[selected_credential_field] = value
+        elif edit_or_clear == "Clear":
+            credentials[selected_credential_field] = None
+    
+    verify_resp = util.verify_provider_credentials(provider=selected_provider, credentials=credentials)
+    if verify_resp != "OK":
+        console.print(f"[Error] Provider {selected_provider}'s credentials are invalid", style="red")
+        console.print(verify_resp)
+        return
+    config.set_provider_credentials(provider=selected_provider, credentials=credentials)
+    console.print(f"Provider {selected_provider}'s credentials are configured successfully!", style="green")
+    
+@credentials_cli.command("list")
+def list_credentials():
+    """
+    List all credentials
+    """
+    settings = Settings()
+    console.print("\n[yellow]All credentials:\n")
+    pprint(get_all_credentials(settings), expand_all=True)
 
 #######################################################################################
 # Config CLI
@@ -22,19 +106,19 @@ console = Console()
 config_cli = typer.Typer()
 
 
-@config_cli.command("openai")
-def config_openai():
-    """
-    Configure OpenAI API token
-    """
-    token = Prompt.ask("Enter your OpenAI API token").strip()
-    verify_resp = util.verify_openai_token(token)
-    if verify_resp != "OK":
-        console.print("[Error] OpenAI Token is invalid", style="red")
-        console.print(verify_resp)
-        return
-    config.set_openai_token(token)
-    console.print("OpenAI Key is Configured Successfully!", style="green")
+# @config_cli.command("openai")
+# def config_openai():
+#     """
+#     Configure OpenAI API token
+#     """
+#     token = Prompt.ask("Enter your OpenAI API token").strip()
+#     verify_resp = util.verify_openai_token(token)
+#     if verify_resp != "OK":
+#         console.print("[Error] OpenAI Token is invalid", style="red")
+#         console.print(verify_resp)
+#         return
+#     config.set_openai_token(token)
+#     console.print("OpenAI Key is Configured Successfully!", style="green")
 
 
 @config_cli.command("pinecone")
@@ -78,14 +162,14 @@ def config_main(ctx: typer.Context):
 
     console.print("SkyAGI's Configuration")
 
-    if config.load_openai_token():
-        console.print("OpenAI Token is configured, good job!", style="green")
-    else:
-        console.print(
-            "OpenAI Token not configured yet! This is necessary to use SkyAGI",
-            style="red",
-        )
-        console.print("To config OpenAI token: [yellow]skyagi config openai[/yellow]")
+    # if config.load_openai_token():
+    #     console.print("OpenAI Token is configured, good job!", style="green")
+    # else:
+    #     console.print(
+    #         "OpenAI Token not configured yet! This is necessary to use SkyAGI",
+    #         style="red",
+    #     )
+    #     console.print("To config OpenAI token: [yellow]skyagi config openai[/yellow]")
 
     if config.load_pinecone_token():
         console.print("Pinecone Token is configured, good job!", style="green")
@@ -105,6 +189,7 @@ def config_main(ctx: typer.Context):
         console.print("To config Discord token: [yellow]skyagi config discord[/yellow]")
 
 
+config_cli.add_typer(credentials_cli, name="credentials")
 cli.add_typer(config_cli, name="config")
 
 #######################################################################################
@@ -165,7 +250,6 @@ def run():
     Run SkyAGI
     """
     settings = Settings()
-    breakpoint()
 
     # Ask Model settings
     questions = [
@@ -207,6 +291,7 @@ def run():
         console.print(res, style="red")
         return
     
+    # this model setting will apply to all agents 
     settings.model = ModelSettings(llm=llm_settings, embedding=embedding_settings)
 
     # Get inputs from the user

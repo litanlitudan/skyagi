@@ -62,13 +62,6 @@ class ModelSettings(BaseModel):
 
 class OpenAICredentials(BaseSettings):
     openai_api_key: Optional[str] = Field(default=None, env='OPENAI_API_KEY')
-    openai_api_base: Optional[str]= Field(default=None, env='OPENAI_API_BASE')
-    openai_organization: Optional[str] = Field(default=None, env='OPENAI_ORGANIZATION')
-    
-    # TODO: (kejiez) maybe not needed
-    @classmethod
-    def get_env_keys(cls) -> list[str]:
-        return ["OPENAI_API_KEY", "OPENAI_API_BASE", "OPENAI_ORGANIZATION"]
     
 provider_to_crendentials_type: dict[ModelProvider, Type[BaseModel]] = {
     ModelProvider.OpenAI: OpenAICredentials
