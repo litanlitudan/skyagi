@@ -47,7 +47,7 @@ export class GenerativeAgent {
         const vectorStore = new SupabaseVectorStore(
             new OpenAIEmbeddings(),
             {
-                supabase,
+                client: supabase,
                 tableName: "memory"
             }
         );
@@ -72,8 +72,8 @@ export class GenerativeAgent {
         }
     }
 
-    private fetchMemories(observation: string): Document[] {
-		return this.memoryRetriever.getRelevantDocuments(observation);
+    private async fetchMemories(observation: string): Promise<Document[]> {
+		return await this.memoryRetriever.getRelevantDocuments(observation);
 	}
 
 	private async computeAgentSummary(): Promise<string> {
@@ -84,7 +84,7 @@ export class GenerativeAgent {
 				`Do not embellish.` +
 				`\n\nSummary: `
 		);
-		const relevantMemories = this.fetchMemories(`${this.name}'s core characteristics`);
+		const relevantMemories = await this.fetchMemories(`${this.name}'s core characteristics`);
 		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
 		const chain = new LLMChain({llm: this.llm, prompt});
 		const res = await chain.run({ name: this.name, relatedMemories: relevantMemoriesStr });
@@ -100,13 +100,14 @@ export class GenerativeAgent {
         return res.trim();
 	}
 
-    private getEntityAction(observation: string, entityName: string): string {
+    private async getEntityAction(observation: string, entityName: string): Promise<string> {
 		const prompt = PromptTemplate.fromTemplate(
 			`What is the {entity} doing in the following observation? ${observation}` +
 				`\nThe {entity} is`
 		);
 		const chain = new LLMChain({llm: this.llm, prompt});
-		return chain.run({ entity: entityName, observation: observation }).trim();
+		const res = await chain.run({ entity: entityName, observation: observation });
+        return res.trim();
 	}
 
     private formatMemoriesToSummarize(relevantMemories: Document[]): string {
@@ -148,12 +149,13 @@ export class GenerativeAgent {
 	}
 
     private async summarizeRelatedMemories(observation: string): Promise<string> {
-		const entityName = this.getEntityFromObservation(observation);
+		const entityName = await this.getEntityFromObservation(observation);
 		const entityAction = this.getEntityAction(observation, entityName);
 		const q1 = `What is the relationship between ${this.name} and ${entityName}`;
-		let relevantMemories = this.fetchMemories(q1);
+		let relevantMemories = await this.fetchMemories(q1);
 		const q2 = `${entityName} is ${entityAction}`;
-		relevantMemories.concat(this.fetchMemories(q2));
+        let relevantMemories2 = await this.fetchMemories(q2);
+		relevantMemories.concat(relevantMemories2);
 
 		const contextStr = this.formatMemoriesToSummarize(relevantMemories);
 		const prompt = PromptTemplate.fromTemplate(
@@ -227,7 +229,7 @@ export class GenerativeAgent {
 				`What 5 high-level insights can you infer from the above statements?` +
 				` (example format: insight (because of 1, 5, 3))`
 		);
-		const relatedMemories = this.fetchMemories(topic);
+		const relatedMemories = await this.fetchMemories(topic);
 		const relatedStatements = relatedMemories
 			.map((memory, i) => `${i + 1}. ${memory.pageContent}`)
 			.join('\n');
