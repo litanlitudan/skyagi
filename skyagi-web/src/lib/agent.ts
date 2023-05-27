@@ -362,12 +362,6 @@ export class GenerativeAgent {
             }
 		});
 		const result = this.memoryRetriever.addDocuments([document]);
-        const new_mem: Memory = {
-            content: content,
-        }
- 
-        this.memories.push(new_mem)
-
 		if (
 			this.memoryImportance > this.reflectionThreshold &&
 			this.status !== 'Reflecting'
