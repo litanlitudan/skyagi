@@ -17,7 +17,11 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		recipientAgentModel,
 		message
 	} = await request.json();
-	return new Response(JSON.stringify({"success": 1, "ID": request.json()}), { status: 200 });
+
+	console.log("before")
+	console.log(conversationId, initiateAgentId, initiateAgentModel, recipientAgentId, recipientAgentModel, message);
+	console.log("after")
+	return new Response(JSON.stringify({"success": 1}), { status: 200 });
 
 
 	// get initiate agent name
