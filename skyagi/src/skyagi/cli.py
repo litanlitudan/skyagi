@@ -268,7 +268,7 @@ def run():
     ]
     answers = inquirer.prompt(questions=questions)
 
-    if answers["llm-model"] == "gpt-4":
+    if answers["llm-model"] == "openai-gpt-4":
         console.print(
             "OpenAI GPT4 API is in waitlist, makes sure you are granted access."
             " Check: https://openai.com/waitlist/gpt-4-api",

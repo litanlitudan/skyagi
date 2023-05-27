@@ -27,20 +27,20 @@ provider_templates: Dict[ModelProvider, ProviderTemplate] = {
                 LLMSettings(
                     type=LLMType.ChatOpenAI,
                     provider=ModelProvider.OpenAI,
-                    name="gpt-3.5-turbo",
+                    name="openai-gpt-3.5-turbo",
                     args={"model_name": "gpt-3.5-turbo", "max_tokens": 1500},
                 ),
                 # NOTE: GPT4 is in waitlist
                 LLMSettings(
                     type=LLMType.ChatOpenAI,
                     provider=ModelProvider.OpenAI,
-                    name="gpt-4",
+                    name="openai-gpt-4",
                     args={"model_name": "gpt-4", "max_tokens": 1500},
                 ),
                 LLMSettings(
                     type=LLMType.OpenAI,
                     provider=ModelProvider.OpenAI,
-                    name="text-davinci-003",
+                    name="openai-text-davinci-003",
                     args={"model_name": "text-davinci-003", "max_tokens": 1500},
                 ),
             ],
@@ -48,7 +48,7 @@ provider_templates: Dict[ModelProvider, ProviderTemplate] = {
                 EmbeddingSettings(
                     type=EmbeddingType.OpenAIEmbeddings,
                     provider=ModelProvider.OpenAI,
-                    name="text-embedding-ada-002",
+                    name="openai-text-embedding-ada-002",
                     args={"model": "text-embedding-ada-002"},
                 )
             ],
