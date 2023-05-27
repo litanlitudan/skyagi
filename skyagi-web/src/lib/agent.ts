@@ -57,6 +57,7 @@ export class GenerativeAgent {
             k: 15}
         );
 
+        /*
         // get all memories
         const { data: allMemories } = supabase
             .from('memory')
@@ -70,6 +71,7 @@ export class GenerativeAgent {
         for (const memory of allMemories) {
             this.memoryRetriever.addDocuments(memory.content);
         }
+        */
     }
 
     private async fetchMemories(observation: string): Promise<Document[]> {
@@ -257,6 +259,7 @@ export class GenerativeAgent {
     
     // TODO
     // * cache summary in supabase memory table
+    // * add conversation to the message table
     async generateRspn(observation: string, suffix: string): Promise<string> {
 		const prompt = PromptTemplate.fromTemplate(
 			'{agentSummaryDescription}' +
