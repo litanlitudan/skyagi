@@ -33,14 +33,7 @@ export class GenerativeAgent {
     // * config llm based on the user's request
     constructor(supabase: any, conversationId: string, agentId: string, llm: any) {
         // get agent's profile
-        const { data: profiles } = supabase
-            .from('agent')
-		    .select('name age personality')
-		    .eq('id', agentId);
-        this.id = agentId;
-        this.name = profiles.name;
-        this.age = profiles.age;
-        this.personality = profiles.personality;
+        this.getAgentInfo(supabase, agentId);
         this.llm = new ChatOpenAI();
 
         // create retriever
@@ -59,12 +52,7 @@ export class GenerativeAgent {
 
         /*
         // get all memories
-        const { data: allMemories } = supabase
-            .from('memory')
-		    .select('id content cur_status last_access_time')
-		    .eq('conversation_id', conversationId)
-		    .eq('agent_id', agentId)
-            .order('last_access_time', { ascending: true });
+        allMemories = this.getAgentMemories(supabase, conversationId, agentId);
         this.status = allMemories[allMemories.length - 1].cur_status;
  
         // add all memories to retriever
@@ -72,6 +60,27 @@ export class GenerativeAgent {
             this.memoryRetriever.addDocuments(memory.content);
         }
         */
+    }
+
+    private async getAgentInfo(supabase: any, agentId: string): Promise<void> {
+        const { data: profiles } = await supabase
+            .from('agent')
+		    .select('name age personality')
+		    .eq('id', agentId);
+        this.id = agentId;
+        this.name = profiles.name;
+        this.age = profiles.age;
+        this.personality = profiles.personality;
+    }
+
+    private async getAgentMemories(supabase: any, conversationId: string, agentId: string): Promise<object[]> {
+        const { data: allMemories } = await supabase
+            .from('memory')
+		    .select('id content cur_status last_access_time')
+		    .eq('conversation_id', conversationId)
+		    .eq('agent_id', agentId)
+            .order('last_access_time', { ascending: true });
+        return allMemories;
     }
 
     private async fetchMemories(observation: string): Promise<Document[]> {
