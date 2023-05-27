@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from langchain.prompts.chat import ChatPromptTemplate, HumanMessagePromptTemplate
+from openai.error import AuthenticationError
 
 from skyagi.constants import ModelProvider
 from skyagi.model import (
@@ -57,11 +58,13 @@ def verify_llm_initialization(llm_settings: LLMSettings) -> str:
                 ).format_prompt(text="ping")
             ]
         )
-    except Exception as e:
+    except AuthenticationError:
         return (
-            f"LLM initialization check failed: {e}. This can happen if provider {llm_settings.provider}'s "
-            f"credentials are invalid, set the valid ones by running `skyagi config credentials set`"
+            f"This can happen if provider {llm_settings.provider}'s credentials are invalid,"
+            f"set the valid ones by running `skyagi config credentials set`"
         )
+    except Exception as e:
+        return f"LLM initialization check failed: {repr(e)}."
 
     return "OK"
 

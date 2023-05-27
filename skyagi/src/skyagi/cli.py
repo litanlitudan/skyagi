@@ -109,7 +109,7 @@ def set_credentials():
             f"[Error] Provider {selected_provider}'s credentials are invalid",
             style="red",
         )
-        console.print(verify_resp)
+        console.print(verify_resp, style="yellow")
         return
     config.set_provider_credentials(provider=selected_provider, credentials=credentials)
     console.print(
