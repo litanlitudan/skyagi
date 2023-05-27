@@ -36,6 +36,7 @@ export class GenerativeAgent {
         this.getAgentInfo(supabase, agentId);
         this.llm = new ChatOpenAI();
 
+        /*
         // create retriever
         const vectorStore = new SupabaseVectorStore(
             new OpenAIEmbeddings(),
@@ -50,7 +51,6 @@ export class GenerativeAgent {
             k: 15}
         );
 
-        /*
         // get all memories
         allMemories = this.getAgentMemories(supabase, conversationId, agentId);
         this.status = allMemories[allMemories.length - 1].cur_status;
@@ -71,6 +71,7 @@ export class GenerativeAgent {
         this.name = profiles.name;
         this.age = profiles.age;
         this.personality = profiles.personality;
+        console.log(this.id, this.name, this.age, this.personality)
     }
 
     private async getAgentMemories(supabase: any, conversationId: string, agentId: string): Promise<object[]> {
