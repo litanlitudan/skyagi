@@ -24,7 +24,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.select('name')
 		.eq('id', initiateAgentId);
 
-	return new Response(JSON.stringify({"success": 1, "AgentName": initiateAgentName}), { status: 200 });
+	return new Response(JSON.stringify({"success": 1, "AgentName": initiateAgentName, "ID": initiateAgentId}), { status: 200 });
 
 	// create recipient agent
 	const agent = new GenerativeAgent(locals.supabase, conversationId, recipientAgentId, recipientAgentModel);
@@ -35,7 +35,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		`What would ${agent.name} say? To end the conversation, ` +
 		`write: GOODBYE: "what to say". Otherwise to continue the conversation, write: SAY: "what to say next"\n\n`;
 
-	const fullResult = agent.generateRspn(newMessage, callToActionTemplate);
+	const fullResult = await agent.generateRspn(newMessage, callToActionTemplate);
 	const result = fullResult.trim().split('\n')[0];
 
 	var respMsg: string = "";
