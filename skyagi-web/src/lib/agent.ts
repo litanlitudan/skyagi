@@ -17,9 +17,10 @@ function parseList(text: string): string[] {
 interface MemoryMetadata {
   conversation_id: string;
   agent_id: string;
+  create_time: string;
   last_access_time: string;
   cur_status: string;
-  score: number;
+  importance: number;
 }
 
 interface Memory {
@@ -46,7 +47,6 @@ export class GenerativeAgent {
 
     // TODO:
     // * support embeddings from different LLM models
-    // * may define our own queryfunction
     // * standardize sql query later
     // * config llm based on the user's request
     constructor(supabase: any, conversationId: string, agentId: string, llm: any) {
@@ -109,13 +109,14 @@ export class GenerativeAgent {
 		    .select('id content metadata')
 		    .eq('metadata:conversation_id', conversationId)
 		    .eq('metadata:agent_id', agentId)
-            .order('metadata:last_access_time', { ascending: true });
+            .order('metadata:create_time', { ascending: true });
         this.memories = allMemories;
         this.status = this.memories[this.memories.length - 1].metadata.cur_status;
     }
 
     private async fetchMemories(observation: string): Promise<Document[]> {
 		return await this.memoryRetriever.getRelevantDocuments(observation);
+        // TODO: need to update the relevant doc last_access_time
 	}
 
 	private async computeAgentSummary(): Promise<string> {
@@ -213,16 +214,16 @@ export class GenerativeAgent {
 		const result: string[] = [];
 
         // Todo: figure out how to work around memoryStream retrieval
-		for (const doc of this.memoryRetriever.memoryStream.slice().reverse()) {
+		for (const doc of this.memories.slice().reverse()) {
 			if (consumedTokens >= this.maxTokensLimit) {
 				break;
 			}
             
-            const ntokens = await this.llm.getNumTokens(doc.pageContent);
+            const ntokens = await this.llm.getNumTokens(doc.content);
             consumedTokens += ntokens;
 
 			if (consumedTokens < this.maxTokensLimit) {
-				result.push(doc.pageContent);
+				result.push(doc.content);
 			}
 		}
 
@@ -258,8 +259,8 @@ export class GenerativeAgent {
 				` Provide each question on a new line.\n\n`
 		);
 		const reflectionChain = new LLMChain({llm : this.llm, prompt});
-		const observations = this.memoryRetriever.memoryStream.slice(-lastK);
-		const observationStr = observations.map(o => o.pageContent).join('\n');
+		const observations = this.memories.slice(-lastK);
+		const observationStr = observations.map(o => o.content).join('\n');
 		const result = await reflectionChain.run({ observations: observationStr });
         const ress = parseList(result);
         return [ress[0], ress[1], ress[2]];
@@ -299,7 +300,7 @@ export class GenerativeAgent {
     
     // TODO
     // * cache summary in supabase memory table
-    // * add conversation to the message table
+    // * add conversation to table message
     async generateRspn(observation: string, suffix: string): Promise<string> {
 		const prompt = PromptTemplate.fromTemplate(
 			'{agentSummaryDescription}' +
@@ -344,24 +345,35 @@ export class GenerativeAgent {
 		return result.trim();
 	}
 
-    // TODO
-    // * need to add memory to vectorStore. Not sure if memoryRetriever would
-    // do it automatically.
-    // * If so, how to let the retriever know the schema of the table.
     async addMemory(content: string): Promise<void> {
         const importanceScore = await this.scoreMemoryImportance(content);
 		this.memoryImportance += importanceScore;
+        const nowTime = new Date().toISOString();
 		const document = new Document({
 			pageContent: content,
 			metadata: { 
                 conversation_id: this.conv_id,
                 agent_id: this.id,
-                last_access_time: new Date().toISOString(),
+                create_time: nowTime, 
+                last_access_time: nowTime,
                 cur_status: this.status,
-                score: importanceScore
+                importance: importanceScore
             }
 		});
 		const result = this.memoryRetriever.addDocuments([document]);
+        const new_mem: Memory = {
+            id: "",
+            content: content,
+            metadata: {
+                conversation_id: this.conv_id,
+                agent_id: this.id,
+                create_time: nowTime,
+                last_access_time: nowTime,
+                cur_status: this.status,
+                importance: importanceScore
+            }
+        }
+        this.memories.push(new_mem);
 		if (
 			this.memoryImportance > this.reflectionThreshold &&
 			this.status !== 'Reflecting'
