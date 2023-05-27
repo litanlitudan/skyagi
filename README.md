@@ -34,21 +34,37 @@ make install
 
 How to run
 
+Make sure the model provider's credentials are provided correctly, e.g. `OPENAI_API_KEY` for OpenAI models.
+
+To check all configured credentials:
 ```sh
-export OPENAI_API_KEY="..."
-skyagi
-# or
-OPENAI_API_KEY="..." skyagi
+skyagi config credentials list
 ```
 
-For example if the OpenAI key is `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`, then the exact command would be the following
+To set credentials:
+```sh
+skyagi config credentials set
+```
 
+Or the credentials can also be provided by environment variables:
+```sh
+export OPENAI_API_KEY="..."
+```
+
+For example if the OpenAI key is `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`, then the exact command would be the following:
 ```sh
 # make sure no quote around the token
 export OPENAI_API_KEY=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
+```
+
+
+
+Credentials are read from `~/.skyagi/config.json` and environment variables, if both are provided, the ones in `config.json` file will
+have higher priority and override the ones set by environment variables.
+
+Once credentials are provided, run the skyagi:
+```sh
 skyagi
-# or
-OPENAI_API_KEY=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 skyagi
 ```
 
 To use example agent configs, download it from here: https://github.com/litanlitudan/skyagi/tree/main/examples
