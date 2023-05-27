@@ -134,21 +134,6 @@ def list_credentials():
 config_cli = typer.Typer()
 
 
-# @config_cli.command("openai")
-# def config_openai():
-#     """
-#     Configure OpenAI API token
-#     """
-#     token = Prompt.ask("Enter your OpenAI API token").strip()
-#     verify_resp = util.verify_openai_token(token)
-#     if verify_resp != "OK":
-#         console.print("[Error] OpenAI Token is invalid", style="red")
-#         console.print(verify_resp)
-#         return
-#     config.set_openai_token(token)
-#     console.print("OpenAI Key is Configured Successfully!", style="green")
-
-
 @config_cli.command("pinecone")
 def config_pinecone():
     """

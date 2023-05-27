@@ -30,6 +30,7 @@ provider_templates: Dict[ModelProvider, ProviderTemplate] = {
                     name="gpt-3.5-turbo",
                     args={"model_name": "gpt-3.5-turbo", "max_tokens": 1500},
                 ),
+                # NOTE: GPT4 is in waitlist
                 LLMSettings(
                     type=LLMType.ChatOpenAI,
                     provider=ModelProvider.OpenAI,
