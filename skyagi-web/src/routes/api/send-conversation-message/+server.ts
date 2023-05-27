@@ -10,51 +10,51 @@ export const config: Config = {
 
 export const PUT = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
 	const {
-		conversation_id,
-		initiate_agent_id,
-		initiate_agent_model,
-		recipient_agent_id,
-		recipient_agent_model,
+		conversationId,
+		initiateAgentId,
+		initiateAgentModel,
+		recipientAgentId,
+		recipientAgentModel,
 		message
 	} = await request.json();
 
 	// get initiate agent name
-	const { data: initiate_agent_name } = await locals.supabase
+	const { data: initiateAgentName } = await locals.supabase
 		.from('agent')
 		.select('name')
-		.eq('id', initiate_agent_id);
+		.eq('id', initiateAgentId);
 
 	// create recipient agent
-	const agent = new GenerativeAgent(locals.supabase, conversation_id, recipient_agent_id, recipient_agent_model);
+	const agent = new GenerativeAgent(locals.supabase, conversationId, recipientAgentId, recipientAgentModel);
 
 	// get reaction
-	const new_message = `${initiate_agent_name} says ${message}`;
-	const call_to_action_template =
+	const newMessage = `${initiateAgentName} says ${message}`;
+	const callToActionTemplate =
 		`What would ${agent.name} say? To end the conversation, ` +
 		`write: GOODBYE: "what to say". Otherwise to continue the conversation, write: SAY: "what to say next"\n\n`;
 
-	const full_result = agent.generateRspn(new_message, call_to_action_template);
-	const result = full_result.trim().split('\n')[0];
+	const fullResult = agent.generateRspn(newMessage, callToActionTemplate);
+	const result = fullResult.trim().split('\n')[0];
 
-	var resp_msg: string = "";
-	var if_continue: boolean = false;
+	var respMsg: string = "";
+	var ifContinue: boolean = false;
 	if (result.includes('GOODBYE:')) {
-		resp_msg = result.split('GOODBYE:').pop()!.trim();
-		if_continue = false;
+		respMsg = result.split('GOODBYE:').pop()!.trim();
+		ifContinue = false;
 	} else if (result.includes('SAY:')) {
-		resp_msg = result.split('SAY:').pop()!.trim();
-		if_continue = true;
+		respMsg = result.split('SAY:').pop()!.trim();
+		ifContinue = true;
 	}
 
 	// update recipient agent memory
-	agent.addMemory(`${agent.name} observed ${new_message} and said ${resp_msg}`);
+	agent.addMemory(`${agent.name} observed ${newMessage} and said ${respMsg}`);
 
 	// return
 	const resp = {
 		'success': 1,
 		'resp_msg': {
-			'if_continue': if_continue,
-			'message': resp_msg
+			'if_continue': ifContinue,
+			'message': respMsg
 		}
 	}
 	return new Response(JSON.stringify(resp), { status: 200 });

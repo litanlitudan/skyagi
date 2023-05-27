@@ -29,12 +29,12 @@ export class GenerativeAgent {
     // * may define our own queryfunction
     // * standardize sql query later
     // * get the llm for the agent
-    constructor(supabase: any, conversation_id: string, agent_id: string, llm: string) {
+    constructor(supabase: any, conversationId: string, agentId: string, llm: string) {
         // get agent's profile
         const { data: profiles } = supabase
             .from('agent')
 		    .select('id name age personality')
-		    .eq('id', agent_id);
+		    .eq('id', agentId);
         this.id = profiles.id;
         this.name = profiles.name;
         this.age = profiles.age;
@@ -58,8 +58,8 @@ export class GenerativeAgent {
         const { data: allMemories } = supabase
             .from('memory')
 		    .select('id content cur_status last_access_time')
-		    .eq('conversation_id', conversation_id)
-		    .eq('agent_id', agent_id)
+		    .eq('conversation_id', conversationId)
+		    .eq('agent_id', agentId)
             .order('last_access_time', { ascending: true });
         this.status = allMemories[allMemories.length - 1].cur_status;
  
@@ -81,10 +81,10 @@ export class GenerativeAgent {
 				`Do not embellish.` +
 				`\n\nSummary: `
 		);
-		const relevant_memories = this.fetchMemories(`${this.name}'s core characteristics`);
-		const relevant_memories_str = relevant_memories.map(mem => mem.pageContent).join('\n');
+		const relevantMemories = this.fetchMemories(`${this.name}'s core characteristics`);
+		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
 		const chain = LLMChain(this.llm, prompt);
-		return chain.run({ name: this.name, related_memories: relevant_memories_str }).trim();
+		return chain.run({ name: this.name, relatedMemories: relevantMemoriesStr }).trim();
 	}
 
     private getEntityFromObservation(observation: string): string {
@@ -95,27 +95,27 @@ export class GenerativeAgent {
 		return chain.run({ observation: observation }).trim();
 	}
 
-    private getEntityAction(observation: string, entity_name: string): string {
+    private getEntityAction(observation: string, entityName: string): string {
 		const prompt = PromptTemplate.fromTemplate(
 			`What is the {entity} doing in the following observation? ${observation}` +
 				`\nThe {entity} is`
 		);
 		const chain = LLMChain({llm: this.llm, prompt});
-		return chain.run({ entity: entity_name, observation: observation }).trim();
+		return chain.run({ entity: entityName, observation: observation }).trim();
 	}
 
-    private formatMemoriesToSummarize(relevant_memories: Document[]): string {
-		const content_strs = new Set<string>();
+    private formatMemoriesToSummarize(relevantMemories: Document[]): string {
+		const contentStrs = new Set<string>();
 		const content: string[] = [];
 
-		for (const mem of relevant_memories) {
-			if (content_strs.has(mem.pageContent)) {
+		for (const mem of relevantMemories) {
+			if (contentStrs.has(mem.pageContent)) {
 
 				continue;
 			}
 
-			content_strs.add(mem.pageContent);
-			const created_time = mem.metadata.created_at.toLocaleString('en-US', {
+			contentStrs.add(mem.pageContent);
+			const createdTime = mem.metadata.createdAt.toLocaleString('en-US', {
 				month: 'long',
 				day: 'numeric',
 				year: 'numeric',
@@ -124,7 +124,7 @@ export class GenerativeAgent {
 				hour12: true
 			});
 
-			content.push(`- ${created_time}: ${mem.pageContent.trim()}`);
+			content.push(`- ${createdTime}: ${mem.pageContent.trim()}`);
 		}
 
 		return content.join('\n');
@@ -132,7 +132,7 @@ export class GenerativeAgent {
 
     // TODO
     // * cache summary in supabase memory table
-	private getSummary(force_refresh: boolean = false): string {
+	private getSummary(forceRefresh: boolean = false): string {
 		let summary = this.computeAgentSummary();
 
 		return (
@@ -143,52 +143,52 @@ export class GenerativeAgent {
 	}
 
     private summarizeRelatedMemories(observation: string): string {
-		const entity_name = this.getEntityFromObservation(observation);
-		const entity_action = this.getEntityAction(observation, entity_name);
-		const q1 = `What is the relationship between ${this.name} and ${entity_name}`;
-		let relevant_memories = this.fetchMemories(q1);
-		const q2 = `${entity_name} is ${entity_action}`;
-		relevant_memories.concat(this.fetchMemories(q2));
+		const entityName = this.getEntityFromObservation(observation);
+		const entityAction = this.getEntityAction(observation, entityName);
+		const q1 = `What is the relationship between ${this.name} and ${entityName}`;
+		let relevantMemories = this.fetchMemories(q1);
+		const q2 = `${entityName} is ${entityAction}`;
+		relevantMemories.concat(this.fetchMemories(q2));
 
-		const context_str = this.formatMemoriesToSummarize(relevant_memories);
+		const contextStr = this.formatMemoriesToSummarize(relevantMemories);
 		const prompt = PromptTemplate.fromTemplate(
-			`${q1}?\nContext from memory:\n${context_str}\nRelevant context: `
+			`${q1}?\nContext from memory:\n${contextStr}\nRelevant context: `
 		);
 
 		const chain = LLMChain({llm: this.llm, prompt});
-		return chain.run({ q1: q1, context_str: context_str.trim() }).trim();
+		return chain.run({ q1: q1, contextStr: contextStr.trim() }).trim();
 	}
 
-    private getMemoriesUntilLimit(consumed_tokens: number): string {
+    private getMemoriesUntilLimit(consumedTokens: number): string {
 		const result: string[] = [];
 
-		for (const doc of this.memoryRetriever.memory_stream.slice().reverse()) {
-			if (consumed_tokens >= this.maxTokensLimit) {
+		for (const doc of this.memoryRetriever.memoryStream.slice().reverse()) {
+			if (consumedTokens >= this.maxTokensLimit) {
 				break;
 			}
 
-			consumed_tokens += this.llm.getNumTokens(doc.page_content);
+			consumedTokens += this.llm.getNumTokens(doc.pageContent);
 
-			if (consumed_tokens < this.maxTokensLimit) {
-				result.push(doc.page_content);
+			if (consumedTokens < this.maxTokensLimit) {
+				result.push(doc.pageContent);
 			}
 		}
 
 		return result.reverse().join('; ');
 	}
 
-    private scoreMemoryImportance(memory_content: string, weight: number = 0.15): number {
+    private scoreMemoryImportance(memoryContent: string, weight: number = 0.15): number {
 		const prompt = PromptTemplate.fromTemplate(
 			`On the scale of 1 to 10, where 1 is purely mundane` +
 				` (e.g., brushing teeth, making bed) and 10 is` +
 				` extremely poignant (e.g., a break up, college` +
 				` acceptance), rate the likely poignancy of the` +
 				` following piece of memory. Respond with a single integer.` +
-				`\nMemory: {memory_content}` +
+				`\nMemory: {memoryContent}` +
 				`\nRating: `
 		);
 		const chain = LLMChain({llm : this.llm, prompt});
-		const score = chain.run({ memory_content: memory_content }).trim();
+		const score = chain.run({ memoryContent: memoryContent }).trim();
 		const match = score.match(/^\D*(\d+)/);
 		if (match) {
 			return (parseFloat(match[1]) / 10) * weight;
@@ -197,17 +197,17 @@ export class GenerativeAgent {
 		}
 	}
 
-    private getTopicsOfReflection(last_k: number = 50): [string, string, string] {
+    private getTopicsOfReflection(lastK: number = 50): [string, string, string] {
 		const prompt = PromptTemplate.fromTemplate(
 			`{observations}\n\n` +
 				`Given only the information above, what are the 3 most salient` +
 				` high-level questions we can answer about the subjects in the statements?` +
 				` Provide each question on a new line.\n\n`
 		);
-		const reflection_chain = LLMChain({llm : this.llm, prompt});
-		const observations = this.memoryRetriever.memoryStream.slice(-last_k);
-		const observation_str = observations.map(o => o.pageContent).join('\n');
-		const result = reflection_chain.run({ observations: observation_str });
+		const reflectionChain = LLMChain({llm : this.llm, prompt});
+		const observations = this.memoryRetriever.memoryStream.slice(-lastK);
+		const observationStr = observations.map(o => o.pageContent).join('\n');
+		const result = reflectionChain.run({ observations: observationStr });
         const ress = parseList(result);
         return [ress[0], ress[1], ress[2]];
 	}
@@ -215,53 +215,53 @@ export class GenerativeAgent {
     private getInsightsOnTopic(topic: string): string[] {
 		const prompt = PromptTemplate.fromTemplate(
 			`Statements about ${topic}\n` +
-				`{related_statements}\n\n` +
+				`{relatedStatements}\n\n` +
 				`What 5 high-level insights can you infer from the above statements?` +
 				` (example format: insight (because of 1, 5, 3))`
 		);
-		const related_memories = this.fetchMemories(topic);
-		const related_statements = related_memories
-			.map((memory, i) => `${i + 1}. ${memory.page_content}`)
+		const relatedMemories = this.fetchMemories(topic);
+		const relatedStatements = relatedMemories
+			.map((memory, i) => `${i + 1}. ${memory.pageContent}`)
 			.join('\n');
-		const reflection_chain = LLMChain(
+		const reflectionChain = LLMChain(
 			{llm : this.llm, prompt}
 		);
-		const result = reflection_chain.run({ topic: topic, related_statements: related_statements });
+		const result = reflectionChain.run({ topic: topic, relatedStatements: relatedStatements });
 		// TODO: Parse the connections between memories and insights
 		return parseList(result);
 	}
 
     private pauseToReflect(): string[] {
-		const new_insights: string[] = [];
+		const newInsights: string[] = [];
 		const topics = this.getTopicsOfReflection();
 		for (const topic of topics) {
 			const insights = this.getInsightsOnTopic(topic);
 			for (const insight of insights) {
 				this.addMemory(insight);
 			}
-			new_insights.push(...insights);
+			newInsights.push(...insights);
 		}
-		return new_insights;
+		return newInsights;
 	}
     
     // TODO
     // * cache summary in supabase memory table
     generateRspn(observation: string, suffix: string): string {
 		const prompt = PromptTemplate.fromTemplate(
-			'{agent_summary_description}' +
-				'\nIt is {current_time}.' +
-				"\n{agent_name}'s status: {agent_status}" +
-				"\nSummary of relevant context from {agent_name}'s memory:" +
-				'\n{relevant_memories}' +
-				'\nMost recent observations: {recent_observations}' +
+			'{agentSummaryDescription}' +
+				'\nIt is {currentTime}.' +
+				"\n{agentName}'s status: {agentStatus}" +
+				"\nSummary of relevant context from {agentName}'s memory:" +
+				'\n{relevantMemories}' +
+				'\nMost recent observations: {recentObservations}' +
 				'\nObservation: {observation}' +
 				'\n\n' +
 				suffix
 		);
 
-		const agent_summary_description = this.getSummary();
-		const relevant_memories_str = this.summarizeRelatedMemories(observation);
-		const current_time_str = new Date().toLocaleString('en-US', {
+		const agentSummaryDescription = this.getSummary();
+		const relevantMemoriesStr = this.summarizeRelatedMemories(observation);
+		const currentTimeStr = new Date().toLocaleString('en-US', {
 			month: 'long',
 			day: 'numeric',
 			year: 'numeric',
@@ -271,31 +271,35 @@ export class GenerativeAgent {
 		});
 
 		let kwargs = {
-			agent_summary_description,
-			current_time: current_time_str,
-			relevant_memories: relevant_memories_str,
-			agent_name: this.name,
+			agentSummaryDescription,
+			currentTime: currentTimeStr,
+			relevantMemories: relevantMemoriesStr,
+			agentName: this.name,
 			observation,
-			agent_status: this.status,
-            recent_observations: ""
+			agentStatus: this.status,
+            recentObservations: ""
 		};
 
-		const consumed_tokens = this.llm.getNumTokens(
+		const consumedTokens = this.llm.getNumTokens(
 			prompt.format({...kwargs })
 		);
-		kwargs.recent_observations = this.getMemoriesUntilLimit(consumed_tokens);
+		kwargs.recentObservations = this.getMemoriesUntilLimit(consumedTokens);
 
-		const action_prediction_chain = LLMChain({ llm: this.llm, prompt });
-		const result = action_prediction_chain.run(kwargs);
+		const actionPredictionChain = LLMChain({ llm: this.llm, prompt });
+		const result = actionPredictionChain.run(kwargs);
 		return result.trim();
 	}
 
+    // TODO
+    // * need to add memory to vectorStore. Not sure if memoryRetriever would
+    // do it automatically.
+    // * If so, how to let the retriever know the schema of the table.
     addMemory(content: string): void {
-        const importance_score = this.scoreMemoryImportance(content);
-		this.memoryImportance += importance_score;
+        const importanceScore = this.scoreMemoryImportance(content);
+		this.memoryImportance += importanceScore;
 		const document = new Document({
 			pageContent: content,
-			metadata: { importance: importance_score }
+			metadata: { importance: importanceScore }
 		});
 		const result = this.memoryRetriever.addDocuments([document]);
 
@@ -303,11 +307,11 @@ export class GenerativeAgent {
 			this.memoryImportance > this.reflectionThreshold &&
 			this.status !== 'Reflecting'
 		) {
-			const old_status = this.status;
+			const oldStatus = this.status;
 			this.status = 'Reflecting';
 			this.pauseToReflect();
 			this.memoryImportance = 0.0;
-			this.status = old_status;
+			this.status = oldStatus;
 		}
 
 		return result;        
