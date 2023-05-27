@@ -10,16 +10,16 @@ export const config: Config = {
 
 export const PUT = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
 	const {
-		conversationId,
-		initiateAgentId,
-		initiateAgentModel,
-		recipientAgentId,
-		recipientAgentModel,
+		conversation_id,
+		initiate_agent_id,
+		initiate_agent_model,
+		recipient_agent_id,
+		recipient_agent_model,
 		message
 	} = await request.json();
 
 	console.log("before")
-	console.log(conversationId, initiateAgentId, initiateAgentModel, recipientAgentId, recipientAgentModel, message);
+	console.log(conversation_id, initiate_agent_id, initiate_agent_model, recipient_agent_id, recipient_agent_model, message);
 	console.log("after")
 	return new Response(JSON.stringify({"success": 1}), { status: 200 });
 
@@ -28,12 +28,12 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	const { data: initiateAgentName } = await locals.supabase
 		.from('agent')
 		.select('name')
-		.eq('id', initiateAgentId);
+		.eq('id', initiate_agent_id);
 
-	return new Response(JSON.stringify({"success": 1, "AgentName": initiateAgentName, "ID": initiateAgentId}), { status: 200 });
+	return new Response(JSON.stringify({"success": 1, "AgentName": initiateAgentName, "ID": initiate_agent_id}), { status: 200 });
 
 	// create recipient agent
-	const agent = new GenerativeAgent(locals.supabase, conversationId, recipientAgentId, recipientAgentModel);
+	const agent = new GenerativeAgent(locals.supabase, conversation_id, recipient_agent_id, recipient_agent_model);
 
 	// get reaction
 	const newMessage = `${initiateAgentName} says ${message}`;
