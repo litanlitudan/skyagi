@@ -51,6 +51,12 @@ export class GenerativeAgent {
     // * config llm based on the user's request
     constructor(supabase: any, conversationId: string, agentId: string, llm: any) {
         // get agent's profile
+        this.name = "B";
+        this.id = agentId;
+        this.age = 70;
+        this.personality = "careful"; 
+
+        /*
         this.getAgentInfo(supabase, agentId);
         this.conv_id = conversationId;
         this.llm = new ChatOpenAI();
@@ -66,6 +72,10 @@ export class GenerativeAgent {
         );
 
         this.memoryRetriever =  vectorStore.asRetriever();
+        // get memories
+        this.getAgentMemories(supabase, conversationId, agentId);
+        */
+
 
         /*
         this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
@@ -75,9 +85,6 @@ export class GenerativeAgent {
         );
         */
 
-        // get memories
-        this.getAgentMemories(supabase, conversationId, agentId);
- 
         /*
         // Do I need to add all memories to retriever? -> don't think so
         for (const memory of allMemories) {
