@@ -49,15 +49,18 @@ export class GenerativeAgent {
     // * support embeddings from different LLM models
     // * standardize sql query later
     // * config llm based on the user's request
-    constructor(supabase: any, conversationId: string, agentId: string, llm: any) {
+    async setup(supabase: any, conversationId: string, agentId: string, llm: any): Promise<void> {
         // get agent's profile
-        this.name = "B";
+        const { data: profiles } = await supabase
+            .from('agent')
+		    .select('name age personality')
+		    .eq('id', agentId);
         this.id = agentId;
-        this.age = 70;
-        this.personality = "careful"; 
+        this.name = profiles.name;
+        this.age = profiles.age;
+        this.personality = profiles.personality;
 
         /*
-        this.getAgentInfo(supabase, agentId);
         this.conv_id = conversationId;
         this.llm = new ChatOpenAI();
 
@@ -96,18 +99,6 @@ export class GenerativeAgent {
             this.memoryRetriever.addDocuments([doc]);
         }
         */
-    }
-
-    private async getAgentInfo(supabase: any, agentId: string): Promise<void> {
-        const { data: profiles } = await supabase
-            .from('agent')
-		    .select('name age personality')
-		    .eq('id', agentId);
-        this.id = agentId;
-        this.name = profiles.name;
-        this.age = profiles.age;
-        this.personality = profiles.personality;
-        console.log(this.id, this.name, this.age, this.personality)
     }
 
     private async getAgentMemories(supabase: any, conversationId: string, agentId: string): Promise<void> {
