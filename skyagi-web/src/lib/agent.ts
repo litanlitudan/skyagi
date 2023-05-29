@@ -112,6 +112,7 @@ export class GenerativeAgent {
             .order('metadata:create_time', { ascending: true });
         this.memories = allMemories;
         this.status = this.memories[this.memories.length - 1].metadata.cur_status;
+        console.log(this.memories.length)
     }
 
     private async fetchMemories(observation: string): Promise<Document[]> {
