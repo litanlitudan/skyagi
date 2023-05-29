@@ -49,7 +49,7 @@ export class GenerativeAgent {
     // * support embeddings from different LLM models
     // * standardize sql query later
     // * config llm based on the user's request
-    async setup(supabase: any, conversationId: string, agentId: string, llm: any): Promise<void> {
+    async setup(supabase: any, conversationId: string, agentId: string, llm: any): Promise<any> {
         // get agent's profile
         const { data: profiles } = await supabase
             .from('agent')
@@ -59,6 +59,13 @@ export class GenerativeAgent {
         this.name = profiles.name;
         this.age = profiles.age;
         this.personality = profiles.personality;
+        const res = {
+            "name": profiles.name,
+            "age": profiles.age,
+            "id": agentId,
+            "personality": profiles.personality
+        };
+        return res;
 
         /*
         this.conv_id = conversationId;
