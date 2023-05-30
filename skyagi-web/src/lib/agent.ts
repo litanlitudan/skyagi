@@ -76,7 +76,7 @@ export class GenerativeAgent {
         this.memoryRetriever =  vectorStore.asRetriever();
         /*
         // get memories
-        this.getAgentMemories(supabase, conversationId, agentId);
+        await this.getAgentMemories(supabase, conversationId, agentId);
         */
 
         /*
@@ -100,7 +100,7 @@ export class GenerativeAgent {
         */
     }
 
-    async getAgentMemories(supabase: any, conversationId: string, agentId: string): Promise<any> {
+    async getAgentMemories(supabase: any, conversationId: string, agentId: string): Promise<void> {
 
         /*
         const { data: allMemories } = await supabase
@@ -116,11 +116,13 @@ export class GenerativeAgent {
 		.contains('metadata',{"conversation_id": conversationId})
 		.contains('metadata',{"agent_id": agentId})
         .order('metadata->create_time', { ascending: true });
-        //this.memories = allMemories;
+        this.memories = allMemories;
+        /*
         if (allMemories === undefined) {
             return {"convID": conversationId, "agentID": agentId}; 
         }
         return allMemories;
+        */
         //this.status = this.memories[this.memories.length - 1].metadata.cur_status;
     }
 
