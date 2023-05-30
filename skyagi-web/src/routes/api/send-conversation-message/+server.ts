@@ -26,9 +26,9 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
     const { data: profiles } = await locals.supabase
             .from('agent')
-		    .select('name')
+		    .select('name, age, personality')
 		    .eq('id', recipient_agent_id);
-    const tname = profiles;
+    const tname = profiles.name;
     //const tage = profiles.age;
     //const tpersonality = profiles.personality;
 	return new Response(JSON.stringify({"success": 1, "RecAgentName": tname}), { status: 200 });
