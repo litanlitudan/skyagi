@@ -10,11 +10,11 @@ from langchain.prompts.chat import (
     HumanMessagePromptTemplate,
     SystemMessagePromptTemplate,
 )
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.vectorstores import FAISS
 
 from skyagi.context import Context
 from skyagi.model import load_embedding_from_config
+from skyagi.retriever import Retriever
 from skyagi.simulation.agent import GenerativeAgent
 
 
@@ -47,8 +47,8 @@ def create_new_memory_retriever(ctx: Context):
         {},
         relevance_score_fn=relevance_score_fn,
     )
-    return TimeWeightedVectorStoreRetriever(
-        vectorstore=vectorstore, other_score_keys=["importance"], k=15
+    return Retriever(
+        vectorstore=vectorstore, other_score_keys=["importance"], k=15, embedding_model=embeddings_model
     )
 
 
