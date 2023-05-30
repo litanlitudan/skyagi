@@ -53,7 +53,7 @@ export class GenerativeAgent {
         // get agent's profile
         const { data: profiles } = await supabase
             .from('agent')
-		    .select('name age personality')
+		    .select('name, age, personality')
 		    .eq('id', agentId);
         this.id = agentId;
         this.name = profiles.name;
@@ -111,7 +111,7 @@ export class GenerativeAgent {
     private async getAgentMemories(supabase: any, conversationId: string, agentId: string): Promise<void> {
         const { data: allMemories } = await supabase
             .from('memory')
-		    .select('id content metadata')
+		    .select('id, content, metadata')
 		    .eq('metadata:conversation_id', conversationId)
 		    .eq('metadata:agent_id', agentId)
             .order('metadata:create_time', { ascending: true });
