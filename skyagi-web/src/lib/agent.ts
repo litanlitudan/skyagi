@@ -117,7 +117,7 @@ export class GenerativeAgent {
         .order('metadata->create_time', { ascending: true });
         //this.memories = allMemories;
         if (allMemories === undefined) {
-            return {}; 
+            return {"convID": conversationId, "agentID": agentId}; 
         } else {
             return {"message": "here"};
         }
