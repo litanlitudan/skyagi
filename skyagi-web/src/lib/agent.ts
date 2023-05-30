@@ -63,6 +63,7 @@ export class GenerativeAgent {
         this.conv_id = conversationId;
         this.llm = new ChatOpenAI();
 
+        /*
         // create retriever
         const vectorStore = new SupabaseVectorStore(
             new OpenAIEmbeddings(),
@@ -76,6 +77,7 @@ export class GenerativeAgent {
         this.memoryRetriever =  vectorStore.asRetriever();
         // get memories
         this.getAgentMemories(supabase, conversationId, agentId);
+        */
 
         /*
         this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
