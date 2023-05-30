@@ -60,7 +60,6 @@ export class GenerativeAgent {
         this.age = profiles[0].age;
         this.personality = profiles[0].personality;
 
-        /*
         this.conv_id = conversationId;
         this.llm = new ChatOpenAI();
 
@@ -77,8 +76,6 @@ export class GenerativeAgent {
         this.memoryRetriever =  vectorStore.asRetriever();
         // get memories
         this.getAgentMemories(supabase, conversationId, agentId);
-        */
-
 
         /*
         this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
