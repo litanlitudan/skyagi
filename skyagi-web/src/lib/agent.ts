@@ -177,8 +177,8 @@ export class GenerativeAgent {
 
     // TODO
     // * cache summary in supabase memory table
-	private getSummary(forceRefresh: boolean = false): string {
-		let summary = this.computeAgentSummary();
+	private async getSummary(forceRefresh: boolean = false): Promise<string> {
+		let summary = await this.computeAgentSummary();
 
 		return (
 			`Name: ${this.name} (age: ${this.age})` +
@@ -189,7 +189,7 @@ export class GenerativeAgent {
 
     private async summarizeRelatedMemories(observation: string): Promise<string> {
 		const entityName = await this.getEntityFromObservation(observation);
-		const entityAction = this.getEntityAction(observation, entityName);
+		const entityAction = await this.getEntityAction(observation, entityName);
 		const q1 = `What is the relationship between ${this.name} and ${entityName}`;
 		let relevantMemories = await this.fetchMemories(q1);
 		const q2 = `${entityName} is ${entityAction}`;
@@ -310,7 +310,7 @@ export class GenerativeAgent {
 				suffix
 		);
 
-		const agentSummaryDescription = this.getSummary();
+		const agentSummaryDescription = await this.getSummary();
 		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
 		const currentTimeStr = new Date().toLocaleString('en-US', {
 			month: 'long',
@@ -376,7 +376,7 @@ export class GenerativeAgent {
 		) {
 			const oldStatus = this.status;
 			this.status = 'Reflecting';
-			this.pauseToReflect();
+			await this.pauseToReflect();
 			this.memoryImportance = 0.0;
 			this.status = oldStatus;
 		}

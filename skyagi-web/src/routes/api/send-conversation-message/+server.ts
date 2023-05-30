@@ -32,7 +32,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	return new Response(JSON.stringify({"success": 1, "InitAgentName": initiateAgentName, "RecAgentName": agent.name, "RecAgentStatus": agent.status, "RecAgentMemLen": agent.memories.length}), { status: 200 });
 
 
-
 	// get reaction
 	const newMessage = `${initiateAgentName} says ${message}`;
 	const callToActionTemplate =
@@ -53,7 +52,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	}
 
 	// update recipient agent memory
-	agent.addMemory(`${agent.name} observed ${newMessage} and said ${respMsg}`);
+	await agent.addMemory(`${agent.name} observed ${newMessage} and said ${respMsg}`);
 
 	// return
 	const resp = {
