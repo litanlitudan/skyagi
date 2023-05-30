@@ -101,12 +101,20 @@ export class GenerativeAgent {
     }
 
     async getAgentMemories(supabase: any, conversationId: string, agentId: string): Promise<any> {
+        /*
         const { data: allMemories } = await supabase
             .from('memory')
 		    .select('id, content, metadata')
             .contains('metadata',{"conversation_id": conversationId})
             .contains('metadata',{"agent_id": agentId})
             .order('metadata->create_time', { ascending: true });
+            */
+        const { data: allMemories } = await supabase
+        .from('memory')
+		.select('id, content, metadata')
+		.contains('metadata',{"conversation_id": conversationId})
+		.contains('metadata',{"agent_id": agentId})
+        .order('metadata->create_time', { ascending: true });
         //this.memories = allMemories;
         if (allMemories === undefined) {
             return {}; 
