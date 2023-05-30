@@ -121,7 +121,7 @@ export class GenerativeAgent {
         }
         return allMemories;
         */
-        //this.status = this.memories[this.memories.length - 1].metadata.cur_status;
+        this.status = this.memories[this.memories.length - 1].metadata.cur_status;
     }
 
     private async fetchMemories(observation: string): Promise<Document[]> {
