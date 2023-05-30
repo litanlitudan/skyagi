@@ -28,8 +28,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     const { data: allMemories } = await locals.supabase
         .from('memory')
 		.select('id, content, metadata')
-		.eq('agent_id', "24c15c9a-5c13-4ebf-b312-fcbc33cb6eab");
-		//.eq('metadata->cur_status', "home");
+		.eq('metadata->cur_status', "home");
 		//.eq('metadata->conversation_id', conversation_id);
 		//.eq('metadata:agent_id', recipient_agent_id)
         //.order('metadata:create_time', { ascending: true });
