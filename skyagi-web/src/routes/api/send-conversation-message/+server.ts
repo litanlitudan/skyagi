@@ -28,10 +28,10 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
             .from('agent')
 		    .select('name, age, personality')
 		    .eq('id', recipient_agent_id);
-    const tname = profiles;
+    const tname = profiles[0].name;
     //const tage = profiles.age;
     //const tpersonality = profiles.personality;
-	return new Response(JSON.stringify({"success": 1, "RecAgentName": tname.name}), { status: 200 });
+	return new Response(JSON.stringify({"success": 1, "RecAgentName": tname}), { status: 200 });
 
 
 	// create recipient agent
