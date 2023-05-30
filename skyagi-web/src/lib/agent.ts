@@ -105,7 +105,7 @@ export class GenerativeAgent {
             .contains('metadata',{"conversation_id": conversationId})
             .contains('metadata',{"agent_id": agentId})
             .order('metadata->create_time', { ascending: true });
-        this.memories = allMemories;
+        //this.memories = allMemories;
         return allMemories;
         //this.status = this.memories[this.memories.length - 1].metadata.cur_status;
     }
