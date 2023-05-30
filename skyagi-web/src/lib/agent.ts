@@ -74,10 +74,8 @@ export class GenerativeAgent {
         );
 
         this.memoryRetriever =  vectorStore.asRetriever();
-        /*
         // get memories
         await this.getAgentMemories(supabase, conversationId, agentId);
-        */
 
         /*
         this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
