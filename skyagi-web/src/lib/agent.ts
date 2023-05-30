@@ -101,6 +101,7 @@ export class GenerativeAgent {
     }
 
     async getAgentMemories(supabase: any, conversationId: string, agentId: string): Promise<any> {
+
         /*
         const { data: allMemories } = await supabase
             .from('memory')
@@ -118,8 +119,6 @@ export class GenerativeAgent {
         //this.memories = allMemories;
         if (allMemories === undefined) {
             return {"convID": conversationId, "agentID": agentId}; 
-        } else {
-            return {"message": "here"};
         }
         return allMemories;
         //this.status = this.memories[this.memories.length - 1].metadata.cur_status;
