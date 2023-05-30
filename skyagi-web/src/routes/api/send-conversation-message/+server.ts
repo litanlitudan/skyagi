@@ -31,7 +31,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     const tname = profiles;
     //const tage = profiles.age;
     //const tpersonality = profiles.personality;
-	return new Response(JSON.stringify({"success": 1, "RecAgentName": tname}), { status: 200 });
+	return new Response(JSON.stringify({"success": 1, "RecAgentName": tname.name}), { status: 200 });
 
 
 	// create recipient agent
