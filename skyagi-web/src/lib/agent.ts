@@ -102,9 +102,9 @@ export class GenerativeAgent {
         const { data: allMemories } = await supabase
             .from('memory')
 		    .select('id, content, metadata')
-		    .eq('metadata:conversation_id', conversationId)
-		    .eq('metadata:agent_id', agentId)
-            .order('metadata:create_time', { ascending: true });
+            .contains('metadata',{"conversation_id": conversationId})
+            .contains('metadata',{"agent_id": agentId})
+            .order('metadata->create_time', { ascending: true });
         this.memories = allMemories;
         this.status = this.memories[this.memories.length - 1].metadata.cur_status;
     }

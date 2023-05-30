@@ -29,8 +29,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         .from('memory')
 		.select('id, content, metadata')
 		.contains('metadata',{"conversation_id": conversation_id})
-		.contains('metadata',{"agent_id": recipient_agent_id});
-        //.order('metadata:create_time', { ascending: true });
+		.contains('metadata',{"agent_id": recipient_agent_id})
+        .order('metadata->create_time', { ascending: true });
 	return new Response(JSON.stringify({"success": 1, "memory": allMemories}), { status: 200 });
 
 
