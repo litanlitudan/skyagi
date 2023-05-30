@@ -2,6 +2,7 @@ import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { GenerativeAgent } from '$lib/agent';
+import { select_multiple_value } from 'svelte/internal';
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
@@ -26,7 +27,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
     const { data: allMemories } = await locals.supabase
         .from('memory')
-		.select('id, content, metadata')
+		//.select('id, content, metadata')
+		.select()
 		.eq('metadata->conversation_id', conversation_id);
 		//.eq('metadata:agent_id', recipient_agent_id)
         //.order('metadata:create_time', { ascending: true });
