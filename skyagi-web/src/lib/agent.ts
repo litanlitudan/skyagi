@@ -46,6 +46,7 @@ export class GenerativeAgent {
 	memoryImportance: number = 0.0;
 
     // TODO:
+    // * should the order of score be desc or aesc
     // * support embeddings from different LLM models
     // * standardize sql query later
     // * config llm based on the user's request
