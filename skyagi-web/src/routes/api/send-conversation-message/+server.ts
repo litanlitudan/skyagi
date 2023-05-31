@@ -31,8 +31,15 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	//return new Response(JSON.stringify({"success": 1, "InitAgentName": initiateAgentName, "RecAgentName": agent.name, "RecAgentStatus": agent.status, "RecAgentMemLen": agent.memories.length}), { status: 200 });
 
 	// test adddoc
+	/*
 	await agent.testadddoc();
 	return new Response(JSON.stringify({"success": 1}), { status: 200 });
+	*/
+
+	// test getrelevant
+	const res = await agent.testgetrelevant();
+	return new Response(JSON.stringify({"success": 1, "res": res}), { status: 200 });
+
 
 	// get reaction
 	const newMessage = `${initiateAgentName} says ${message}`;
