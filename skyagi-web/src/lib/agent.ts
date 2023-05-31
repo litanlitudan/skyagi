@@ -181,7 +181,7 @@ export class GenerativeAgent {
 			}
 
 			contentStrs.add(mem.pageContent);
-			const createdTime = mem.metadata.createdAt.toLocaleString('en-US', {
+			const createdTime = mem.metadata.create_time.toLocaleString('en-US', {
 				month: 'long',
 				day: 'numeric',
 				year: 'numeric',
