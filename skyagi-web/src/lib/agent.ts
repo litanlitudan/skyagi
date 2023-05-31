@@ -110,6 +110,27 @@ export class GenerativeAgent {
         this.status = this.memories[this.memories.length - 1].metadata.cur_status;
     }
 
+    async testadddoc(): Promise<void> {
+        const nowTime = new Date().toISOString();
+		const document = new Document({
+			pageContent: "hello world",
+			metadata: { 
+                conversation_id: this.conv_id,
+                agent_id: this.id,
+                create_time: nowTime, 
+                last_access_time: nowTime,
+                cur_status: this.status,
+                importance: 10
+            }
+		});
+        await this.memoryRetriever.addDocuments([document]);
+    }
+
+    async testgetrelevant(): Promise<any> {
+        const observation = "hello world";
+		return await this.memoryRetriever.getRelevantDocuments(observation);
+    }
+
     private async fetchMemories(observation: string): Promise<Document[]> {
 		return await this.memoryRetriever.getRelevantDocuments(observation);
         // TODO: need to update the relevant doc last_access_time
@@ -356,7 +377,7 @@ export class GenerativeAgent {
                 importance: importanceScore
             }
 		});
-		const result = this.memoryRetriever.addDocuments([document]);
+		await this.memoryRetriever.addDocuments([document]);
         const new_mem: Memory = {
             id: "",
             content: content,
