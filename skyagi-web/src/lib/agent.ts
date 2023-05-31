@@ -373,7 +373,7 @@ export class GenerativeAgent {
         }
         const { error } = await supabase
             .from('message')
-            .insert({ messageEntry})
+            .insert(messageEntry)
 
         if (error !== null) {
             return error;
