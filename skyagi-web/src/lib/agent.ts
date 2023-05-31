@@ -69,7 +69,7 @@ export class GenerativeAgent {
             {
                 client: supabase,
                 tableName: "memory",
-                queryName: "match_documents"
+                queryName: "match_memories"
             }
         );
         this.memoryRetriever =  vectorStore.asRetriever();
