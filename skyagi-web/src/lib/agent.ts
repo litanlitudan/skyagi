@@ -318,7 +318,7 @@ export class GenerativeAgent {
     // TODO
     // * cache summary in supabase memory table
     // * add conversation to table message
-    async generateRspn(observation: string, suffix: string): Promise<string> {
+    async generateRspn(observation: string, suffix: string): Promise<any> {
 		const prompt = PromptTemplate.fromTemplate(
 			'{agentSummaryDescription}' +
 				'\nIt is {currentTime}.' +
@@ -356,6 +356,7 @@ export class GenerativeAgent {
             await prompt.format({...kwargs })
 		);
 		kwargs.recentObservations = await this.getMemoriesUntilLimit(consumedTokens);
+        return kwargs;
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
 		const result = await actionPredictionChain.run(kwargs);
