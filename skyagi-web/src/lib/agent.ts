@@ -47,10 +47,9 @@ export class GenerativeAgent {
 	memoryImportance: number = 0.0;
 
     // TODO:
-    // * should the order of score be desc or aesc
-    // * support embeddings from different LLM models
-    // * standardize sql query later
-    // * config llm based on the user's request
+    // [Critical] should the order of score be desc or aesc
+    // [Func] support embeddings from different LLM models
+    // [Func] config llm based on the user's request
     async setup(supabase: any, conversationId: string, agentId: string, llm: any, the_other_agent_id: string): Promise<void> {
         // get agent's profile
         const { data: profiles } = await supabase
@@ -136,7 +135,8 @@ export class GenerativeAgent {
 
     private async fetchMemories(observation: string): Promise<Document[]> {
 		return await this.memoryRetriever.getRelevantDocuments(observation);
-        // TODO: need to update the relevant doc last_access_time
+        // TODO:
+        // [Critical] need to update the relevant doc last_access_time
 	}
 
 	private async computeAgentSummary(): Promise<string> {
@@ -199,8 +199,6 @@ export class GenerativeAgent {
 		return content.join('\n');
 	}
 
-    // TODO
-    // * cache summary in supabase memory table
 	private async getSummary(forceRefresh: boolean = false): Promise<string> {
 		let summary = await this.computeAgentSummary();
 
@@ -233,7 +231,6 @@ export class GenerativeAgent {
     private async getMemoriesUntilLimit(consumedTokens: number): Promise<string> {
 		const result: string[] = [];
 
-        // Todo: figure out how to work around memoryStream retrieval
 		for (const doc of this.memories.slice().reverse()) {
 			if (consumedTokens >= this.maxTokensLimit) {
 				break;
@@ -301,7 +298,8 @@ export class GenerativeAgent {
 			{llm : this.llm, prompt}
 		);
 		const result = await reflectionChain.run({ topic: topic, relatedStatements: relatedStatements });
-		// TODO: Parse the connections between memories and insights
+		// TODO:
+        // [func] Parse the connections between memories and insights
 		return parseList(result);
 	}
 
@@ -319,8 +317,7 @@ export class GenerativeAgent {
 	}
     
     // TODO
-    // * cache summary in supabase memory table
-    // * add conversation to table message
+    // [Performance] cache summary in supabase memory table
     async generateRspn(supabase: any, observation: string, suffix: string): Promise<string> {
 		const prompt = PromptTemplate.fromTemplate(
 			'{agentSummaryDescription}' +
