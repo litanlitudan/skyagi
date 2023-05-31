@@ -37,8 +37,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		`write: GOODBYE: "what to say". Otherwise to continue the conversation, write: SAY: "what to say next"\n\n`;
 
 	const fullResult = await agent.generateRspn(newMessage, callToActionTemplate);
-	//const result = fullResult.trim().split('\n')[0];
-	const result = fullResult
+	const result = fullResult.trim().split('\n')[0];
 	return new Response(JSON.stringify({"success": 1, "result": result}), { status: 200 });
 
 	var respMsg: string = "";
