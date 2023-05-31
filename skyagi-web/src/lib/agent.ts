@@ -331,7 +331,6 @@ export class GenerativeAgent {
 				suffix
 		);
 
-        /*
 		const agentSummaryDescription = await this.getSummary();
 		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
 		const currentTimeStr = new Date().toLocaleString('en-US', {
@@ -357,18 +356,9 @@ export class GenerativeAgent {
             await prompt.format({...kwargs })
 		);
 		kwargs.recentObservations = await this.getMemoriesUntilLimit(consumedTokens);
-        */
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
-		const result = await actionPredictionChain.call({
-			agentSummaryDescription: "agentSummaryDescription",
-		    currentTime: "currenttime",
-            agentName: "agentName",
-            agentStatus: "agentStatus",
-			relevantMemories: "relevantMemories",
-			recentObservations: "recentObservations",
-		    observation: "observation"
-        });
+		const result = await actionPredictionChain.call(kwargs);
 		return result.text.trim();
 	}
 
