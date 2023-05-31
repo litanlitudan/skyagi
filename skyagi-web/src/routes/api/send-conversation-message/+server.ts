@@ -31,7 +31,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	//return new Response(JSON.stringify({"success": 1, "InitAgentName": initiateAgentName, "RecAgentName": agent.name, "RecAgentStatus": agent.status, "RecAgentMemLen": agent.memories.length}), { status: 200 });
 
 	// get reaction
-	const newMessage = `${initiateAgentName} says ${message}`;
+	const newMessage = `${initiateAgentName[0].name} says ${message}`;
 	const callToActionTemplate =
 		`What would ${agent.name} say? To end the conversation, ` +
 		`write: GOODBYE: "what to say". Otherwise to continue the conversation, write: SAY: "what to say next"\n\n`;
