@@ -45,8 +45,6 @@ export class GenerativeAgent {
 	reflectionThreshold: number = 8;
 	memoryImportance: number = 0.0;
 
-    vs: SupabaseVectorStore;
-
     // TODO:
     // * support embeddings from different LLM models
     // * standardize sql query later
@@ -74,8 +72,7 @@ export class GenerativeAgent {
                 queryName: "match_memories"
             }
         );
-        this.memoryRetriever =  vectorStore.asRetriever(1, {conversation_id: conversationId, agent_id: agentId});
-        this.vs = vectorStore;
+        this.memoryRetriever =  vectorStore.asRetriever(15, {conversation_id: conversationId, agent_id: agentId});
 
         // get memories
         await this.getAgentMemories(supabase, conversationId, agentId);
