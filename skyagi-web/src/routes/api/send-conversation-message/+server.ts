@@ -28,7 +28,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	// create recipient agent
 	const agent = new GenerativeAgent();
 	await agent.setup(locals.supabase, conversation_id, recipient_agent_id, recipient_agent_model);
-	//return new Response(JSON.stringify({"success": 1, "InitAgentName": initiateAgentName, "RecAgentName": agent.name, "RecAgentStatus": agent.status, "RecAgentMemLen": agent.memories.length}), { status: 200 });
 
 	// get reaction
 	const newMessage = `${initiateAgentName[0].name} says ${message}`;
@@ -36,9 +35,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		`What would ${agent.name} say? To end the conversation, ` +
 		`write: GOODBYE: "what to say". Otherwise to continue the conversation, write: SAY: "what to say next"\n\n`;
 
-	const fullResult = await agent.generateRspn(newMessage, callToActionTemplate);
+	const fullResult = await agent.generateRspn(locals.supabase, newMessage, callToActionTemplate);
 	const result = fullResult.trim().split('\n')[0];
-	//return new Response(JSON.stringify({"success": 1, "result": result}), { status: 200 });
 
 	var respMsg: string = "";
 	var ifContinue: boolean = false;

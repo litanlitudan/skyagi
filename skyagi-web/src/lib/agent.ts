@@ -32,6 +32,7 @@ interface Memory {
 export class GenerativeAgent {
     conv_id : string;
     id: string;
+    the_other_agent_id: string;
     name: string;
 	age: number;
 	personality: string;
@@ -50,13 +51,14 @@ export class GenerativeAgent {
     // * support embeddings from different LLM models
     // * standardize sql query later
     // * config llm based on the user's request
-    async setup(supabase: any, conversationId: string, agentId: string, llm: any): Promise<void> {
+    async setup(supabase: any, conversationId: string, agentId: string, llm: any, the_other_agent_id: string): Promise<void> {
         // get agent's profile
         const { data: profiles } = await supabase
             .from('agent')
 		    .select('name, age, personality')
 		    .eq('id', agentId);
         this.id = agentId;
+        this.the_other_agent_id = the_other_agent_id;
         this.name = profiles[0].name;
         this.age = profiles[0].age;
         this.personality = profiles[0].personality;
@@ -319,7 +321,7 @@ export class GenerativeAgent {
     // TODO
     // * cache summary in supabase memory table
     // * add conversation to table message
-    async generateRspn(observation: string, suffix: string): Promise<string> {
+    async generateRspn(supabase: any, observation: string, suffix: string): Promise<string> {
 		const prompt = PromptTemplate.fromTemplate(
 			'{agentSummaryDescription}' +
 				'\nIt is {currentTime}.' +
@@ -360,6 +362,20 @@ export class GenerativeAgent {
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
 		const result = await actionPredictionChain.call(kwargs);
+        
+        // add conversation to the message table
+        const messageEntry = {
+            agent_id: this.id,
+            recipient_agent_id: this.the_other_agent_id,
+            creat_time:  new Date().toISOString(),
+            content: result 
+        }
+        const { error } = await supabase
+            .from('message')
+            .insert({ messageEntry})
+
+        return error;
+
 		return result.text.trim();
 	}
 
