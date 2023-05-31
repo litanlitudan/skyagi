@@ -375,9 +375,11 @@ export class GenerativeAgent {
             .from('message')
             .insert({ messageEntry})
 
-        return error;
-
-		return result.text.trim();
+        if (error !== null) {
+            return error;
+        } else {
+            return result.text.trim();
+        }
 	}
 
     async addMemory(content: string): Promise<void> {

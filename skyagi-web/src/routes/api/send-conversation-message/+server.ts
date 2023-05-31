@@ -19,15 +19,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		message
 	} = await request.json();
 	 
-	const res = await locals.supabase.from('message').insert({
-		conversation_id:   '6f74a64d-22a2-4472-a969-2b6851c6d4e1',
-        agent_id: '24c15c9a-5c13-4ebf-b312-fcbc33cb6eab',
-		recipient_agent_id:'e8b2985d-f291-4e00-be44-b19ff92ef290',
-        create_time: '2023-05-31T21:20:37.977Z',
-		content:'C observed A says how is the hospital?'
-	})
-	return new Response(JSON.stringify(res), { status: 200 });
-
 	// get initiate agent name
 	const { data: initiateAgentName } = await locals.supabase
 		.from('agent')
