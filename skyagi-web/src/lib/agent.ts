@@ -332,7 +332,16 @@ export class GenerativeAgent {
 				suffix
 		);
         */
-		const prompt = PromptTemplate.fromTemplate("how are you?");
+		const prompt = PromptTemplate.fromTemplate(
+			'{agentSummaryDescription}' +
+				'\nIt is {currentTime}.' +
+				"\n{agentName}'s status: {agentStatus}" +
+				"\nSummary of relevant context from {agentName}'s memory:" +
+				'\n{relevantMemories}' +
+				'\nMost recent observations: {recentObservations}' +
+				'\nObservation: {observation}' +
+				'\n\n' 
+        );
 
         /*
 		const agentSummaryDescription = await this.getSummary();
@@ -364,7 +373,6 @@ export class GenerativeAgent {
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
 		//const result = await actionPredictionChain.run(kwargs);
-        /*
 		const result = await actionPredictionChain.run({
 			agentSummaryDescription: "agentSummaryDescription",
 		    currentTime: "currenttime",
@@ -374,8 +382,6 @@ export class GenerativeAgent {
 			recentObservations: "recentObservations",
 		    observation: "observation"
         });
-        */
-		const result = await actionPredictionChain.run({});
 		return result.trim();
 	}
 
