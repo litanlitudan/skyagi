@@ -333,7 +333,9 @@ export class GenerativeAgent {
 		);
         */
 		const prompt = PromptTemplate.fromTemplate(
-			'{agentSummaryDescription}'
+			'{agentSummaryDescription}' +
+				'\nIt is {currentTime}.'
+
         );
 
         /*
@@ -368,8 +370,8 @@ export class GenerativeAgent {
 		//const result = await actionPredictionChain.run(kwargs);
 		const result = await actionPredictionChain.run({
 			agentSummaryDescription: "agentSummaryDescription",
-            /*
 		    currentTime: "currenttime",
+            /*
             agentName: "agentName",
             agentStatus: "agentStatus",
 			relevantMemories: "relevantMemories",
