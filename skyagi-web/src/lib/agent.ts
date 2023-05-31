@@ -334,6 +334,7 @@ export class GenerativeAgent {
         */
 		const prompt = PromptTemplate.fromTemplate("how are you?");
 
+        /*
 		const agentSummaryDescription = await this.getSummary();
 		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
 		const currentTimeStr = new Date().toLocaleString('en-US', {
@@ -359,6 +360,7 @@ export class GenerativeAgent {
             await prompt.format({...kwargs })
 		);
 		kwargs.recentObservations = await this.getMemoriesUntilLimit(consumedTokens);
+        */
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
 		//const result = await actionPredictionChain.run(kwargs);
