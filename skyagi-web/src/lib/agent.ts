@@ -319,7 +319,6 @@ export class GenerativeAgent {
     // * cache summary in supabase memory table
     // * add conversation to table message
     async generateRspn(observation: string, suffix: string): Promise<string> {
-        /*
 		const prompt = PromptTemplate.fromTemplate(
 			'{agentSummaryDescription}' +
 				'\nIt is {currentTime}.' +
@@ -331,12 +330,6 @@ export class GenerativeAgent {
 				'\n\n' +
 				suffix
 		);
-        */
-		const prompt = PromptTemplate.fromTemplate(
-			'{agentSummaryDescription}' +
-				'\nIt is {currentTime}.'
-
-        );
 
         /*
 		const agentSummaryDescription = await this.getSummary();
@@ -367,19 +360,16 @@ export class GenerativeAgent {
         */
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
-		//const result = await actionPredictionChain.run(kwargs);
 		const result = await actionPredictionChain.call({
 			agentSummaryDescription: "agentSummaryDescription",
 		    currentTime: "currenttime",
-            /*
             agentName: "agentName",
             agentStatus: "agentStatus",
 			relevantMemories: "relevantMemories",
 			recentObservations: "recentObservations",
 		    observation: "observation"
-            */
         });
-		return result.trim();
+		return result.text.trim();
 	}
 
     async addMemory(content: string): Promise<void> {
