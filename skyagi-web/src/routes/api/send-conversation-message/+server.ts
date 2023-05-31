@@ -31,7 +31,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	//return new Response(JSON.stringify({"success": 1, "InitAgentName": initiateAgentName, "RecAgentName": agent.name, "RecAgentStatus": agent.status, "RecAgentMemLen": agent.memories.length}), { status: 200 });
 
 	// test filter
-	const res = await agent.vs.similaritySearch("Hello world", 15, {});
+	const res = await agent.vs.similaritySearch("Hello world", 15, {metadata->agent_id: "24c15c9a-5c13-4ebf-b312-fcbc33cb6eab"});
 	return new Response(JSON.stringify({"success": 1, "res": res}), { status: 200 });
 
 	// test adddoc
