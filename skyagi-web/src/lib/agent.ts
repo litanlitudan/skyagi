@@ -365,10 +365,11 @@ export class GenerativeAgent {
         
         // add conversation to the message table
         const messageEntry = {
+            cnversation_id: this.conv_id,
             agent_id: this.id,
             recipient_agent_id: this.the_other_agent_id,
             creat_time:  new Date().toISOString(),
-            content: result 
+            content: result.text.trim() 
         }
         const { error } = await supabase
             .from('message')
