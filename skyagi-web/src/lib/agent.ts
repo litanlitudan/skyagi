@@ -358,8 +358,16 @@ export class GenerativeAgent {
 		kwargs.recentObservations = await this.getMemoriesUntilLimit(consumedTokens);
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
-        return "i am here";
-		const result = await actionPredictionChain.run(kwargs);
+		//const result = await actionPredictionChain.run(kwargs);
+		const result = await actionPredictionChain.run({
+			agentSummaryDescription: "agentSummaryDescription",
+		    currentTime: "currenttime",
+            agentName: "agentName",
+            agentStatus: "agentStatus",
+			relevantMemories: "relevantMemories",
+			recentObservations: "recentObservations",
+		    observation: "observation"
+        });
 		return result.trim();
 	}
 
