@@ -352,12 +352,9 @@ export class GenerativeAgent {
             recentObservations: ""
 		};
 
-        /*
 		const consumedTokens = await this.llm.getNumTokens(
-			prompt.format({...kwargs })
+            await prompt.format({...kwargs })
 		);
-        */
-        const consumedTokens = 500;
 		kwargs.recentObservations = await this.getMemoriesUntilLimit(consumedTokens);
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
