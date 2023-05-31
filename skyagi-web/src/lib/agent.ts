@@ -72,7 +72,7 @@ export class GenerativeAgent {
                 queryName: "match_memories"
             }
         );
-        this.memoryRetriever =  vectorStore.asRetriever();
+        this.memoryRetriever =  vectorStore.asRetriever(15, {'metadata->conversation_id': conversationId, 'metadata->agent_id': agentId});
 
         // get memories
         await this.getAgentMemories(supabase, conversationId, agentId);
