@@ -358,6 +358,7 @@ export class GenerativeAgent {
 		kwargs.recentObservations = await this.getMemoriesUntilLimit(consumedTokens);
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
+        return "i am here";
 		const result = await actionPredictionChain.run(kwargs);
 		return result.trim();
 	}
