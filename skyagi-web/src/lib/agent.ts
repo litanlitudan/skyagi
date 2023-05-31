@@ -368,7 +368,7 @@ export class GenerativeAgent {
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
 		//const result = await actionPredictionChain.run(kwargs);
-		const result = await actionPredictionChain.run({
+		const result = await actionPredictionChain.call({
 			agentSummaryDescription: "agentSummaryDescription",
 		    currentTime: "currenttime",
             /*
