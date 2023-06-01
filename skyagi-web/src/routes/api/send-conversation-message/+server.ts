@@ -36,9 +36,9 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
             last_access_time: new Date().toISOString()
             }
         })
-		.eq('metadata->agent_id', recipient_agent_id)
-		.eq('metadata->conversation_id', conversation_id)
-		.eq('metadata->create_time', create_time)
+		.contains('metadata', {'agent_id': recipient_agent_id})
+		.contains('metadata', {'conversation_id': conversation_id})
+		.contains('metadata', {'create_time': create_time})
         .eq('content', content);
 	return new Response(JSON.stringify(error), { status: 200 });
 
