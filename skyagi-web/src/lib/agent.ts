@@ -10,7 +10,6 @@ import type { BaseLanguageModel } from "langchain/base_language";
 import { _ } from "$env/static/private";
 
 // TODO:
-// [Critical] need to update the relevant doc last_access_time
 // [Critical] should the order of score be desc or aesc
 // [Func] support embeddings from different LLM models
 // [Func] config llm based on the user's request
@@ -106,36 +105,28 @@ export class GenerativeAgent {
         this.status = this.memories[this.memories.length - 1].metadata.cur_status;
     }
 
-    /*
     private async updateMemoryAccessTime(mem: Document): Promise<void> {
-        // Find the mem entry in the database
+        // get all metadata
+        const content = mem.pageContent;
+        const agent_id = mem.metadata.agent_id;
+        const conv_id = mem.metadata.conversation_id;
+        const create_time = mem.metadata.create_time;
+
+        // update last_access_time
         const { error} = await this.storage
-		.from('agent')
-		.select('name')
-		.eq('id', initiate_agent_id);
-
-        // update the last_access_time
-
-        const accessTime = new Date();
-        mem.metadata.last_access_time = accessTime.toLocaleString('en-US', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            hour12: true
-        });
-        await mem.save(); 
+		    .from('memory')
+            .update('last_access_time', new Date().toISOString())
+		    .eq('metadata->agent_id', agent_id)
+		    .eq('metadata->conversation_id', conv_id)
+		    .eq('metadata->create_time', create_time)
+            .eq('content', content);
     }
-    */
 
     private async fetchMemories(observation: string): Promise<Document[]> {
 		const mems = await this.memoryRetriever.getRelevantDocuments(observation);
-        /*
 		for (const mem of mems) {
             await this.updateMemoryAccessTime(mem)
         }
-        */
         return mems;
 	}
 
