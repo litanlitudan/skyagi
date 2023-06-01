@@ -11,7 +11,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	const {
 		conversation_id,
 		agent_id,
-		agent
+		agent_name
 	} = await request.json();
 
 	// get existing agent
@@ -35,7 +35,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.from('agent')
 		.insert({
 			user_id: existing_agent[0].user_id,
-			name: existing_agent[0].name,
+			name: agent_name,
 		    age: existing_agent[0].age,
 			personality: existing_agent[0].personality,
 			initial_status: existing_agent[0].status,
