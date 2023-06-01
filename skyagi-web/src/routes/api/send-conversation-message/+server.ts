@@ -19,6 +19,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		message
 	} = await request.json();
 
+	/*
 	const content = 'I am sad always';
 	const agent_id = 'e61c5e25-a9ad-48e6-9cc5-4d6713c06b34';
     const create_time = '2023-05-29T23:25:21.413Z';
@@ -42,7 +43,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.contains('metadata', {'create_time': create_time})
         .eq('content', content);
 	return new Response(JSON.stringify(error), { status: 200 });
-
+	*/
 	 
 	// get initiate agent name
 	const { data: initiateAgentName } = await locals.supabase
