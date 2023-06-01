@@ -1,8 +1,6 @@
-import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { GenerativeAgent } from '$lib/agent';
-import { select_multiple_value } from 'svelte/internal';
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
@@ -19,32 +17,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		message
 	} = await request.json();
 
-	/*
-	const content = 'I am sad always';
-	const agent_id = 'e61c5e25-a9ad-48e6-9cc5-4d6713c06b34';
-    const create_time = '2023-05-29T23:25:21.413Z';
-    const importance = 2;
-    const cur_status = 'at Macys in SF';
-
-    // update last_access_time
-    const { error } = await locals.supabase
-		.from('memory')
-        .update({metadata: {
-            agent_id: agent_id,
-            cur_status: cur_status,
-            importance: importance,
-            create_time: create_time, 
-            conversation_id: conversation_id,
-            last_access_time: new Date().toISOString()
-            }
-        })
-		.contains('metadata', {'agent_id': agent_id})
-		.contains('metadata', {'conversation_id': conversation_id})
-		.contains('metadata', {'create_time': create_time})
-        .eq('content', content);
-	return new Response(JSON.stringify(error), { status: 200 });
-	*/
-	 
 	// get initiate agent name
 	const { data: initiateAgentName } = await locals.supabase
 		.from('agent')

@@ -1,4 +1,3 @@
-import { TimeWeightedVectorStoreRetriever } from "langchain/retrievers/time_weighted";
 import type { VectorStoreRetriever } from "langchain/vectorstores";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
@@ -46,13 +45,11 @@ export class GenerativeAgent {
     memories: Memory[];
 	llm: BaseLanguageModel;
     memoryRetriever: VectorStoreRetriever;
-	//memoryRetriever: TimeWeightedVectorStoreRetriever;
+    storage: any;
 
 	maxTokensLimit: number = 1200;
 	reflectionThreshold: number = 8;
 	memoryImportance: number = 0.0;
-
-    storage: any;
 
     async setup(supabase: any, conversationId: string, agentId: string, llm: any, the_other_agent_id: string): Promise<void> {
         // get agent's profile
@@ -83,14 +80,6 @@ export class GenerativeAgent {
 
         // get memories
         await this.getAgentMemories(conversationId, agentId);
-
-        /*
-        this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
-            vectorStore,
-            otherScoreKeys: ["importance"],
-            k: 15}
-        );
-        */
     }
 
     async getAgentMemories(conversationId: string, agentId: string): Promise<void> {
