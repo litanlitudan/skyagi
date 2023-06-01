@@ -83,7 +83,7 @@ export class GenerativeAgent {
         this.memoryRetriever =  vectorStore.asRetriever(15, {conversation_id: conversationId, agent_id: agentId});
 
         // get memories
-        await this.getAgentMemories(supabase, conversationId, agentId);
+        await this.getAgentMemories(conversationId, agentId);
 
         /*
         this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
@@ -94,9 +94,9 @@ export class GenerativeAgent {
         */
     }
 
-    async getAgentMemories(supabase: any, conversationId: string, agentId: string): Promise<void> {
+    async getAgentMemories(conversationId: string, agentId: string): Promise<void> {
 
-        const { data: allMemories } = await supabase
+        const { data: allMemories } = await this.storage
             .from('memory')
 		    .select('id, content, metadata')
 		    .contains('metadata',{"conversation_id": conversationId})
@@ -109,7 +109,7 @@ export class GenerativeAgent {
     /*
     private async updateMemoryAccessTime(mem: Document): Promise<void> {
         // Find the mem entry in the database
-        const { error} = await locals.supabase
+        const { error} = await this.storage
 		.from('agent')
 		.select('name')
 		.eq('id', initiate_agent_id);
@@ -314,7 +314,7 @@ export class GenerativeAgent {
 		return newInsights;
 	}
     
-    async generateRspn(supabase: any, observation: string, suffix: string): Promise<string> {
+    async generateRspn(observation: string, suffix: string): Promise<string> {
 		const prompt = PromptTemplate.fromTemplate(
 			'{agentSummaryDescription}' +
 				'\nIt is {currentTime}.' +
@@ -364,7 +364,7 @@ export class GenerativeAgent {
             create_time:  new Date().toISOString(),
             content: result.text.trim() 
         }
-        const { error } = await supabase
+        const { error } = await this.storage
             .from('message')
             .insert(messageEntry)
 
