@@ -111,11 +111,21 @@ export class GenerativeAgent {
         const agent_id = mem.metadata.agent_id;
         const conv_id = mem.metadata.conversation_id;
         const create_time = mem.metadata.create_time;
+        const importance = mem.metadata.importance;
+        const cur_status = mem.metadata.cur_status;
 
         // update last_access_time
-        const { error} = await this.storage
+        const { error } = await this.storage
 		    .from('memory')
-            .update('last_access_time', new Date().toISOString())
+            .update({metadata: {
+                agent_id: agent_id,
+                cur_status: cur_status,
+                importance: importance,
+                create_time: create_time, 
+                conversation_id: conv_id,
+                last_access_time: new Date().toISOString()
+              }
+            })
 		    .eq('metadata->agent_id', agent_id)
 		    .eq('metadata->conversation_id', conv_id)
 		    .eq('metadata->create_time', create_time)
