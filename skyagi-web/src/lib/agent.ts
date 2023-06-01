@@ -53,9 +53,12 @@ export class GenerativeAgent {
 	reflectionThreshold: number = 8;
 	memoryImportance: number = 0.0;
 
+    storage: any;
+
     async setup(supabase: any, conversationId: string, agentId: string, llm: any, the_other_agent_id: string): Promise<void> {
         // get agent's profile
-        const { data: profiles } = await supabase
+        this.storage = supabase;
+        const { data: profiles } = await this.storage
             .from('agent')
 		    .select('name, age, personality')
 		    .eq('id', agentId);
@@ -72,7 +75,7 @@ export class GenerativeAgent {
         const vectorStore = new SupabaseVectorStore(
             new OpenAIEmbeddings(),
             {
-                client: supabase,
+                client: this.storage,
                 tableName: "memory",
                 queryName: "match_memories"
             }
@@ -103,8 +106,37 @@ export class GenerativeAgent {
         this.status = this.memories[this.memories.length - 1].metadata.cur_status;
     }
 
+    /*
+    private async updateMemoryAccessTime(mem: Document): Promise<void> {
+        // Find the mem entry in the database
+        const { error} = await locals.supabase
+		.from('agent')
+		.select('name')
+		.eq('id', initiate_agent_id);
+
+        // update the last_access_time
+
+        const accessTime = new Date();
+        mem.metadata.last_access_time = accessTime.toLocaleString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+        await mem.save(); 
+    }
+    */
+
     private async fetchMemories(observation: string): Promise<Document[]> {
-		return await this.memoryRetriever.getRelevantDocuments(observation);
+		const mems = await this.memoryRetriever.getRelevantDocuments(observation);
+        /*
+		for (const mem of mems) {
+            await this.updateMemoryAccessTime(mem)
+        }
+        */
+        return mems;
 	}
 
 	private async computeAgentSummary(): Promise<string> {
