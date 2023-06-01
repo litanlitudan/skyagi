@@ -9,6 +9,13 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import type { BaseLanguageModel } from "langchain/base_language";
 import { _ } from "$env/static/private";
 
+// TODO:
+// [Critical] need to update the relevant doc last_access_time
+// [Critical] should the order of score be desc or aesc
+// [Func] support embeddings from different LLM models
+// [Func] config llm based on the user's request
+// [Performance] cache summary in supabase memory table
+
 function parseList(text: string): string[] {
 	const lines = text.trim().split('\n');
 	return lines.map(line => line.replace(/^\s*\d+\.\s*/, '').trim());
@@ -46,10 +53,6 @@ export class GenerativeAgent {
 	reflectionThreshold: number = 8;
 	memoryImportance: number = 0.0;
 
-    // TODO:
-    // [Critical] should the order of score be desc or aesc
-    // [Func] support embeddings from different LLM models
-    // [Func] config llm based on the user's request
     async setup(supabase: any, conversationId: string, agentId: string, llm: any, the_other_agent_id: string): Promise<void> {
         // get agent's profile
         const { data: profiles } = await supabase
@@ -85,18 +88,6 @@ export class GenerativeAgent {
             otherScoreKeys: ["importance"],
             k: 15}
         );
-        */
-
-        /*
-        // Do I need to add all memories to retriever? -> don't think so
-        for (const memory of allMemories) {
-            const doc = new Document({
-                pageContent: memory.content,
-                metadata: { importance: importanceScore }
-            });
-
-            this.memoryRetriever.addDocuments([doc]);
-        }
         */
     }
 
@@ -135,8 +126,6 @@ export class GenerativeAgent {
 
     private async fetchMemories(observation: string): Promise<Document[]> {
 		return await this.memoryRetriever.getRelevantDocuments(observation);
-        // TODO:
-        // [Critical] need to update the relevant doc last_access_time
 	}
 
 	private async computeAgentSummary(): Promise<string> {
@@ -298,8 +287,6 @@ export class GenerativeAgent {
 			{llm : this.llm, prompt}
 		);
 		const result = await reflectionChain.run({ topic: topic, relatedStatements: relatedStatements });
-		// TODO:
-        // [func] Parse the connections between memories and insights
 		return parseList(result);
 	}
 
@@ -316,8 +303,6 @@ export class GenerativeAgent {
 		return newInsights;
 	}
     
-    // TODO
-    // [Performance] cache summary in supabase memory table
     async generateRspn(supabase: any, observation: string, suffix: string): Promise<string> {
 		const prompt = PromptTemplate.fromTemplate(
 			'{agentSummaryDescription}' +
