@@ -20,8 +20,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	} = await request.json();
 
 	const content = 'I am sad always';
-    const agent_id = 'e61c5e25-a9ad-48e6-9cc5-4d6713c06b34';
-    const conv_id = '6f74a64d-22a2-4472-a969-2b6851c6d4e1';
     const create_time = '2023-05-29T23:25:21.413Z';
     const importance = 2;
     const cur_status = 'at Macys in SF';
@@ -30,16 +28,16 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     const { error } = await locals.supabase
 		.from('memory')
         .update({metadata: {
-            agent_id: agent_id,
+            agent_id: recipient_agent_id,
             cur_status: cur_status,
             importance: importance,
             create_time: create_time, 
-            conversation_id: conv_id,
+            conversation_id: conversation_id,
             last_access_time: new Date().toISOString()
             }
         })
-		.eq('metadata->agent_id', agent_id)
-		.eq('metadata->conversation_id', conv_id)
+		.eq('metadata->agent_id', recipient_agent_id)
+		.eq('metadata->conversation_id', conversation_id)
 		.eq('metadata->create_time', create_time)
         .eq('content', content);
 	return new Response(JSON.stringify(error), { status: 200 });
