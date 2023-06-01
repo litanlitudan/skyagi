@@ -24,5 +24,15 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 			initial_memory: agent.memory
 		});
 
-	return new Response(JSON.stringify({ message: res }), { status: 200 });
+	const { data } = await locals.supabase
+		.from('agent')
+		.select('id')
+		.eq('user_id', user_id)
+		.eq('name', agent.name)
+		.eq('age', agent.age)
+		.contains('personality', agent.personality)
+		.contains('initial_status', agent.status)
+		.contains('initial_memory', agent.memory);
+
+	return new Response(JSON.stringify({ message: res, agent_id: data[0].id }), { status: 200 });
 }) satisfies RequestHandler;

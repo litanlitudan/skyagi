@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
@@ -33,15 +34,17 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.eq('name', name);
 
 	// get agents' initial memory and add to memory
+    const embeddings = new OpenAIEmbeddings();
 	const currentTime = new Date().toISOString();
+
 	for (const agent of agents) {
 		const agent_info = await locals.supabase
 			.from('agent')
 			.select('initial_status, initial_memory')
 			.eq('id', agent);
 		
-		const embedding = ;
-		const importance = ;
+		const embedding = await embeddings.embedQuery(agent_info[0].initial_memory);
+		const importance = 0.0;
 		const metadata = {
 			agent_id: agent,
 			cur_status: agent_info[0].initial_status,
@@ -61,5 +64,5 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	}
 
 	// need to call add_memory?
-	return new Response(JSON.stringify({ message: 'Success' }), { status: 200 });
+	return new Response(JSON.stringify({ message: 'Success', conversation_id: conv_id[0].id }), { status: 200 });
 }) satisfies RequestHandler;
