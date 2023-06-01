@@ -8,8 +8,7 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import type { BaseLanguageModel } from "langchain/base_language";
 import { _ } from "$env/static/private";
 
-// TODO:
-// [Critical] should the order of score be desc or aesc
+// Future improvements:
 // [Func] support embeddings from different LLM models
 // [Func] config llm based on the user's request
 // [Performance] cache summary in supabase memory table
