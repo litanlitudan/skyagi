@@ -19,12 +19,12 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		message
 	} = await request.json();
 
-	const content = "I am sad always";
-    const agent_id = "e61c5e25-a9ad-48e6-9cc5-4d6713c06b34";
-    const conv_id = "6f74a64d-22a2-4472-a969-2b6851c6d4e1";
-    const create_time = "2023-05-29T23:25:21.413Z";
+	const content = 'I am sad always';
+    const agent_id = 'e61c5e25-a9ad-48e6-9cc5-4d6713c06b34';
+    const conv_id = '6f74a64d-22a2-4472-a969-2b6851c6d4e1';
+    const create_time = '2023-05-29T23:25:21.413Z';
     const importance = 2;
-    const cur_status = "at Macys in SF";
+    const cur_status = 'at Macys in SF';
 
     // update last_access_time
     const { error } = await locals.supabase
