@@ -1,2 +1,3 @@
-fastapi==0.95.1
+fastapi
 uvicorn[standard]
+skyagi
