@@ -13,8 +13,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	const {
 		name,
 		user_id,
-		agents,
-		user_agents
+		agent_ids,
+		user_agent_ids
 	} = await request.json();
 
 	// create conversation
@@ -23,8 +23,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.insert({
 			user_id: user_id,
 			name: name,
-			agents: agents,
-			user_agents: user_agents
+			agents: agent_ids,
+			user_agents: user_agent_ids
 		});
 
 	// assumption: (user_id, name) combo is unique
@@ -42,11 +42,11 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     const embeddings = new OpenAIEmbeddings();
 	const currentTime = new Date().toISOString();
 
-	for (const agent of agents) {
+	for (const agent_id of agent_ids) {
 		const { data: agent_info } = await locals.supabase
 			.from('agent')
 			.select('initial_status, initial_memory')
-			.eq('id', agent);
+			.eq('id', agent_id);
 
 	    if (checkValidity(agent_info) === false) {
 		    return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
@@ -55,7 +55,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		const embedding = await embeddings.embedQuery(agent_info[0].initial_memory);
 		const importance = 0.0;
 		const metadata = {
-			agent_id: agent,
+			agent_id: agent_id,
 			cur_status: agent_info[0].initial_status,
 			importance: importance,
 			create_time: currentTime,
