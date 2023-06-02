@@ -22,18 +22,18 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.eq('id', agent_id);
 
 	if (checkValidity(existing_agent) === false) {
-		return new Response(JSON.stringify({ 'success': 0, 'reason': 'agent not found' }), { status: 200 });
+		return new Response(JSON.stringify({ 'success': 0, 'error': 'agent not found' }), { status: 200 });
 	}
 	
 	// get memories
 	const { data: agent_memories } = await locals.supabase
 		.from('memory')
 		.select('content')
-		.eq('metadata->agent_id', agent_id)
-		.eq('metadata->conversation_id', conversation_id);
+		.contains('metadata', {'agent_id': agent_id})
+		.contains('metadata', {'conversation_id': conversation_id});
 
 	if (checkValidity(agent_memories) === false) {
-		return new Response(JSON.stringify({ 'success': 0, 'reason': 'memory not found' }), { status: 200 });
+		return new Response(JSON.stringify({ 'success': 0, 'error': 'failed loading agent memories' }), { status: 200 });
 	}
 
 	const memories = "";
@@ -53,7 +53,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		});
 
 	if (error) {
-		return new Response(JSON.stringify({ 'success': 0, 'reason': "failed to create agent" }), { status: 200 });
+		return new Response(JSON.stringify({ 'success': 0, 'error': "failed to create new agent" }), { status: 200 });
 	}
 
 	const { data: new_agent } = await locals.supabase
@@ -67,7 +67,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.eq('initial_memory', memories);
 
 	if (checkValidity(new_agent) === false) {
-		return new Response(JSON.stringify({ 'success': 0, 'reason': "failed to get new agent" }), { status: 200 });
+		return new Response(JSON.stringify({ 'success': 0, 'error': "failed to get new agent id" }), { status: 200 });
 	} else {
 		return new Response(JSON.stringify({ 'success': 1, agent_id: new_agent[0].id }), { status: 200 });
 	}

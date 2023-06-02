@@ -37,6 +37,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	if (checkValidity(data)) {
 		return new Response(JSON.stringify({ 'success': 1, agent_id: data[0].id }), { status: 200 });
 	} else {
-		return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
+		return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to create new agent' }), { status: 200 });
 	}
 }) satisfies RequestHandler;

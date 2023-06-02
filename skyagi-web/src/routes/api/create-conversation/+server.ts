@@ -35,7 +35,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.eq('name', name);
 
 	if (checkValidity(conv_id) === false) {
-		return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
+		return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to find conversation' }), { status: 200 });
 	}
 	
 	// get agents' initial memory and add to memory
@@ -49,7 +49,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 			.eq('id', agent_id);
 
 	    if (checkValidity(agent_info) === false) {
-		    return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
+		    return new Response(JSON.stringify({ 'success': 0, 'error': 'agent not found' }), { status: 200 });
 	    }
 
 		const embedding = await embeddings.embedQuery(agent_info[0].initial_memory);
@@ -72,7 +72,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 			});
 		
 		if (error) {
-			return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
+			return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to create new initial memory' }), { status: 200 });
 		}
 	}
 
