@@ -1,6 +1,7 @@
-import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
+import { checkValidity } from '$lib/utils';
+
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
@@ -11,47 +12,64 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	const {
 		conversation_id,
 		agent_id,
-		agent_name
+		new_agent_name
 	} = await request.json();
 
 	// get existing agent
-	const existing_agent = await locals.supabase
+	const { data: existing_agent } = await locals.supabase
 		.from('agent')
 		.select('user_id, name, age, personality, initial_status')
 		.eq('id', agent_id);
+
+	if (checkValidity(existing_agent) === false) {
+		return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
+	}
 	
 	// get memories
-	const agent_memories = await locals.supabase
+	const { data: agent_memories } = await locals.supabase
 		.from('memory')
 		.select('content')
 		.eq('metadata->agent_id', agent_id)
 		.eq('metadata->conversation_id', conversation_id);
+
+	if (checkValidity(agent_memories) === false) {
+		return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
+	}
+
 	const memories = "";
 	for (const mem of agent_memories) {
 		memories += mem.content;
 	}
 	
-	const res = await locals.supabase
+	const { error } = await locals.supabase
 		.from('agent')
 		.insert({
 			user_id: existing_agent[0].user_id,
-			name: agent_name,
+			name: new_agent_name,
 		    age: existing_agent[0].age,
 			personality: existing_agent[0].personality,
-			initial_status: existing_agent[0].status,
+			initial_status: existing_agent[0].initial_status,
 			initial_memory: memories
 		});
 
-	const { data } = await locals.supabase
+	if (error) {
+		return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
+	}
+
+	const { data: new_agent } = await locals.supabase
 		.from('agent')
 		.select('id')
 		.eq('user_id', existing_agent[0].user_id)
-		.eq('name', agent_name)
+		.eq('name', new_agent_name)
 		.eq('age', existing_agent[0].age)
 		.eq('personality', existing_agent[0].personality)
-		.eq('initial_status', existing_agent[0].status)
+		.eq('initial_status', existing_agent[0].initial_status)
 		.eq('initial_memory', memories);
 
-	return new Response(JSON.stringify({ message: res, agent_id: data[0].id }), { status: 200 });
+	if (checkValidity(new_agent) === false) {
+		return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
+	} else {
+		return new Response(JSON.stringify({ 'success': 1, agent_id: new_agent[0].id }), { status: 200 });
+	}
 
 }) satisfies RequestHandler;
