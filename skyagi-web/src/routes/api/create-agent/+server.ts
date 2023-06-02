@@ -13,8 +13,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		agent
 	} = await request.json();
 
-	return new Response(JSON.stringify({ message: "SUCCESS", id: user_id }), { status: 200 });
-	
 	const res = await locals.supabase
 		.from('agent')
 		.insert({
@@ -36,5 +34,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.contains('initial_status', agent.status)
 		.contains('initial_memory', agent.memory);
 	
-	return new Response(JSON.stringify({ message: res, agent_id: data[0].id }), { status: 200 });
+	//return new Response(JSON.stringify({ message: res, agent_id: data[0].id }), { status: 200 });
+	return new Response(JSON.stringify({ message: res, agent_id: data }), { status: 200 });
 }) satisfies RequestHandler;
