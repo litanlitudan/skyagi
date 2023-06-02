@@ -12,6 +12,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		user_id,
 		agent
 	} = await request.json();
+
+	return new Response(JSON.stringify({ message: "SUCCESS", id: user_id }), { status: 200 });
 	
 	const res = await locals.supabase
 		.from('agent')
