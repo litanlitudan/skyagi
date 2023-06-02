@@ -36,7 +36,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		return new Response(JSON.stringify({ 'success': 0, 'error': 'failed loading agent memories' }), { status: 200 });
 	}
 
-	const memories = "";
+	let memories = "";
 	for (const mem of agent_memories) {
 		memories += mem.content;
 	}
