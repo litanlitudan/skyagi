@@ -33,5 +33,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.contains('personality', agent.personality)
 		.contains('initial_status', agent.status)
 		.contains('initial_memory', agent.memory);
-
+	
+	return new Response(JSON.stringify({ message: res, agent_id: data[0].id }), { status: 200 });
 }) satisfies RequestHandler;
