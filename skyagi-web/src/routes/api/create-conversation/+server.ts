@@ -43,11 +43,10 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	const currentTime = new Date().toISOString();
 
 	for (const agent of agents) {
-		const agent_info = await locals.supabase
+		const { data: agent_info } = await locals.supabase
 			.from('agent')
 			.select('initial_status, initial_memory')
 			.eq('id', agent);
-		return new Response(JSON.stringify({ 'success': 1, res: agent_info }), { status: 200 });
 
 	    if (checkValidity(agent_info) === false) {
 		    return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
@@ -64,13 +63,17 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 			last_access_time: currentTime
 		};
 
-		await locals.supabase
+		const { error } = await locals.supabase
 			.from('memory')
 			.insert({
 				content: agent_info[0].initial_memory,
 				embedding: embedding,
 				metadata: metadata
 			});
+		
+		if (error) {
+			return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
+		}
 	}
 
 	// need to call add_memory?
