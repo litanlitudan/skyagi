@@ -1,6 +1,6 @@
-import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
+import { checkValidity } from '$lib/utils';
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
@@ -34,9 +34,9 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.eq('initial_status', agent.status)
 		.eq('initial_memory', agent.memory);
 	
-	if (data === null || data.length === 0) {
-		return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
-	} else {
+	if (checkValidity(data)) {
 		return new Response(JSON.stringify({ 'success': 1, agent_id: data[0].id }), { status: 200 });
+	} else {
+		return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
 	}
 }) satisfies RequestHandler;
