@@ -38,7 +38,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
 	let memories = "";
 	for (const mem of agent_memories) {
-		memories += mem.content;
+		memories += (mem.content + "\n");
 	}
 	
 	const { error } = await locals.supabase
