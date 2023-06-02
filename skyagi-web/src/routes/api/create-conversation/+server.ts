@@ -64,5 +64,5 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	}
 
 	// need to call add_memory?
-	return new Response(JSON.stringify({ message: 'Success', conversation_id: conv_id[0].id }), { status: 200 });
+	return new Response(JSON.stringify({ success: 1, conversation_id: conv_id[0].id }), { status: 200 });
 }) satisfies RequestHandler;

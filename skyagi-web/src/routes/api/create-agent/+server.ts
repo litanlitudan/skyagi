@@ -13,6 +13,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		agent
 	} = await request.json();
 
+	/*
 	const res = await locals.supabase
 		.from('agent')
 		.insert({
@@ -23,17 +24,18 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 			initial_status: agent.status,
 			initial_memory: agent.memory
 		});
+	*/
 
 	const { data } = await locals.supabase
 		.from('agent')
 		.select('id')
 		.eq('user_id', user_id)
 		.eq('age', agent.age)
-		.contains('name', agent.name)
-		.contains('personality', agent.personality)
-		.contains('initial_status', agent.status)
-		.contains('initial_memory', agent.memory);
+		.eq('name', agent.name)
+		.eq('personality', agent.personality)
+		.eq('initial_status', agent.status)
+		.eq('initial_memory', agent.memory);
 	
 	//return new Response(JSON.stringify({ message: res, agent_id: data[0].id }), { status: 200 });
-	return new Response(JSON.stringify({ message: res, agent_id: data }), { status: 200 });
+	return new Response(JSON.stringify({ 'success': 1, agent_id: data }), { status: 200 });
 }) satisfies RequestHandler;
