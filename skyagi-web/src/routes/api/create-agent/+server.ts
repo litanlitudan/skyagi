@@ -13,7 +13,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		agent
 	} = await request.json();
 
-	/*
 	const res = await locals.supabase
 		.from('agent')
 		.insert({
@@ -24,7 +23,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 			initial_status: agent.status,
 			initial_memory: agent.memory
 		});
-	*/
 
 	const { data } = await locals.supabase
 		.from('agent')
