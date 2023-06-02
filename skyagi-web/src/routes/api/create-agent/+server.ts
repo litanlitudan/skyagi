@@ -28,8 +28,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.from('agent')
 		.select('id')
 		.eq('user_id', user_id)
-		.eq('name', agent.name)
 		.eq('age', agent.age)
+		.contains('name', agent.name)
 		.contains('personality', agent.personality)
 		.contains('initial_status', agent.status)
 		.contains('initial_memory', agent.memory);
