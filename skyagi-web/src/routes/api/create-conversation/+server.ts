@@ -47,6 +47,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 			.from('agent')
 			.select('initial_status, initial_memory')
 			.eq('id', agent);
+		return new Response(JSON.stringify({ 'success': 1, res: agent_info }), { status: 200 });
 
 	    if (checkValidity(agent_info) === false) {
 		    return new Response(JSON.stringify({ 'success': 0 }), { status: 200 });
