@@ -2,12 +2,20 @@
     // import Scrolly from "./Scrolly.svelte";
     import Character from '$lib/room-new-character.svelte';
     import { Select, Label } from 'flowbite-svelte';
+
     export const characters = [
         {name: "tan li", image: "../src/lib/assets/Avatar1.png", title:"", description:""},
         {name: "yy", image: "../src/lib/assets/Avatar2.png", title:"", description:""},
         {name: "Vegeta", image: "../src/lib/assets/Avatar3.png", title:"", description:""},
-        {name: "Goku", image:"../src/lib/assets/Avatar3.png", title:"", description:""}];
+        {name: "Goku", image:"../src/lib/assets/Avatar3.png", title:"", description:""},
+        {name: "Sheldon", image:"../src/lib/assets/Avatar2.png", title:"", description:""}];
+
     let lastClickedCharacter = "..."
+    function handleOnClickImageMessage(event) {
+        console.log(event.detail.character.name);
+        lastClickedCharacter = event.detail.character.name;
+    }
+
 
 
 
@@ -22,17 +30,6 @@
         return "position:static;left:" + leftVal.toString() + "px;top:" + topVal.toString() + "px"
     }
 
-    function get2DCharacterLs(inputLs, colNum) {
-        let rstLs = []
-        for (let i=0; i<Math.ceil(inputLs.length/colNum); i++){
-            rstLs.push([]);
-        }
-        for (let i=0; i<inputLs.length;i++){
-            rstLs[Math.floor(i/3)].push(inputLs[i]);
-        }
-        return rstLs
-    }
-    export const characters2D = get2DCharacterLs(characters, 3);
 
     let selectedModel;
     let models = [
@@ -43,6 +40,15 @@
 		// { value: 'vicuna-13b-modelz', name: 'vicuna-13b-modelz' },
 		// { value: 'mpt-7b-modelz', name: 'mpt-7b-modelz' }
 	];
+    let checkedCharacterGroup = [];
+    let playerCharacter;
+    function charactersToItems(inputCharacters){
+        let rst = []
+        for (let i=0; i<inputCharacters.length; i++){
+            rst.push({name: inputCharacters[i], value: inputCharacters[i]})
+        }
+        return rst
+    }
 </script>
 
 <div id="globalGrid">
@@ -54,7 +60,10 @@
     <div class="scroller">
         {#each characters as character, i}
             <div class="characterInfoSet">
-                <Character {character}>
+                <Character {character} 
+                 on:message={handleOnClickImageMessage} 
+                 bind:bindGroup={checkedCharacterGroup} 
+                 value={character.name}>
                 </Character>
             </div>
         {/each}
@@ -80,8 +89,8 @@
             You will play...
         </h1>
         <Label class="mb-10 w-1/2">Select an option
-            <Select id="modelDropDown" class="mt-5" size="lg" items={models} bind:value={selectedModel}
-            placeholder = "Select LLM" />
+            <Select id="playerDropDown" class="mt-5" size="lg" items={charactersToItems(checkedCharacterGroup)} bind:value={playerCharacter}
+            placeholder = "Select your character" />
         </Label>
         <button>
             Create
