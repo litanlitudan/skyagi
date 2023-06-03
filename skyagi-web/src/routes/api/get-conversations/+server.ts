@@ -2,6 +2,9 @@ import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { checkValidity } from '$lib/utils';
 
+// TODO
+// add conversation summary
+
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
 	runtime: 'nodejs18.x'
@@ -33,9 +36,12 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
             .order('create_time', { ascending: false })
             .limit(3);
 
+        // Some conversations are created, but no message exchanged
+        /*
 	    if (checkValidity(messages) === false) {
 		    return new Response(JSON.stringify({ 'success': 0, 'error': 'messages not found' }), { status: 200 });
 	    }
+        */
         for (const m of messages) {
             snapshot.push({
                 'initiate_agent_id': m.agent_id,
@@ -44,6 +50,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
                 'content': m.content
             });
         }
+        
         res_conversations.push({
             'name': conversation.name,
             'summary': '',
