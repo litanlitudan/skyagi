@@ -18,12 +18,22 @@
 
 
 <div id="globalGrid">
-    <Accordion>
-        {#each conversations as conversationText, i}
-            <Conversation conversationIndex={i+1} {conversationText} >
-            </Conversation>
-        {/each}
-    </Accordion>
+    <div>
+        <Accordion id="conversationBoard">
+            {#each conversations as conversationText, i}
+                <Conversation conversationIndex={i+1} {conversationText} >
+                </Conversation>
+            {/each}
+        </Accordion>
+        <div id="buttonGrid">
+            <button>
+                Create new conversation
+            </button>
+            <button>
+                Create new agent
+            </button>
+        </div>
+    </div>
     
     <div class="scroller">
         {#each characters as character, i}
@@ -41,6 +51,9 @@
 
 <style>
 
+    #conversationBoard {
+        height: 1000px;
+    }
 
 
     .scroller {
@@ -63,5 +76,9 @@
         /* grid-auto-columns: 400px 400px; */
     }
 
+    #buttonGrid {
+        display: grid;
+        grid-template-rows: (2, 50%);
+    }
 
 </style>

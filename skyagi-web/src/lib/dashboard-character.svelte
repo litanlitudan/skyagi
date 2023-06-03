@@ -6,7 +6,7 @@
 
 
 <figure>
-    <img src={character.image} alt="" width=80px/>
+    <img src={character.image} alt="" width=70px/>
     <figcaption> {character.name} </figcaption>
 </figure>
 
@@ -14,7 +14,6 @@
 <style>
     figure {
         text-align: center;
-        width: 100px;
-        /* transform: translateX(50px); */
+        width: 70px;
     }
 </style>
