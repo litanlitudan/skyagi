@@ -50,6 +50,7 @@ provider_templates: Dict[ModelProvider, ProviderTemplate] = {
                     provider=ModelProvider.OpenAI,
                     name="openai-text-embedding-ada-002",
                     args={"model": "text-embedding-ada-002"},
+                    embedding_size=1536
                 )
             ],
         ),

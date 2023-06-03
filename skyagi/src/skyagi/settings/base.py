@@ -40,6 +40,7 @@ class EmbeddingSettings(BaseModel):
     provider: str
     name: str
     args: Dict[str, Any] = Field(default_factory=dict)
+    embedding_size: int
 
     class Config:
         extra = Extra.allow
