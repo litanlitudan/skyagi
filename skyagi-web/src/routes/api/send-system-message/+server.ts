@@ -21,8 +21,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		initiate_agent_model,
 		recipient_agent_id,
 		recipient_agent_model,
-		start_time,
-		message
+		start_time
 	} = await request.json();
 
 	// get agent names
@@ -60,15 +59,21 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
 	let observation = "";
 	for (const m of message_history) {
-		observation += (m + "\n");
+		const { data: initiate_agent_name } = await locals.supabase
+		    .from('agent')
+			.select('name')
+			.eq('id', m.agent_id);
+		const { data: recipient_agent_name } = await locals.supabase
+		    .from('agent')
+			.select('name')
+			.eq('id', m.recipient_agent_id);
+
+		observation += (initiate_agent_name[0].name + " told " + recipient_agent_name[0].name + ": " + m.content + "\n") 
 	}
 
-	/*
 	let instruct = 'Here are the timeline of events happened for these NPC characters:\n{observation}\n';
 	instruct += 'I want you to behave as {initiator_name} and talk to me as I am {recipient_name}.\n';
 	instruct += 'If you do not want to or can not talk to {recipient_name}, just output NOTHING';
-	*/
-	let instruct = message;
 
 	const chatMessages = [
 		SystemMessagePromptTemplate.fromTemplate(
