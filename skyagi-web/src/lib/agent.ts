@@ -12,6 +12,7 @@ import { _ } from "$env/static/private";
 // [Func] support embeddings from different LLM models
 // [Func] config llm based on the user's request
 // [Performance] cache summary in supabase memory table
+// [Accuracy] prompt management
 
 function parseList(text: string): string[] {
 	const lines = text.trim().split('\n');
