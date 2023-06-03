@@ -85,12 +85,12 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	let llm = new ChatOpenAI();
 
 	const respChain = new LLMChain({llm : llm, prompt: ChatPromptTemplate.fromPromptMessages(chatMessages)});
-	const res = await respChain.call({
+	const respChainRes = await respChain.call({
 			observation: observation,
 			initiator_name: initiator_name,
 			recipient_name: recipient_name
 		});
-	const msgResp = res.trim();
+	const msgResp = respChainRes.text.trim();
 
 	if (msgResp.includes('NOTHING')) {
 		return new Response(JSON.stringify({ 'success': 1, 'resp_msg': {'is_valid': false, 'message':''} }), { status: 200 });
@@ -105,12 +105,12 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
 	const validationChain = new LLMChain({llm : llm,
 		prompt : ChatPromptTemplate.fromPromptMessages(chatMessages)});
-	const res2 = await validationChain.call({
+	const validationChainRes = await validationChain.call({
 			observation: observation,
 			initiator_name: initiator_name,
 			recipient_name: recipient_name
 	});
-	const validationResp = res2.trim();
+	const validationResp = validationChainRes.text.trim();
 
 	if (validationResp.includes('no')) {
 		return new Response(JSON.stringify({ 'success': 1, 'resp_msg': {'is_valid': false, 'message':''} }), { status: 200 });
