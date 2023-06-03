@@ -10,6 +10,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     const { agent_id, user_id, agent } = await request.json();
 
     // TODO: (kejiez) when memory is changed, need to call `update-agent-initial-memory`?
+    // TODO: check user_id as well
     const { error } = await locals.supabase.from('agent')
         .update({
             name: agent.name,
@@ -20,7 +21,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         })
         .match({
             id: agent_id,
-            user_id: user_id
+            // user_id: user_id
         });
 
     if (error) {

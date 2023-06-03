@@ -1,7 +1,9 @@
 <script lang="ts">
+	import { error } from '@sveltejs/kit';
 	import { isAgentFormEditing } from './stores';
 	import type { AgentDataType } from './types';
 	import { Label, Input, Button } from 'flowbite-svelte';
+	import { goto } from '$app/navigation';
 
 	export let agentData: AgentDataType = {
 		id: '',
@@ -11,10 +13,62 @@
 		socialStatus: '',
 		memories: ['']
 	};
+	let agentForm: HTMLFormElement;
 
-	function handleSubmit() {
-		console.log('submitted!');
-		isAgentFormEditing.set(false);
+	async function handleSubmit() {
+		if ($isAgentFormEditing) {
+			// TODO: get user_id
+			const user_id = '';
+			const resp = await fetch('/api/update-agent', {
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				method: 'PUT',
+				body: JSON.stringify({
+					agent_id: agentData.id,
+					user_id,
+					agent: {
+						name: agentData.name,
+						age: agentData.age,
+						personality: agentData.personalities,
+						status: agentData.socialStatus,
+						memory: agentData.memories.join(' ')
+					}
+				})
+			});
+			const data = await resp.json();
+			if (!data.success) {
+				alert(data.error);
+			} else {
+				isAgentFormEditing.set(false);
+			}
+		} else {
+			// TODO: get user_id
+			const user_id = 'e971a95c-e503-455c-bdd4-8a5a27efa116';
+			const resp = await fetch('/api/create-agent', {
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				method: 'PUT',
+				body: JSON.stringify({
+					user_id,
+					agent: {
+						name: agentData.name,
+						age: agentData.age,
+						personality: agentData.personalities,
+						status: agentData.socialStatus,
+						memory: agentData.memories.join(' ')
+					}
+				})
+			});
+
+			const data = await resp.json();
+			if (!data.success) {
+				error(data.error);
+			} else {
+				goto(`/agent/${data.agent_id}`);
+			}
+		}
 	}
 
 	function addMemory() {
@@ -33,33 +87,34 @@
 </script>
 
 <main>
-	<form on:submit|preventDefault={handleSubmit}>
+	<form on:submit|preventDefault={handleSubmit} bind:this={agentForm}>
 		<Label class="mb-8 w-1/4">
 			Name:
-			<Input type="text" class="mt-5" bind:value={agentData.name} />
+			<Input id="name" type="text" class="mt-5" bind:value={agentData.name} />
 		</Label>
 
-		<Label class="mb-8 w-1/4">
+		<Label for="age" class="mb-8 w-1/4">
 			Age:
-			<Input type="number" class="mt-5" bind:value={agentData.age} />
+			<Input id="age" type="number" class="mt-5" bind:value={agentData.age} />
 		</Label>
 
-		<Label class="mb-8 w-1/4">
+		<Label for="personalities" class="mb-8 w-1/4">
 			Personalities:
-			<Input type="text" class="mt-5" bind:value={agentData.personalities} />
+			<Input id="personalities" type="text" class="mt-5" bind:value={agentData.personalities} />
 		</Label>
 
-		<Label class="mb-8 w-1/4">
+		<Label for="social-status" class="mb-8 w-1/4">
 			Social status:
-			<Input type="text" class="mt-5" bind:value={agentData.socialStatus} />
+			<Input id="social-status" type="text" class="mt-5" bind:value={agentData.socialStatus} />
 		</Label>
 
-		<Label class="mb-10 w-1/2">
+		<Label for="memories" class="mb-10 w-1/2">
 			Memories:
 
 			{#each agentData.memories as memory, index}
 				<div class="mb-5 mt-5 flex">
 					<Input
+						id="memories"
 						type="text"
 						class="mr-2 dark:placeholder-gray-500"
 						placeholder="Social relationship, experience, catch phrase, ..."
