@@ -11,37 +11,32 @@ export const config: Config = {
 };
 
 export const PUT = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
-	const {
+    const {
         user_id
-	} = await request.json();
-
+    } = await request.json();
+    
     // get the conversations
-	const { data: conversations } = await locals.supabase
-		.from('conversation')
-		.select('id, name, agents, user_agents')
-		.eq('user_id', user_id);
-
-	if (checkValidity(conversations) === false) {
-		return new Response(JSON.stringify({ 'success': 0, 'error': 'conversations not found' }), { status: 200 });
-	}
-
+    const { data: conversations } = await locals.supabase
+        .from('conversation')
+        .select('id, name, agents, user_agents')
+        .eq('user_id', user_id);
+        
+    if (checkValidity(conversations) === false) {
+        return new Response(JSON.stringify({ 'success': 0, 'error': 'conversations not found' }), { status: 200 });
+    }
+    
     let res_conversations = [];
     // get snapshot of a conversation
+    // Some conversations are created, but no message exchanged
     for (const conversation of conversations) {
         let snapshot = [];
         const { data: messages } = await locals.supabase
             .from('message')
-		    .select('agent_id, recipient_agent_id, create_time, content')
-		    .eq('conversation_id', conversation.id)
+            .select('agent_id, recipient_agent_id, create_time, content')
+            .eq('conversation_id', conversation.id)
             .order('create_time', { ascending: false })
             .limit(3);
 
-        // Some conversations are created, but no message exchanged
-        /*
-	    if (checkValidity(messages) === false) {
-		    return new Response(JSON.stringify({ 'success': 0, 'error': 'messages not found' }), { status: 200 });
-	    }
-        */
         for (const m of messages) {
             snapshot.push({
                 'initiate_agent_id': m.agent_id,

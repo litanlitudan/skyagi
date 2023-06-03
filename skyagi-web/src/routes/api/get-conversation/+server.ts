@@ -12,8 +12,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	const {
 		conversation_id
 	} = await request.json();
-
-    // get the conversation
+	
+	// get the conversation
 	const { data: conversation } = await locals.supabase
 		.from('conversation')
 		.select('name, agents, user_agents')
@@ -22,8 +22,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	if (checkValidity(conversation) === false) {
 		return new Response(JSON.stringify({ 'success': 0, 'error': 'conversation not found' }), { status: 200 });
 	}
-
-    // get messages of a conversation
+	
+	// get messages of a conversation
 	const { data: messages } = await locals.supabase
 		.from('message')
 		.select('agent_id, recipient_agent_id, create_time, content')
