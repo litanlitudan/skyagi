@@ -3,6 +3,7 @@
 	import { Label, Input, Button } from 'flowbite-svelte';
 
 	export let agentData: AgentDataType = {
+		id: '',
 		name: '',
 		age: '',
 		personalities: '',
