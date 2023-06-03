@@ -14,22 +14,23 @@
 </script>
 
 <main>
-	<h1>Agent Details</h1>
-
-	{#if agentData}
+	{#if agentData && Object.keys(agentData).length !== 0}
+		<h1>Agent Details</h1>
 		<!-- Display the form data -->
 		<p>Name: {agentData.name}</p>
 		<p>Age: {agentData.age}</p>
 		<p>Personalities: {agentData.personalities}</p>
 		<p>Social status: {agentData.socialStatus}</p>
 		<p>Memories:</p>
-		<ul>
-			{#each agentData.memories as memory}
-				<li>{memory}</li>
-			{/each}
-		</ul>
+		{#if agentData.memories}
+			<ul>
+				{#each agentData.memories as memory}
+					<li>{memory}</li>
+				{/each}
+			</ul>
+		{/if}
 	{:else}
-		<p>Loading agent details...</p>
+		<p>Agent not found</p>
 	{/if}
 
 	<Button type="button" on:click={handleEdit}>Edit</Button>
