@@ -39,7 +39,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	}
 	
 	// get agents' initial memory and add to memory
-    const embeddings = new OpenAIEmbeddings();
+	const embeddings = new OpenAIEmbeddings();
 	const currentTime = new Date().toISOString();
 
 	for (const agent_id of agent_ids) {
