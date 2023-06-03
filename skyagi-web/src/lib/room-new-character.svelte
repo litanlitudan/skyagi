@@ -9,6 +9,7 @@
 	export let character: CharacterType;
     export let value;
 
+
     // export let lastClickedCharacter;
     const dispatch = createEventDispatcher();
     function updateLastClickedCharacter(){
