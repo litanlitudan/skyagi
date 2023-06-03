@@ -10,7 +10,7 @@
 		memories: ['']
 	};
 
-	export let handleSubmit = () => {
+	export let handleSubmit = (data: AgentDataType) => {
 		console.log('submitted!');
 	};
 
@@ -30,7 +30,7 @@
 </script>
 
 <main>
-	<form on:submit|preventDefault={handleSubmit}>
+	<form on:submit|preventDefault={() => handleSubmit(agentData)}>
 		<Label class="mb-8 w-1/4">
 			Name:
 			<Input type="text" class="mt-5" bind:value={agentData.name} />
