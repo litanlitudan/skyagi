@@ -1,12 +1,13 @@
 <script lang="ts">
+	import { isAgentFormEditing } from './stores';
 	import type { AgentDataType } from './types';
 	import { Button } from 'flowbite-svelte';
 
 	export let agentData: AgentDataType;
 
-	export let handleEdit = () => {
-		console.log('Edited');
-	};
+	function handleEdit() {
+		isAgentFormEditing.set(true);
+	}
 
 	export let handleDelete = async () => {
 		const agent_id = agentData.id;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { isAgentFormEditing } from './stores';
 	import type { AgentDataType } from './types';
 	import { Label, Input, Button } from 'flowbite-svelte';
 
@@ -11,9 +12,10 @@
 		memories: ['']
 	};
 
-	export let handleSubmit = () => {
+	function handleSubmit() {
 		console.log('submitted!');
-	};
+		isAgentFormEditing.set(false);
+	}
 
 	function addMemory() {
 		agentData.memories = [...agentData.memories, ''];
@@ -71,6 +73,9 @@
 			<Button type="button" on:click={addMemory}>+</Button>
 		</Label>
 
+		{#if $isAgentFormEditing}
+			<Button type="button" class="" on:click={() => isAgentFormEditing.set(false)}>Cancel</Button>
+		{/if}
 		<Button type="submit" class="">Submit</Button>
 	</form>
 </main>
