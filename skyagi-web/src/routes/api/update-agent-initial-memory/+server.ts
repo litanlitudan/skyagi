@@ -39,7 +39,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		return new Response(JSON.stringify({ 'success': 0, 'error': 'agent not found' }), { status: 200 });
 	}
 
-    // update the memory	
+
+	// update the memory
 	const { error } = await locals.supabase
 		.from('agent')
 		.update({

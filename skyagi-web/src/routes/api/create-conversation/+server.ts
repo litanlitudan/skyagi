@@ -39,7 +39,9 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	}
 	
 	// get agents' initial memory and add to memory
-    const embeddings = new OpenAIEmbeddings();
+
+	const embeddings = new OpenAIEmbeddings();
+
 	const currentTime = new Date().toISOString();
 
 	for (const agent_id of agent_ids) {
@@ -76,6 +78,5 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		}
 	}
 
-	// need to call add_memory?
 	return new Response(JSON.stringify({ success: 1, conversation_id: conv_id[0].id }), { status: 200 });
 }) satisfies RequestHandler;
