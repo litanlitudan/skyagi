@@ -43,8 +43,8 @@
 				isAgentFormEditing.set(false);
 			}
 		} else {
-			// TODO: get user_id
-			const user_id = 'e971a95c-e503-455c-bdd4-8a5a27efa116';
+			// TODO: get user_id, otherwise this won't work
+			const user_id = '';
 			const resp = await fetch('/api/create-agent', {
 				headers: {
 					'Content-Type': 'application/json'

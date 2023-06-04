@@ -20,7 +20,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         });
 
     if (error) {
-        console.log(error);
+        console.error(`Fail to archive agent: ${error?.message}`);
         return new Response(JSON.stringify({ 'success': 0, 'error': "failed to archive agent" }), { status: 200 });
     } else {
         return new Response(JSON.stringify({ 'success': 1 }), { status: 200 });

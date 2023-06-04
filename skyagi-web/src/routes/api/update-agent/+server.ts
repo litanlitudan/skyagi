@@ -9,7 +9,6 @@ export const config: Config = {
 export const PUT = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
     const { agent_id, user_id, agent } = await request.json();
 
-    // TODO: (kejiez) when memory is changed, need to call `update-agent-initial-memory`?
     // TODO: check user_id as well
     const { error } = await locals.supabase.from('agent')
         .update({
@@ -25,7 +24,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         });
 
     if (error) {
-        console.log(error);
+        console.error(`Fail to update agent: ${error?.message}`);
         return new Response(JSON.stringify({ 'success': 0, 'error': "failed to update agent" }), { status: 200 });
     } else {
         return new Response(JSON.stringify({ 'success': 1 }), { status: 200 });
