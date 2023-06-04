@@ -13,7 +13,6 @@
 		socialStatus: '',
 		memories: ['']
 	};
-	let agentForm: HTMLFormElement;
 
 	async function handleSubmit() {
 		if ($isAgentFormEditing) {
@@ -32,7 +31,7 @@
 						age: agentData.age,
 						personality: agentData.personalities,
 						status: agentData.socialStatus,
-						memory: agentData.memories.join(' ')
+						memory: agentData.memories.join('\n')
 					}
 				})
 			});
@@ -87,7 +86,7 @@
 </script>
 
 <main>
-	<form on:submit|preventDefault={handleSubmit} bind:this={agentForm}>
+	<form on:submit|preventDefault={handleSubmit}>
 		<Label class="mb-8 w-1/4">
 			Name:
 			<Input id="name" type="text" class="mt-5" bind:value={agentData.name} />
@@ -129,7 +128,9 @@
 		</Label>
 
 		{#if $isAgentFormEditing}
-			<Button type="button" class="" on:click={() => isAgentFormEditing.set(false)}>Cancel</Button>
+			<Button type="button" class="" color="light" on:click={() => isAgentFormEditing.set(false)}
+				>Cancel</Button
+			>
 		{/if}
 		<Button type="submit" class="">Submit</Button>
 	</form>

@@ -29,7 +29,7 @@ export const load = (async ({ params, fetch }) => {
         age: agent.age,
         personalities: agent.personality,
         socialStatus: agent.initial_status,
-        memories: [agent.initial_memory],
+        memories: agent.initial_memory.split('\n'),
         archived: agent.archived
     };
 
