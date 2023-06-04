@@ -1,7 +1,9 @@
 <script lang="ts">
-    // import Scrolly from "./Scrolly.svelte";
+    import { createSearchStore, searchHandler } from '$lib/room/stores/search';
     import Character from '$lib/room-new-character.svelte';
     import { Select, Label } from 'flowbite-svelte';
+	import { onDestroy } from 'svelte';
+    
 
     export const characters = [
         {name: "tan li", image: "../src/lib/assets/Avatar1.png", title:"", description:""},
@@ -9,6 +11,20 @@
         {name: "Vegeta", image: "../src/lib/assets/Avatar3.png", title:"", description:""},
         {name: "Goku", image:"../src/lib/assets/Avatar3.png", title:"", description:""},
         {name: "Sheldon", image:"../src/lib/assets/Avatar2.png", title:"", description:""}];
+    const searchCharacters = characters.map((character) => ({
+        ...character,
+        searchTerms: `${character.name}`
+    }));
+    const searchStore = createSearchStore(searchCharacters);
+
+    const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
+
+    onDestroy(()=> {
+        unsubscribe();
+    });
+
+
+
 
     let lastClickedCharacter = "..."
     function handleOnClickImageMessage(event) {
@@ -54,11 +70,11 @@
 <div id="globalGrid">
     
     <div>
-        <input id="searchBar" type="search" placeholder="Search..." />
+        <input id="searchBar" type="search" placeholder="Search..." bind:value={$searchStore.search} />
     </div>
     
     <div class="scroller">
-        {#each characters as character, i}
+        {#each $searchStore.filtered as character, i}
             <div class="characterInfoSet">
                 <Character {character} 
                  on:message={handleOnClickImageMessage} 
@@ -89,7 +105,9 @@
             You will play...
         </h1>
         <Label class="mb-10 w-1/2">Select an option
-            <Select id="playerDropDown" class="mt-5" size="lg" items={charactersToItems(checkedCharacterGroup)} bind:value={playerCharacter}
+            <Select id="playerDropDown" class="mt-5" size="lg" 
+            items={charactersToItems(checkedCharacterGroup)} 
+            bind:value={playerCharacter}
             placeholder = "Select your character" />
         </Label>
         <button>
