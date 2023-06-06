@@ -47,6 +47,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         }
         
         res_conversations.push({
+            'id': conversation.id,
             'name': conversation.name,
             'summary': '',
             'agents': conversation.agents,
