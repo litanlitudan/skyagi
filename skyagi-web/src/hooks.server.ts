@@ -23,6 +23,12 @@ export const handle: Handle = async ({ event, resolve }) => {
     return session;
   };
 
+  // Get the cookies from the request
+	const { cookies } = event;
+
+	// Get the user token from the cookie
+	const authToken = cookies.get('sb-auth-token');
+
   return resolve(event, {
     /**
      * There´s an issue with `filterSerializedResponseHeaders` not working when using `sequence`
