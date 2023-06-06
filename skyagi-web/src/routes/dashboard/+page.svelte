@@ -19,6 +19,10 @@
     function handleCreateAgentClick() {
         window.location.href = '/agent/create'
     }
+
+    function handleCreateRoomClick() {
+        window.location.href = '/room/new'
+    }
     const images = ["../src/lib/assets/Ale.png", "../src/lib/assets/Amy.png",
     "../src/lib/assets/Bella.png","../src/lib/assets/Coco.png","../src/lib/assets/Don.png","../src/lib/assets/Edgar.png",
     "../src/lib/assets/Ian.png","../src/lib/assets/Jack.png"]
@@ -35,10 +39,10 @@
             {/each}
         </Accordion>
         <div id="buttonGrid">
-            <Button on:click={handleCreateAgentClick}>
+            <Button on:click={handleCreateRoomClick}>
                 Create new conversation
             </Button>
-            <Button>
+            <Button on:click={handleCreateAgentClick}>
                 Create new agent
             </Button>
         </div>

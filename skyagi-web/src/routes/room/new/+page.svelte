@@ -4,11 +4,16 @@
     import { Select, Label } from 'flowbite-svelte';
 	import { onDestroy } from 'svelte';
     export let data;
-    export const characterData = data.agents
+    import { browser } from '$app/environment';
+    export const characterData = data.agents.agents
+    export const modelData = data.models.models
+    let models = modelData
     
     const characters = characterData.map((characterDataPoint) => ({
         ...characterDataPoint,
-        image: "../src/lib/assets/Avatar1.png"
+        image: "../src/lib/assets/Avatar1.png",
+        model: "",
+        modelToken: ""
     }))
 
     const searchCharacters = characters.map((character) => ({
@@ -27,9 +32,15 @@
 
 
     let lastClickedCharacter = "..."
+    let showedModelIndex = 0
     function handleOnClickImageMessage(event) {
         console.log(event.detail.character.name);
         lastClickedCharacter = event.detail.character.name;
+        showedModelIndex = event.detail.character.model;
+        if (browser) {
+            modelSelect = document.getElementById("modelSelect")
+            modelSelect.value = showedModelIndex;
+        }
     }
 
 
@@ -37,14 +48,14 @@
 
 
     let selectedModel;
-    let models = [
-		{ value: 'openai-gpt-3.5-turbo', name: 'openai-gpt-3.5-turbo' },
-		{ value: 'openai-gpt-4', name: 'openai-gpt-4' }
-		// { value: 'chatglm-6b-modelz', name: 'chatglm-6b-modelz' },
-		// { value: 'moss-16b-modelz', name: 'moss-16b-modelz' },
-		// { value: 'vicuna-13b-modelz', name: 'vicuna-13b-modelz' },
-		// { value: 'mpt-7b-modelz', name: 'mpt-7b-modelz' }
-	];
+    // let models = [
+	// 	{ value: 'openai-gpt-3.5-turbo', name: 'openai-gpt-3.5-turbo' },
+	// 	{ value: 'openai-gpt-4', name: 'openai-gpt-4' }
+	// 	// { value: 'chatglm-6b-modelz', name: 'chatglm-6b-modelz' },
+	// 	// { value: 'moss-16b-modelz', name: 'moss-16b-modelz' },
+	// 	// { value: 'vicuna-13b-modelz', name: 'vicuna-13b-modelz' },
+	// 	// { value: 'mpt-7b-modelz', name: 'mpt-7b-modelz' }
+	// ];
     let checkedCharacterGroup = [];
     let playerCharacter;
     function charactersToItems(inputCharacters){
@@ -81,18 +92,19 @@
             Select Model for {lastClickedCharacter}
         </h1>
         <Label>Select an option
-            <Select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" items={models} bind:value={selectedModel}
+            <Select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
+            items={models} 
+            bind:value={selectedModel}
+            id="modelSelect"
             placeholder = "Select LLM" />
         </Label>
 
         <h1>
-            API Key
+            Model Token
         </h1>
         <input id="APIKeyField" placeholder="Input key">
 
-        <h1>
-            You will play...
-        </h1>
+
         <Label class="mb-10 w-1/2">Select an option
             <Select id="playerDropDown" class="mt-5" size="lg" 
             items={charactersToItems(checkedCharacterGroup)} 
