@@ -30,9 +30,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		.eq('conversation_id', conversation_id)
         .order('create_time', { ascending: true });
 
-	if (checkValidity(messages) === false) {
-		return new Response(JSON.stringify({ 'success': 0, 'error': 'messages not found' }), { status: 200 });
-	}
+	// a converation could have empty messages, so no need to check if messages is empty
 
     let resp = {
         'summary': 1,
