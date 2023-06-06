@@ -3,14 +3,14 @@
     import Character from '$lib/room-new-character.svelte';
     import { Select, Label } from 'flowbite-svelte';
 	import { onDestroy } from 'svelte';
+    export let data;
+    export const characterData = data.agents
     
+    const characters = characterData.map((characterDataPoint) => ({
+        ...characterDataPoint,
+        image: "../src/lib/assets/Avatar1.png"
+    }))
 
-    export const characters = [
-        {name: "tan li", image: "../src/lib/assets/Avatar1.png", title:"", description:""},
-        {name: "yy", image: "../src/lib/assets/Avatar2.png", title:"", description:""},
-        {name: "Vegeta", image: "../src/lib/assets/Avatar3.png", title:"", description:""},
-        {name: "Goku", image:"../src/lib/assets/Avatar3.png", title:"", description:""},
-        {name: "Sheldon", image:"../src/lib/assets/Avatar2.png", title:"", description:""}];
     const searchCharacters = characters.map((character) => ({
         ...character,
         searchTerms: `${character.name}`
@@ -34,17 +34,6 @@
 
 
 
-
-    function getNthPicPositionStr(inputVal) {
-        let startPointX = 120;
-        let startPointY = 150;
-        let widthX = 200;
-        let widthY = 200;
-        let leftVal = (inputVal%3) * widthX+startPointX
-        let topVal = Math.floor(inputVal/3) * widthY+startPointY
-        // console.log("positin:absolute;left:" + leftVal.toString() + "px;top:" + topVal.toString() + "px") 
-        return "position:static;left:" + leftVal.toString() + "px;top:" + topVal.toString() + "px"
-    }
 
 
     let selectedModel;
