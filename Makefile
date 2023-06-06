@@ -2,10 +2,14 @@ setup-package:
 	pip install virtualenv
 	pip install build
 
-build-package:
+build-skyagi-package:
 	make setup-package
 	cp README.md skyagi
 	cd skyagi && python -m build
+
+build-community-profiler-package:
+	make setup-package
+	cd community-profiler && python -m build
 
 install:
 	cd skyagi && pip install -e .[dev]

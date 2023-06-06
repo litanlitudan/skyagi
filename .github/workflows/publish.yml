@@ -19,9 +19,15 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: make build-package
-      - name: Publish package
+      - run: make build-skyagi-package
+      - name: Publish SkyAGI package
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
+          password: ${{ secrets.PYPI_SKYAGI_TOKEN }}
           packages_dir: skyagi/dist
+      - run: make build-community-profiler-package
+      - name: Publish Community-Profiler package
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_COMMUNITY_PROFILER_TOKEN }}
+          packages_dir: community-profiler/dist
