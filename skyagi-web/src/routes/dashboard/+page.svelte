@@ -1,6 +1,6 @@
 <script lang="ts">
     import Character from '$lib/dashboard-character.svelte';
-    import { AccordionItem, Accordion } from 'flowbite-svelte';
+    import { AccordionItem, Accordion, Button} from 'flowbite-svelte';
     import Conversation from '$lib/dashboard-conversation.svelte'
     export let data;
     export const characterData = data.agents.agents
@@ -27,12 +27,12 @@
             {/each}
         </Accordion>
         <div id="buttonGrid">
-            <button>
+            <Button>
                 Create new conversation
-            </button>
-            <button>
+            </Button>
+            <Button>
                 Create new agent
-            </button>
+            </Button>
         </div>
     </div>
     
