@@ -1,8 +1,12 @@
 <script lang="ts">
+	import { error } from '@sveltejs/kit';
+	import { isAgentFormEditing } from './stores';
 	import type { AgentDataType } from './types';
 	import { Label, Input, Button } from 'flowbite-svelte';
+	import { goto } from '$app/navigation';
 
 	export let agentData: AgentDataType = {
+		id: '',
 		name: '',
 		age: '',
 		personalities: '',
@@ -10,9 +14,61 @@
 		memories: ['']
 	};
 
-	export let handleSubmit = () => {
-		console.log('submitted!');
-	};
+	async function handleSubmit() {
+		if ($isAgentFormEditing) {
+			// TODO: get user_id
+			const user_id = '';
+			const resp = await fetch('/api/update-agent', {
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				method: 'PUT',
+				body: JSON.stringify({
+					agent_id: agentData.id,
+					user_id,
+					agent: {
+						name: agentData.name,
+						age: agentData.age,
+						personality: agentData.personalities,
+						status: agentData.socialStatus,
+						memory: agentData.memories.join('\n')
+					}
+				})
+			});
+			const data = await resp.json();
+			if (!data.success) {
+				alert(data.error);
+			} else {
+				isAgentFormEditing.set(false);
+			}
+		} else {
+			// TODO: get user_id, otherwise this won't work
+			const user_id = '';
+			const resp = await fetch('/api/create-agent', {
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				method: 'PUT',
+				body: JSON.stringify({
+					user_id,
+					agent: {
+						name: agentData.name,
+						age: agentData.age,
+						personality: agentData.personalities,
+						status: agentData.socialStatus,
+						memory: agentData.memories.join(' ')
+					}
+				})
+			});
+
+			const data = await resp.json();
+			if (!data.success) {
+				alert(data.error);
+			} else {
+				goto(`/agent/${data.agent_id}`);
+			}
+		}
+	}
 
 	function addMemory() {
 		agentData.memories = [...agentData.memories, ''];
@@ -33,30 +89,31 @@
 	<form on:submit|preventDefault={handleSubmit}>
 		<Label class="mb-8 w-1/4">
 			Name:
-			<Input type="text" class="mt-5" bind:value={agentData.name} />
+			<Input id="name" type="text" class="mt-5" bind:value={agentData.name} />
 		</Label>
 
-		<Label class="mb-8 w-1/4">
+		<Label for="age" class="mb-8 w-1/4">
 			Age:
-			<Input type="number" class="mt-5" bind:value={agentData.age} />
+			<Input id="age" type="number" class="mt-5" bind:value={agentData.age} />
 		</Label>
 
-		<Label class="mb-8 w-1/4">
+		<Label for="personalities" class="mb-8 w-1/4">
 			Personalities:
-			<Input type="text" class="mt-5" bind:value={agentData.personalities} />
+			<Input id="personalities" type="text" class="mt-5" bind:value={agentData.personalities} />
 		</Label>
 
-		<Label class="mb-8 w-1/4">
+		<Label for="social-status" class="mb-8 w-1/4">
 			Social status:
-			<Input type="text" class="mt-5" bind:value={agentData.socialStatus} />
+			<Input id="social-status" type="text" class="mt-5" bind:value={agentData.socialStatus} />
 		</Label>
 
-		<Label class="mb-10 w-1/2">
+		<Label for="memories" class="mb-10 w-1/2">
 			Memories:
 
 			{#each agentData.memories as memory, index}
 				<div class="mb-5 mt-5 flex">
 					<Input
+						id="memories"
 						type="text"
 						class="mr-2 dark:placeholder-gray-500"
 						placeholder="Social relationship, experience, catch phrase, ..."
@@ -70,6 +127,11 @@
 			<Button type="button" on:click={addMemory}>+</Button>
 		</Label>
 
+		{#if $isAgentFormEditing}
+			<Button type="button" class="" color="light" on:click={() => isAgentFormEditing.set(false)}
+				>Cancel</Button
+			>
+		{/if}
 		<Button type="submit" class="">Submit</Button>
 	</form>
 </main>
