@@ -16,6 +16,13 @@
         ...conversationDataPoint
     }))
 
+    function handleCreateAgentClick() {
+        window.location.href = '/agent/create'
+    }
+    const images = ["../src/lib/assets/Ale.png", "../src/lib/assets/Amy.png",
+    "../src/lib/assets/Bella.png","../src/lib/assets/Coco.png","../src/lib/assets/Don.png","../src/lib/assets/Edgar.png",
+    "../src/lib/assets/Ian.png","../src/lib/assets/Jack.png"]
+
 </script>
 
 
@@ -28,7 +35,7 @@
             {/each}
         </Accordion>
         <div id="buttonGrid">
-            <Button>
+            <Button on:click={handleCreateAgentClick}>
                 Create new conversation
             </Button>
             <Button>
@@ -39,10 +46,12 @@
     
     <div class="scroller">
         {#each characters as character, i}
+            <a href= "agent/{character.id}">
             <div class="characterInfoSet">
-                <Character {character}>
+                <Character {character} imageUrl={images[i]}>
                 </Character>
             </div>
+            </a>
         {/each}
     </div>
 
