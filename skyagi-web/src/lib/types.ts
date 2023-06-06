@@ -6,10 +6,12 @@ export interface CharacterType {
 }
 
 export interface AgentDataType {
+    id: string;
     name: string;
     age: string;
     personalities: string;
     socialStatus: string;
     memories: string[];
+    archived?: boolean;
 }
 

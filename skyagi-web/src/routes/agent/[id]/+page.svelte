@@ -3,24 +3,15 @@
 	import AgentForm from '$lib/AgentForm.svelte';
 	import type { AgentDataType } from '$lib/types';
 	import type { PageData } from './$types';
+	import { isAgentFormEditing } from '$lib/stores';
 
 	export let data: PageData;
 
 	let agentData: AgentDataType = data.body;
-
-	let isEditing = false;
-
-	function handleEdit() {
-		isEditing = true;
-	}
-
-	function handleSubmit() {
-		isEditing = false;
-	}
 </script>
 
-{#if isEditing}
-	<AgentForm {agentData} {handleSubmit} />
+{#if $isAgentFormEditing}
+	<AgentForm {agentData} />
 {:else}
-	<AgentDetails {agentData} {handleEdit} />
+	<AgentDetails {agentData} />
 {/if}
