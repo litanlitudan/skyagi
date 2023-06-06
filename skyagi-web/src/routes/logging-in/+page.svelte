@@ -11,7 +11,8 @@
 
 		// check if user has been set in session store then redirect
 		if (browser && data.session) {
-			goto(redirectTo ?? '/dashboard');
+			//goto(redirectTo ?? '/dashboard');
+			goto('/dashboard');
 		}
 	}
 </script>
