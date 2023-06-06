@@ -63,7 +63,7 @@
 
 			const data = await resp.json();
 			if (!data.success) {
-				error(data.error);
+				alert(data.error);
 			} else {
 				goto(`/agent/${data.agent_id}`);
 			}
