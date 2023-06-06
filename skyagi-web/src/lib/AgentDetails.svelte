@@ -25,7 +25,7 @@
 			body: JSON.stringify({ agent_id, user_id })
 		});
 
-		goto('/agent');
+		goto('/dashboard');
 	};
 </script>
 
