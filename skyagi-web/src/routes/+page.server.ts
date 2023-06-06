@@ -5,7 +5,7 @@ import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ url, locals: { getSession } }) => {
 	const session = await getSession();
 
-	// if the user is already logged in return them to the account page
+	// if the user is already logged in return them to the dasnboard page
 	if (session) {
 		throw redirect(303, '/dashboard');
 	}
