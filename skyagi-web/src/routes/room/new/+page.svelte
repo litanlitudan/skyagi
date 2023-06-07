@@ -13,7 +13,8 @@
         ...characterDataPoint,
         image: "../src/lib/assets/Avatar1.png",
         model: "",
-        modelToken: ""
+        modelToken: "",
+        selected:false
     }))
 
     const searchCharacters = characters.map((character) => ({
@@ -27,8 +28,6 @@
     onDestroy(()=> {
         unsubscribe();
     });
-
-
 
 
     let lastClickedCharacterName = "..."
@@ -54,9 +53,6 @@
     }
 
 
-
-
-
     let selectedModel="";
     let selectedToken="";
     let checkedCharacterGroup = [];
@@ -76,6 +72,24 @@
     function handleTokenInput() {
         lastClickedCharacter.modelToken = selectedToken
     }
+
+    const handleCreateButton = async () => {
+        let selectedCharacters = characters.filter((item) => item.checked==false)
+        let agent_ids = selectedCharacters.map((item) => (item.id))
+        await fetch("/api/create-conversation", {
+        method: 'PUT',
+        headers: {
+            "Content-Type" : 'application/json'
+        },
+        body: JSON.stringify({
+            name: "",
+            agent_ids: agent_ids,
+            user_agent_ids: []
+        })
+    })
+        window.location.href = '/room/new/{}'
+    }
+
 </script>
 
 <div id="globalGrid">

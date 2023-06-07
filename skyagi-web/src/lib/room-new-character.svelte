@@ -36,6 +36,7 @@
             } else {
                 bindGroup = bindGroup.filter((item) => item !== value)
             }
+        character.selected=characterCheck.checked
     }
 
 </script>
