@@ -31,15 +31,25 @@
 
 
 
-    let lastClickedCharacter = "..."
-    let showedModelIndex = 0
+    let lastClickedCharacterName = "..."
+    let lastClickedCharacter = characters[0]
+    let showedModelValue = ""
+    let showedTokenValue = ""
     function handleOnClickImageMessage(event) {
         console.log(event.detail.character.name);
-        lastClickedCharacter = event.detail.character.name;
-        showedModelIndex = event.detail.character.model;
+        lastClickedCharacterName = event.detail.character.name;
+        lastClickedCharacter = event.detail.character;
+        showedModelValue = event.detail.character.model;
+        showedTokenValue = event.detail.character.modelToken;
+        console.log(showedModelValue)
         if (browser) {
-            modelSelect = document.getElementById("modelSelect")
-            modelSelect.value = showedModelIndex;
+            let modelSelect = document.getElementById("modelSelect")
+            let tokenField = document.getElementById("tokenField")
+            if (showedTokenValue == ""){
+                console.log("empty string")
+            }
+            modelSelect.value = showedModelValue;
+            tokenField.value = showedTokenValue;
         }
     }
 
@@ -47,15 +57,8 @@
 
 
 
-    let selectedModel;
-    // let models = [
-	// 	{ value: 'openai-gpt-3.5-turbo', name: 'openai-gpt-3.5-turbo' },
-	// 	{ value: 'openai-gpt-4', name: 'openai-gpt-4' }
-	// 	// { value: 'chatglm-6b-modelz', name: 'chatglm-6b-modelz' },
-	// 	// { value: 'moss-16b-modelz', name: 'moss-16b-modelz' },
-	// 	// { value: 'vicuna-13b-modelz', name: 'vicuna-13b-modelz' },
-	// 	// { value: 'mpt-7b-modelz', name: 'mpt-7b-modelz' }
-	// ];
+    let selectedModel="";
+    let selectedToken="";
     let checkedCharacterGroup = [];
     let playerCharacter;
     function charactersToItems(inputCharacters){
@@ -64,6 +67,14 @@
             rst.push({name: inputCharacters[i], value: inputCharacters[i]})
         }
         return rst
+    }
+
+    function handleModelChange() {
+        lastClickedCharacter.model = selectedModel
+    }
+
+    function handleTokenInput() {
+        lastClickedCharacter.modelToken = selectedToken
     }
 </script>
 
@@ -89,20 +100,23 @@
 
     <div>
         <h1>
-            Select Model for {lastClickedCharacter}
+            Select Model for {lastClickedCharacterName}
         </h1>
         <Label>Select an option
             <Select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
             items={models} 
             bind:value={selectedModel}
             id="modelSelect"
+            on:change={handleModelChange}
             placeholder = "Select LLM" />
         </Label>
 
         <h1>
             Model Token
         </h1>
-        <input id="APIKeyField" placeholder="Input key">
+        <input id="tokenField" placeholder="Input key"
+         on:input={handleTokenInput}
+         bind:value={selectedToken}>
 
 
         <Label class="mb-10 w-1/2">Select an option

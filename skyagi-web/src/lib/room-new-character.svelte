@@ -6,7 +6,7 @@
 	import Toast from '$lib/Toast.svelte'
     import { browser } from '$app/environment';
 
-	export let character: CharacterType;
+	export let character;
     export let value;
 
 
