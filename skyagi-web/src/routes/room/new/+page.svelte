@@ -1,15 +1,16 @@
 <script lang="ts">
     import { createSearchStore, searchHandler } from '$lib/room/stores/search';
     import Character from '$lib/room-new-character.svelte';
-    import { Select, Label } from 'flowbite-svelte';
+    import { Select, Label, Button } from 'flowbite-svelte';
 	import { onDestroy } from 'svelte';
     export let data;
     import { browser } from '$app/environment';
     export const characterData = data.agents.agents
     export const modelData = data.models.models
     let models = modelData
+    let chatName = ""
     
-    const characters = characterData.map((characterDataPoint) => ({
+    let characters = characterData.map((characterDataPoint) => ({
         ...characterDataPoint,
         image: "../src/lib/assets/Avatar1.png",
         model: "",
@@ -17,11 +18,7 @@
         selected:false
     }))
 
-    const searchCharacters = characters.map((character) => ({
-        ...character,
-        searchTerms: `${character.name}`
-    }));
-    const searchStore = createSearchStore(searchCharacters);
+    const searchStore = createSearchStore(characters);
 
     const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
 
@@ -56,11 +53,14 @@
     let selectedModel="";
     let selectedToken="";
     let checkedCharacterGroup = [];
-    let playerCharacter;
+    let playerCharacterId;
     function charactersToItems(inputCharacters){
         let rst = []
+        console.log(inputCharacters)
         for (let i=0; i<inputCharacters.length; i++){
-            rst.push({name: inputCharacters[i], value: inputCharacters[i]})
+            if (inputCharacters[i].selected){
+                rst.push({name: inputCharacters[i].name, value: inputCharacters[i].id})
+            }
         }
         return rst
     }
@@ -74,22 +74,23 @@
     }
 
     const handleCreateButton = async () => {
-        let selectedCharacters = characters.filter((item) => item.checked==false)
+        let selectedCharacters = characters.filter((item) => item.selected==false)
         let agent_ids = selectedCharacters.map((item) => (item.id))
-        await fetch("/api/create-conversation", {
-        method: 'PUT',
-        headers: {
-            "Content-Type" : 'application/json'
-        },
-        body: JSON.stringify({
-            name: "",
-            agent_ids: agent_ids,
-            user_agent_ids: []
+        const conversationResponse = await fetch("/api/create-conversation", {
+            method: 'PUT',
+            headers: {
+                "Content-Type" : 'application/json'
+            },
+            body: JSON.stringify({
+                name: chatName,
+                user_id: "e776f213-b2c7-4fe1-b874-e2705ef99345",
+                agent_ids: agent_ids,
+                user_agent_ids: [playerCharacterId]
+            })
         })
-    })
-        window.location.href = '/room/new/{}'
+        let conversation_id = await conversationResponse.json()
+        window.location.href = '/room/' + conversation_id.conversation_id
     }
-
 </script>
 
 <div id="globalGrid">
@@ -101,7 +102,8 @@
     <div class="scroller">
         {#each $searchStore.filtered as character, i}
             <div class="characterInfoSet">
-                <Character {character} 
+                <Character bind:character={character} 
+                 bind:characters={characters}
                  on:message={handleOnClickImageMessage} 
                  bind:bindGroup={checkedCharacterGroup} 
                  value={character.name}>
@@ -110,7 +112,7 @@
         {/each}
     </div>
 
-    <input id="chatNameField" placeholder="Chat name">
+    <input id="chatNameField" placeholder="Chat name" bind:value={chatName}>
 
     <div>
         <h1>
@@ -135,13 +137,13 @@
 
         <Label class="mb-10 w-1/2">Select an option
             <Select id="playerDropDown" class="mt-5" size="lg" 
-            items={charactersToItems(checkedCharacterGroup)} 
-            bind:value={playerCharacter}
+            items={charactersToItems(characters)} 
+            bind:value={playerCharacterId}
             placeholder = "Select your character" />
         </Label>
-        <button>
+        <Button on:click={handleCreateButton}>
             Create
-        </button>
+        </Button>
 
     </div>
 </div>

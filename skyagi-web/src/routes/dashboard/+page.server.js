@@ -4,7 +4,7 @@ export const load = async ({ fetch }) => {
         headers: {
             "Content-Type" : 'application/json'
         },
-        body: JSON.stringify({user_id: "e971a95c-e503-455c-bdd4-8a5a27efa116"})
+        body: JSON.stringify({user_id: "e776f213-b2c7-4fe1-b874-e2705ef99345"})
     })
     let agents = await charactersResponse.json()
 
