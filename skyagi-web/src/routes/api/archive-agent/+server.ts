@@ -9,14 +9,13 @@ export const config: Config = {
 export const PUT = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
     const { agent_id, user_id } = await request.json();
 
-    // TODO: check user_id as well
     const { error } = await locals.supabase.from('agent')
         .update({
             archived: true
         })
         .match({
             id: agent_id,
-            // user_id: user_id
+            user_id: user_id
         });
 
     if (error) {

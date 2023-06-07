@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { error } from '@sveltejs/kit';
 	import { isAgentFormEditing } from './stores';
 	import type { AgentDataType } from './types';
 	import { Label, Input, Button } from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
+	import type { User } from '@supabase/supabase-js';
 
 	export let agentData: AgentDataType = {
 		id: '',
@@ -14,10 +14,11 @@
 		memories: ['']
 	};
 
+	export let user: User;
+
 	async function handleSubmit() {
 		if ($isAgentFormEditing) {
-			// TODO: get user_id
-			const user_id = '';
+			const user_id = user.id;
 			const resp = await fetch('/api/update-agent', {
 				headers: {
 					'Content-Type': 'application/json'
@@ -42,8 +43,7 @@
 				isAgentFormEditing.set(false);
 			}
 		} else {
-			// TODO: get user_id, otherwise this won't work
-			const user_id = '';
+			const user_id = user.id;
 			const resp = await fetch('/api/create-agent', {
 				headers: {
 					'Content-Type': 'application/json'

@@ -4,14 +4,16 @@
 	import type { AgentDataType } from '$lib/types';
 	import type { PageData } from './$types';
 	import { isAgentFormEditing } from '$lib/stores';
+	import type { User } from '@supabase/supabase-js';
 
 	export let data: PageData;
 
 	let agentData: AgentDataType = data.body;
+	let user: User = data.user;
 </script>
 
 {#if $isAgentFormEditing}
-	<AgentForm {agentData} />
+	<AgentForm {agentData} {user} />
 {:else}
-	<AgentDetails {agentData} />
+	<AgentDetails {agentData} {user} />
 {/if}
