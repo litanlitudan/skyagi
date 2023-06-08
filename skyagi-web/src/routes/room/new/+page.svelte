@@ -7,6 +7,13 @@
     import { browser } from '$app/environment';
     export const characterData = data.agents.agents
     export const modelData = data.models.models
+    import modelTokenDataStore from '$lib/room-store.js';
+
+    let selectedModelData;
+    modelTokenDataStore.subscribe((data) => {
+        selectedModelData = data;
+        console.log(data)
+    })
     let models = modelData
     let chatName = ""
     
@@ -89,6 +96,13 @@
             })
         })
         let conversation_id = await conversationResponse.json()
+        modelTokenDataStore.update((currentData) => {
+            return characters.map((item) => ({
+                agent_id: item.id, 
+                model: item.model,
+                token: item.modelToken}))
+
+        })
         window.location.href = '/room/' + conversation_id.conversation_id
     }
 </script>
