@@ -15,7 +15,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
 	const { data: agents } = await locals.supabase
 		.from('agent')
-		.select('id, name, age, personality, initial_status, initial_memory')
+		.select('id, name, age, personality, initial_status, initial_memory, avatar')
 		.eq('user_id', user_id);
 
 	if (checkValidity(agents) === false) {

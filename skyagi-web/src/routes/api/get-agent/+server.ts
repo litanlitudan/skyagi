@@ -12,7 +12,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
     // TODO: check user_id as well
     const { data: agent, error } = await locals.supabase.from('agent')
-        .select()
+        .select('id, name, age, personality, initial_status, initial_memory, avatar')
         .match({
             id: agent_id,
             // user_id: user_id
