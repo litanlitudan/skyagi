@@ -13,9 +13,11 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	const {
 		name,
 		user_id,
-		agent_ids,
+		agents,
 		user_agent_ids
 	} = await request.json();
+
+	let agent_ids = agents.map(agent => agent.id);
 
 	// create conversation
 	const res = await locals.supabase
@@ -39,6 +41,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	}
 	
 	// get agents' initial memory and add to memory
+	// TODO
+	// use per agent model based embedding
 	const embeddings = new OpenAIEmbeddings();
 	const currentTime = new Date().toISOString();
 
