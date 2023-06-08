@@ -4,17 +4,17 @@
     import Conversation from '$lib/dashboard-conversation.svelte'
     export let data;
     export const characterData = data.agents.agents
-    export const conversationData = data.conversations.conversations
-    console.log(conversationData)
+    export const conversationData = data.conversations
+    
     
 
     const characters = characterData.map((characterDataPoint) => ({
         ...characterDataPoint,
         image: "../src/lib/assets/Avatar1.png"
     }))
-    export const conversations = conversationData.map((conversationDataPoint) => ({
-        ...conversationDataPoint
-    }))
+
+    
+    export const conversations = conversationData
 
     function handleCreateAgentClick() {
         window.location.href = '/agent/create'
@@ -34,7 +34,7 @@
     <div>
         <Accordion id="conversationBoard">
             {#each conversations as conversation, i}
-                <Conversation conversationIndex={i+1} conversationSummary = {conversation.conversationSummary} >
+                <Conversation conversationIndex={i+1} conversationSummary = {conversation} >
                 </Conversation>
             {/each}
         </Accordion>
@@ -68,6 +68,7 @@
 
     #conversationBoard {
         height: 1000px;
+        white-space: pre-line;
     }
 
 
