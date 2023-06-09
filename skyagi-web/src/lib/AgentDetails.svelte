@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import type { User } from '@supabase/supabase-js';
 	import { isAgentFormEditing } from './stores';
 	import type { AgentDataType } from './types';
 	import { Button, Modal } from 'flowbite-svelte';
 
 	export let agentData: AgentDataType;
+
+	export let user: User;
 
 	let popupDeleteModal = false;
 
@@ -14,8 +17,7 @@
 
 	export let handleDelete = async () => {
 		const agent_id = agentData.id;
-		// TODO: get user_id
-		const user_id = '';
+		const user_id = user.id;
 
 		const resp = await fetch('/api/archive-agent', {
 			headers: {
