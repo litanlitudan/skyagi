@@ -18,7 +18,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	// get existing agent
 	const { data: existing_agent } = await locals.supabase
 		.from('agent')
-		.select('user_id, name, age, personality, initial_status')
+		.select('user_id, name, age, personality, initial_status, avatar')
 		.eq('id', agent_id);
 
 	if (checkValidity(existing_agent) === false) {
@@ -49,7 +49,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		    age: existing_agent[0].age,
 			personality: existing_agent[0].personality,
 			initial_status: existing_agent[0].initial_status,
-			initial_memory: memories
+			initial_memory: memories,
+			avatar: existing_agent[0].avatar
 		});
 
 	if (error) {

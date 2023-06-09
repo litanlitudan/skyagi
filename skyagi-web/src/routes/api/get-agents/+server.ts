@@ -13,10 +13,10 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         user_id
     } = await request.json();
 
-    const { data: agents } = await locals.supabase
-        .from('agent')
-        .select()
-        .eq('user_id', user_id);
+	const { data: agents } = await locals.supabase
+		.from('agent')
+		.select('id, name, age, personality, initial_status, initial_memory, avatar')
+		.eq('user_id', user_id);
 
     if (checkValidity(agents) === false) {
         return new Response(JSON.stringify({ 'success': 0, 'error': 'agent not found' }), { status: 200 });
