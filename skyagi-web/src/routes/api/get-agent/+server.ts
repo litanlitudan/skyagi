@@ -10,12 +10,11 @@ export const config: Config = {
 export const PUT = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
     const { agent_id, user_id } = await request.json();
 
-    // TODO: check user_id as well
     const { data: agent, error } = await locals.supabase.from('agent')
         .select('id, name, age, personality, initial_status, initial_memory, avatar')
         .match({
             id: agent_id,
-            // user_id: user_id
+            user_id: user_id
         })
         .limit(1)
         .single();
