@@ -109,7 +109,7 @@
                 token: item.modelToken
             }))
         })
-        conversation_id = conversationResponse.json()
+        console.log(conversation_id)
         if (conversation_id.success){
             window.location.href = '/room/' + conversation_id.conversation_id
         }
