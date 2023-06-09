@@ -1,12 +1,14 @@
 <script lang="ts">
+    import { Img } from 'flowbite-svelte';
 	import type { CharacterType } from './types';
 	export let character: CharacterType;
+    export let imageUrl;
 
 </script>
 
 
 <figure>
-    <img src={character.image} alt="" width=70px/>
+    <img class="rounded-lg" src={imageUrl} alt="" width=70px/>
     <figcaption> {character.name} </figcaption>
 </figure>
 
