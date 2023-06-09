@@ -82,7 +82,13 @@
 
     const handleCreateButton = async () => {
         let selectedCharacters = characters.filter((item) => item.selected==false)
-        let agent_ids = selectedCharacters.map((item) => (item.id))
+        let inputAgents = selectedCharacters.map((item) => (
+            {id: item.id, 
+            model: {
+                name: item.model,
+                token: item.modelToken
+            }}))
+        console.log(inputAgents)
         const conversationResponse = await fetch("/api/create-conversation", {
             method: 'PUT',
             headers: {
@@ -91,7 +97,7 @@
             body: JSON.stringify({
                 name: chatName,
                 user_id: "e776f213-b2c7-4fe1-b874-e2705ef99345",
-                agent_ids: agent_ids,
+                agents: inputAgents,
                 user_agent_ids: [playerCharacterId]
             })
         })
@@ -100,10 +106,16 @@
             return characters.map((item) => ({
                 agent_id: item.id, 
                 model: item.model,
-                token: item.modelToken}))
-
+                token: item.modelToken
+            }))
         })
-        window.location.href = '/room/' + conversation_id.conversation_id
+        conversation_id = conversationResponse.json()
+        if (conversation_id.success){
+            window.location.href = '/room/' + conversation_id.conversation_id
+        }
+        else{
+            console.log(conversation_id.error)
+        }
     }
 </script>
 
