@@ -1,22 +1,29 @@
 <script lang="ts">
-	import Character from '$lib/dashboard-character.svelte';
-	import { AccordionItem, Accordion, Button } from 'flowbite-svelte';
-	import Conversation from '$lib/dashboard-conversation.svelte';
-	export let data;
-	export const characterData = data.agents;
-	export const conversationData = data.conversations;
+    import Character from '$lib/dashboard-character.svelte';
+    import { AccordionItem, Accordion, Button} from 'flowbite-svelte';
+    import Conversation from '$lib/dashboard-conversation.svelte'
+    export let data;
+    export const characterData = data.agents.agents
+    export const conversationData = data.conversations
+    
+    
 
-	const characters = characterData.map(characterDataPoint => ({
-		...characterDataPoint,
-		image: '../src/lib/assets/Avatar1.png'
-	}));
-	export const conversations = conversationData?.map(conversationDataPoint => ({
-		...conversationDataPoint
-	}));
+    const characters = characterData.map((characterDataPoint) => ({
+        ...characterDataPoint,
+        image: "../src/lib/assets/Avatar1.png"
+    }))
 
-	function handleCreateAgentClick() {
-		window.location.href = '/agent/create';
-	}
+    
+    export const conversations = conversationData
+
+    function handleCreateAgentClick() {
+        window.location.href = '/agent/create'
+    }
+
+    function handleCreateRoomClick() {
+        window.location.href = '/room/new'
+    }
+
 	const images = [
 		'../src/lib/assets/Ale.png',
 		'../src/lib/assets/Amy.png',
@@ -30,20 +37,34 @@
 </script>
 
 <div id="globalGrid">
-	<div>
-		<Accordion id="conversationBoard">
-			{#each conversations as conversation, i}
-				<Conversation
-					conversationIndex={i + 1}
-					conversationSummary={conversation.conversationSummary}
-				/>
-			{/each}
-		</Accordion>
-		<div id="buttonGrid">
-			<Button on:click={handleCreateAgentClick}>Create new conversation</Button>
-			<Button>Create new agent</Button>
-		</div>
-	</div>
+
+    <div>
+        <Accordion id="conversationBoard">
+            {#each conversations as conversation, i}
+                <Conversation conversationIndex={i+1} conversationSummary = {conversation} >
+                </Conversation>
+            {/each}
+        </Accordion>
+        <div id="buttonGrid">
+            <Button on:click={handleCreateRoomClick}>
+                Create new conversation
+            </Button>
+            <Button on:click={handleCreateAgentClick}>
+                Create new agent
+            </Button>
+        </div>
+    </div>
+    
+    <div class="scroller">
+        {#each characters as character, i}
+            <a href= "agent/{character.id}">
+            <div class="characterInfoSet">
+                <Character {character} imageUrl={images[i]}>
+                </Character>
+            </div>
+            </a>
+        {/each}
+    </div>
 
 	<div class="scroller">
 		{#each characters as character, i}
@@ -72,6 +93,10 @@
 		grid-template-columns: repeat(3, 200px);
 		grid-template-rows: repeat(auto-fill, 220px);
 	}
+    #conversationBoard {
+        height: 1000px;
+        white-space: pre-line;
+    }
 
 	#globalGrid {
 		display: grid;
