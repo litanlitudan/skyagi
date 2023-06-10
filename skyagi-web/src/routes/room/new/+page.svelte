@@ -19,9 +19,10 @@
     let characters = characterData.map((characterDataPoint) => ({
         ...characterDataPoint,
         image: characterDataPoint.avatar.local_path,
-        model: "",
+        model: models[0].value,
         modelToken: "",
-        selected:false
+        selected:false,
+        avatarStyle: "rounded-lg border-none border-4 hover:border-solid border-indigo-600"
     }))
     function filterCharacters(inputCharacters){
         let rst = []
@@ -43,17 +44,24 @@
     });
 
 
-    let lastClickedCharacterName = "..."
+    let lastClickedCharacterName = characters[0].name
     let lastClickedCharacter = characters[0]
-    let showedModelValue = ""
+    characters[0].avatarStyle = "rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
+    let showedModelValue = models[0].value
     let showedTokenValue = ""
     function handleOnClickImageMessage(event) {
-        console.log(event.detail.character.name);
         lastClickedCharacterName = event.detail.character.name;
         lastClickedCharacter = event.detail.character;
         showedModelValue = event.detail.character.model;
         showedTokenValue = event.detail.character.modelToken;
-        console.log(showedModelValue)
+        for (let i=0; i<characters.length; i++){
+            if (characters[i].name==lastClickedCharacterName){
+                characters[i].avatarStyle="rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
+            }
+            else{
+                characters[i].avatarStyle="rounded-lg border-none border-4 hover:border-solid border-indigo-600"
+            }
+        }
         if (browser) {
             let modelSelect = document.getElementById("modelSelect")
             let tokenField = document.getElementById("tokenField")
@@ -63,10 +71,10 @@
     }
 
 
-    let selectedModel="";
+    let selectedModel=models[0].value;
     let selectedToken="";
     let checkedCharacterGroup = [];
-    let playerCharacterId;
+    let playerCharacterId="";
     function charactersToItems(inputCharacters){
         let rst = []
         for (let i=0; i<inputCharacters.length; i++){
@@ -84,7 +92,35 @@
     function handleTokenInput() {
         lastClickedCharacter.modelToken = selectedToken
     }
-
+    let createDisabled = true
+    function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
+        let selectedCount = 0;
+        // console.log("called")
+        for (let i=0; i<inputCharacters.length; i++){
+            if (inputCharacters[i].selected){
+                selectedCount++
+                if (inputCharacters[i].model=="" || inputCharacters[i].modelToken==""){
+                    console.log("condition1")
+                    return true
+                }
+            }
+        }
+        console.log(selectedCount)
+        if (selectedCount < 2){
+            console.log("condition2")
+            return true
+        }
+        if (inputChatName==""){
+            console.log("condition3")
+            return true
+        }
+        if (inputPlayerCharacter==""){
+            console.log("condition4")
+            return true
+        }
+        return false
+    }
+    $: createDisabled = checkCreateButtonDisabled(characters, chatName, playerCharacterId)
     const handleCreateButton = async () => {
         console.log(selectedCharacters)
         // console.log(selectedCharacters)
@@ -139,6 +175,7 @@
                  bind:characters={characters}
                  on:message={handleOnClickImageMessage} 
                  bind:bindGroup={checkedCharacterGroup} 
+                 bind:avatarStyle={characters[i].avatarStyle}
                  value={character.name}>
                 </Character>
             </div>
@@ -153,7 +190,7 @@
         </h1>
         <Label>Select an option
             <Select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
-            items={models} 
+            items={models}
             bind:value={selectedModel}
             id="modelSelect"
             on:change={handleModelChange}
@@ -174,7 +211,7 @@
             bind:value={playerCharacterId}
             placeholder = "Select your character" />
         </Label>
-        <Button on:click={handleCreateButton}>
+        <Button on:click={handleCreateButton} bind:disabled={createDisabled}>
             Create
         </Button>
 
