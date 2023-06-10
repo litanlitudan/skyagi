@@ -4,7 +4,7 @@ from pathlib import Path
 from modal import Secret, Stub, Image, web_endpoint
 
 image = Image.debian_slim().pip_install(
-    "lancedb", "openai", "pandas", "tiktoken", "unstructured", "tabulate"
+    "lancedb", "pandas", "tqdm", "PyGithub", "sentence-transformers"
 )
 
 stub = Stub(
