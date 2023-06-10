@@ -24,8 +24,10 @@ export const load = (async ({ fetch, locals }) => {
 
         agents = agentsData.agents.filter((agent: { archived: boolean; }) => !agent.archived);
     }
-
+    let models = {models: [{ value: 'openai-gpt-3.5-turbo', name: 'openai-gpt-3.5-turbo' },
+                { value: 'openai-gpt-4', name: 'openai-gpt-4' }]}
     return {
-        agents
+        agents: agents,
+        models: models
     }
 }) satisfies PageServerLoad;
