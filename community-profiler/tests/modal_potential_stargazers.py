@@ -115,13 +115,19 @@ def get_potential_stargazers(
     return potential_stargazers
 
 
-# @stub.function()
-# @web_endpoint(method="GET")
-# def web(owner: str, repo: str, query: str):
-#     answer = qanda_langchain(query)
-#     return {
-#         "answer": answer,
-#     }
+@stub.function()
+@web_endpoint(method="GET")
+def web(owner: str, repo: str, query: str):
+    # download db if not exist
+    db_path = Path(f"{repo}.lancedb")
+    if not os.path.exists(db_path):
+        download_db(repo)
+    # get potential stargazers
+    potential_stargazers = get_potential_stargazers(
+        owner, repo, query, db_path, os.getenv("GITHUB_ACCESS_TOKEN")
+    )
+    df = users_to_df(potential_stargazers)
+    return df.to_json()
 
 
 @stub.function()
