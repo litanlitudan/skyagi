@@ -3,7 +3,7 @@
     import { AccordionItem, Accordion, Button} from 'flowbite-svelte';
     import Conversation from '$lib/dashboard-conversation.svelte'
     export let data;
-    export const characterData = data.agents.agents
+    export const characterData = data.agents
     export const conversationData = data.conversations
     
     
@@ -65,16 +65,6 @@
             </a>
         {/each}
     </div>
-
-	<div class="scroller">
-		{#each characters as character, i}
-			<a href="agent/{character.id}">
-				<div class="characterInfoSet">
-					<Character {character} imageUrl={images[i]} />
-				</div>
-			</a>
-		{/each}
-	</div>
 </div>
 
 <style>

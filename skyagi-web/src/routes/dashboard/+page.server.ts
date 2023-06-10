@@ -16,7 +16,6 @@ export const load = (async ({ fetch, locals }) => {
             console.log("returend")
             return rstText
         }
-        console.log(snapShot)
         for (let i=0; i < snapShot.length; i++){
             let message = snapShot[snapShot.length-i-1]
             let agentResponse = await fetch("/api/get-agent", {
@@ -24,12 +23,12 @@ export const load = (async ({ fetch, locals }) => {
                 headers: {
                     "Content-Type" : 'application/json'
                 },
-                body: JSON.stringify({agent_id: message.initiate_agent_id})
+                body: JSON.stringify({agent_id: message.initiate_agent_id,
+                                      user_id: user_id})
             })
             
             let agentData = await agentResponse.json()
             let agentName = agentData.data.name
-            console.log(agentData)
             rstText += agentName + " " + message.content + "\n"
         }
         return {name: conversation.name, 
@@ -63,7 +62,12 @@ export const load = (async ({ fetch, locals }) => {
     let conversations = [];
     if (conversationsData.success) {
         conversations = conversationsData.conversations;
+        
     }
+    else {
+        console.log("error")
+    }
+    conversations = conversationsData.conversations;
     let rstLs = Promise.all(conversations.map((item)=>(snapShotToText(item))))
     return {
         agents: agents,
