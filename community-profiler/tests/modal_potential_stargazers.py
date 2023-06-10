@@ -128,6 +128,8 @@ def get_potential_stargazers(
 def cli(owner: str, repo: str, query: str):
     # download db if not exist
     db_path = Path(f"{repo}.lancedb")
+    if not os.path.exists(db_path):
+        download_db(repo)
     # get potential stargazers
     potential_stargazers = get_potential_stargazers(
         owner, repo, query, db_path, os.getenv("GITHUB_ACCESS_TOKEN")
