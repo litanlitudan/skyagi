@@ -15,6 +15,8 @@ const { subscribe, update, ...store } = writable<ChatTranscript>({
 // put a new user input message to store
 const set = async (query: string) => {
   updateMessages(query, StoreMessageRole.USER_AGENT, 'Me', 'loading');
+  console.log('query', query);
+  console.log('chatM', chatMessages);
 
   const request = {
     conversation_id: get(conversationId),
