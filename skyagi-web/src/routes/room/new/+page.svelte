@@ -23,6 +23,16 @@
         modelToken: "",
         selected:false
     }))
+    function filterCharacters(inputCharacters){
+        let rst = []
+        for (let i=0; i<inputCharacters.length; i++){
+            if (inputCharacters[i].selected == true){
+                rst.push(inputCharacters[i])
+            }
+        }
+        return rst
+    }
+    $: selectedCharacters = filterCharacters(characters)
 
     const searchStore = createSearchStore(characters);
 
@@ -47,9 +57,6 @@
         if (browser) {
             let modelSelect = document.getElementById("modelSelect")
             let tokenField = document.getElementById("tokenField")
-            if (showedTokenValue == ""){
-                console.log("empty string")
-            }
             modelSelect.value = showedModelValue;
             tokenField.value = showedTokenValue;
         }
@@ -62,7 +69,6 @@
     let playerCharacterId;
     function charactersToItems(inputCharacters){
         let rst = []
-        console.log(inputCharacters)
         for (let i=0; i<inputCharacters.length; i++){
             if (inputCharacters[i].selected){
                 rst.push({name: inputCharacters[i].name, value: inputCharacters[i].id})
@@ -80,14 +86,16 @@
     }
 
     const handleCreateButton = async () => {
-        let selectedCharacters = characters.filter((item) => item.selected==false)
+        console.log(selectedCharacters)
+        // console.log(selectedCharacters)
+        
         let inputAgents = selectedCharacters.map((item) => (
             {id: item.id, 
             model: {
                 name: item.model,
                 token: item.modelToken
             }}))
-        console.log(inputAgents)
+        // console.log(inputAgents)
         const conversationResponse = await fetch("/api/create-conversation", {
             method: 'PUT',
             headers: {
