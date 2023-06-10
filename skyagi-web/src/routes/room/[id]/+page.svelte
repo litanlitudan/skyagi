@@ -3,10 +3,29 @@
 	import ChatMessage from '$lib/ChatMessage.svelte';
 	import CharacterDashboard from '$lib/Character_dashboard.svelte';
 	import Input from '$lib/Input.svelte';
-	import { chatMessages, answer } from '$lib/stores/chat-messages';
+	import {
+		chatMessages,
+		answer,
+		currentAgentName,
+		conversationId,
+		userAgentId
+	} from '$lib/stores/chat-messages';
+	import type { PageData } from './$types';
+	import {
+		StoreMessageRole,
+		type ConversationDataType,
+		type MessageDataType,
+		type StoreMessageType,
+		type AgentDataType
+	} from '$lib/types';
 	import { onMount } from 'svelte';
+	import { loadHistoryToLocalStorage, getLocalHistoryKey } from '$lib/stores/chat-history';
+	import { get } from 'svelte/store';
+
+	export let data: PageData;
 
 	let query = '';
+	let conversationData: ConversationDataType = data.body;
 
 	const handleSubmit = async () => {
 		answer.set('...');
@@ -14,29 +33,61 @@
 		query = '';
 	};
 
-	onMount(async () => {
-		fetch('https://app.skyagi.ai/api/get-conversation', {
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			method: 'PUT',
-			body: JSON.stringify({
-				conversation_id: '6f74a64d-22a2-4472-a969-2b6851c6d4e1'
-			})
-		})
-			.then(response => response.json())
-			.then(data => {
-				console.log(data);
-			})
-			.catch(error => {
-				console.log(error);
+	const getAgentIdForChat = (message: MessageDataType, userAgentId: string): string => {
+		if (message.recipientAgentId === userAgentId) return message.initiateAgentId;
+		return message.recipientAgentId;
+	};
+
+	const getRole = (initiateAgentId: string, userAgentId: string): StoreMessageRole => {
+		if (initiateAgentId === userAgentId) return StoreMessageRole.USER_AGENT;
+		return StoreMessageRole.AGENT;
+	};
+
+	const getAgentIdToAgentDataMap = (agentDataLists: AgentDataType[]) => {
+		let agentIdToAgentDataMap: { [key: string]: AgentDataType } = {};
+		agentDataLists.forEach(agentData => {
+			if (!agentIdToAgentDataMap[agentData.id]) agentIdToAgentDataMap[agentData.id] = agentData;
+		});
+		return agentIdToAgentDataMap;
+	};
+
+	onMount(() => {
+		// if the conversation has history, put the history into local storage.
+		conversationId.set(conversationData.id);
+		userAgentId.set(conversationData.userAgents[0].id);
+		if (conversationData.messages.length > 0) {
+			let chatHistoryToLoad: { [key: string]: StoreMessageType[] } = {};
+			const conversationId = conversationData.id;
+			const userAgentId = conversationData.userAgents[0].id;
+			const agentIdToAgentDataMap = getAgentIdToAgentDataMap(
+				conversationData.agents.concat(conversationData.userAgents)
+			);
+			conversationData.messages.forEach(message => {
+				const localHistoryKey = getLocalHistoryKey(
+					conversationId,
+					getAgentIdForChat(message, userAgentId)
+				);
+				if (!chatHistoryToLoad[localHistoryKey]) chatHistoryToLoad[localHistoryKey] = [];
+				chatHistoryToLoad[localHistoryKey].push({
+					role: getRole(message.initiateAgentId, userAgentId),
+					name: agentIdToAgentDataMap[message.initiateAgentId].name,
+					content: message.content
+				});
 			});
+			loadHistoryToLocalStorage(chatHistoryToLoad);
+		}
 	});
 </script>
 
 <section class="flex max-w-6xl w-full pt-4 justify-center">
 	<div class="flex flex-col gap-2">
-		<CharacterDashboard />
+		<CharacterDashboard
+			conversationId={conversationData.id}
+			userAgent={conversationData.userAgents[0]}
+			agents={conversationData.agents.filter(
+				agent => agent.id != conversationData.userAgents[0].id
+			)}
+		/>
 	</div>
 
 	<div class="flex flex-col w-full px-8 items-center gap-2">
@@ -45,11 +96,15 @@
 		>
 			<div class="flex flex-col gap-2">
 				{#each $chatMessages.messages as message}
-					<ChatMessage type={message.role} message={message.content} />
+					<ChatMessage type={message.role} name={message.name} message={message.content} />
 				{/each}
 
 				{#if $answer}
-					<ChatMessage type="assistant" message={$answer} />
+					<ChatMessage
+						type={StoreMessageRole.AGENT}
+						name={get(currentAgentName)}
+						message={$answer}
+					/>
 				{/if}
 			</div>
 		</div>

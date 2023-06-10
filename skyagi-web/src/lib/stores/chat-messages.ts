@@ -1,28 +1,44 @@
-import type { ChatCompletionRequestMessage } from 'openai';
+import { StoreMessageRole, type StoreMessageType } from '$lib/types';
 import { SSE } from 'sse.js';
 import { get, writable } from 'svelte/store';
 
 export interface ChatTranscript {
-  messages: ChatCompletionRequestMessage[];
+  messages: StoreMessageType[];
   chatState: 'idle' | 'loading' | 'error' | 'message';
 }
 
 const { subscribe, update, ...store } = writable<ChatTranscript>({
-  messages: [
-    { role: 'assistant', content: 'Hello, I am your virtual assistant. How can I help you?' }
-  ],
+  messages: [],
   chatState: 'idle'
 });
 
 // put a new user input message to store
 const set = async (query: string) => {
-  updateMessages(query, 'user', 'loading');
+  updateMessages(query, StoreMessageRole.USER_AGENT, 'Me', 'loading');
 
-  const eventSource = new SSE('/api/chat', {
+  const request = {
+    conversation_id: get(conversationId),
+    initiate_agent_id: get(userAgentId),
+    initiate_agent_model: {
+      name: "gpt-3.5-turbo",
+      token: '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',
+    },
+    recipient_agent_id: get(currentAgentId),
+    recipient_agent_model: {
+      name: "gpt-3.5-turbo",
+      token: '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',
+    },
+    message: query,
+  }
+
+  console.log('request', request);
+
+  const eventSource = new SSE('/api/send-conversation-message', {
     headers: {
       'Content-Type': 'application/json'
     },
-    payload: JSON.stringify({ messages: get(chatMessages).messages })
+    method: 'PUT',
+    payload: JSON.stringify(request)
   });
 
   eventSource.addEventListener('error', handleError);
@@ -34,30 +50,23 @@ const replace = (messages: ChatTranscript) => {
   store.set(messages);
 };
 
-const reset = () =>
-  store.set({
-    messages: [
-      { role: 'assistant', content: 'Hello, I am your virtual assistant. How can I help you?' }
-    ],
-    chatState: 'idle'
-  });
-
-const updateMessages = (content: any, role: any, state: any) => {
+const updateMessages = (content: any, role: StoreMessageRole, name: string, state: any) => {
   chatMessages.update((messages: ChatTranscript) => {
-    return { messages: [...messages.messages, { role: role, content: content }], chatState: state };
+    return { messages: [...messages.messages, { role: role, content: content, name: name }], chatState: state };
   });
 };
 
 const handleError = <T>(err: T) => {
-  updateMessages(err, 'system', 'error');
+  updateMessages(err, StoreMessageRole.SYSTEM, 'bot', 'error');
   console.error(err);
 };
 
 // put a new AI generated answer to store
 const streamMessage = (e: MessageEvent) => {
+  console.log('streamMessage', e.data);
   try {
     if (e.data === '[DONE]') {
-      updateMessages(get(answer), 'assistant', 'idle');
+      updateMessages(get(answer), StoreMessageRole.AGENT, get(currentAgentName), 'idle');
       return answer.set('');
     }
 
@@ -76,10 +85,14 @@ const streamMessage = (e: MessageEvent) => {
 
 // These variables are the memory store for current chat thread. 
 // aka, a specific combination of conversation id + agent id
-export const chatMessages = { subscribe, set, update, reset, replace };
+export const chatMessages = { subscribe, set, update, replace };
 export const answer = writable<string>('');
+export const currentChatQueryKey = writable<string>('');
+export const currentAgentName = writable<string>('');
+export const currentAgentId = writable<string>('');
 
 // These variables are the memory store for current chat room. 
 // aka, a specific conversation id (might have multiple agents in this conversation room)
 export const conversationId = writable<string>('');
-export const agentIds = writable<string[]>('');
+export const userAgentId = writable<string>('');
+export const agentIds = writable<string[]>([]);

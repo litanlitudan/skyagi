@@ -3,18 +3,20 @@
 	import DOMPurify from 'isomorphic-dompurify';
 	import type { ChatCompletionRequestMessageRoleEnum } from 'openai';
 	import { onMount } from 'svelte';
+	import { StoreMessageRole } from './types';
 
-	export let type: ChatCompletionRequestMessageRoleEnum;
+	export let type: StoreMessageRole;
+	export let name: string;
 	export let message: string = '';
 	export { classes as class };
 
 	let classes = '';
 	let scrollToDiv: HTMLDivElement;
 
-	const classSet = {
-		user: 'justify-end text-rose-700',
-		assistant: 'justify-start text-teal-400',
-		system: 'justify-center text-gray-400'
+	const classSet: { [key in StoreMessageRole]: string } = {
+		[StoreMessageRole.USER_AGENT]: 'justify-end text-rose-700',
+		[StoreMessageRole.AGENT]: 'justify-start text-teal-400',
+		[StoreMessageRole.SYSTEM]: 'justify-center text-gray-400'
 	};
 
 	const typeEffect = (node: HTMLDivElement, message: string) => {
@@ -31,7 +33,7 @@
 </script>
 
 <div class="flex items-center {classSet[type]} ">
-	<p class="text-xs px-2">{type === 'user' ? 'Me' : 'Bot'}</p>
+	<p class="text-xs px-2">{type === StoreMessageRole.USER_AGENT ? 'Me' : name}</p>
 </div>
 
 <div class="flex {classSet[type]}">
