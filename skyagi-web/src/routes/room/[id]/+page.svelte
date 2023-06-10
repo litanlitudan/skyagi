@@ -1,5 +1,4 @@
 <script lang="ts">
-	import ChatHistory from '$lib/ChatHistory.svelte';
 	import ChatMessage from '$lib/ChatMessage.svelte';
 	import CharacterDashboard from '$lib/Character_dashboard.svelte';
 	import Input from '$lib/Input.svelte';
