@@ -56,7 +56,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         })
     }
     let resp = {
-        'summary': 1,
+        'success': 1,
         'conversations': res_conversations
     };
 	
