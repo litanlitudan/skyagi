@@ -5,21 +5,20 @@
 	import { onDestroy } from 'svelte';
     export let data;
     import { browser } from '$app/environment';
-    export const characterData = data.agents.agents
-    export const modelData = data.models.models
+    export const characterData = data.agents
+    export const modelData = data.models
     import modelTokenDataStore from '$lib/room-store.js';
 
     let selectedModelData;
     modelTokenDataStore.subscribe((data) => {
         selectedModelData = data;
-        console.log(data)
     })
     let models = modelData
     let chatName = ""
     
     let characters = characterData.map((characterDataPoint) => ({
         ...characterDataPoint,
-        image: "../src/lib/assets/Avatar1.png",
+        image: characterDataPoint.avatar.local_path,
         model: "",
         modelToken: "",
         selected:false

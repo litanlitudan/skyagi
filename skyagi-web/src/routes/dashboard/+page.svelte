@@ -10,7 +10,7 @@
 
     const characters = characterData.map((characterDataPoint) => ({
         ...characterDataPoint,
-        image: "../src/lib/assets/Avatar1.png"
+        image: characterDataPoint.avatar.local_path
     }))
 
     
@@ -24,16 +24,6 @@
         window.location.href = '/room/new'
     }
 
-	const images = [
-		'../src/lib/assets/Ale.png',
-		'../src/lib/assets/Amy.png',
-		'../src/lib/assets/Bella.png',
-		'../src/lib/assets/Coco.png',
-		'../src/lib/assets/Don.png',
-		'../src/lib/assets/Edgar.png',
-		'../src/lib/assets/Ian.png',
-		'../src/lib/assets/Jack.png'
-	];
 </script>
 
 <div id="globalGrid">
@@ -59,7 +49,7 @@
         {#each characters as character, i}
             <a href= "agent/{character.id}">
             <div class="characterInfoSet">
-                <Character {character} imageUrl={images[i]}>
+                <Character {character} imageUrl={character.image}>
                 </Character>
             </div>
             </a>
