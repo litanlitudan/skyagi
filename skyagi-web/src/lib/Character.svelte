@@ -5,7 +5,7 @@
 	export let character: AgentDataType;
 </script>
 
-<Card class="bg-blue-800 border-slate-950 hover:bg-blue-950">
+<Card color="bg-blue-950" class="bg-blue-950 border-slate-950 hover:bg-blue-800">
 	<div class="flex items-center space-x-4">
 		<Avatar src={Icon1} alt={Icon1} class="flex-shrink-0" />
 		<div class="flex-1 min-w-0">
