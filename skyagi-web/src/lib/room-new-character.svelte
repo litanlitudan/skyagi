@@ -10,7 +10,8 @@
 	export let character;
     export let value;
     export let characters;
-    export let avatarStyle;
+    export let avatarStyle = "rounded-lg border-none border-4 hover:border-solid border-indigo-600";
+
 
 
     // export let lastClickedCharacter;
