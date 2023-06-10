@@ -4,9 +4,9 @@ import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 import { PromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
 import { Document } from "langchain/document";
-import { ChatOpenAI } from "langchain/chat_models/openai";
 import type { BaseLanguageModel } from "langchain/base_language";
 import { _ } from "$env/static/private";
+import { load_llm_from_config, type LLMSettings } from "./model/model";
 
 // Future improvements:
 // [Func] support embeddings from different LLM models
@@ -51,7 +51,7 @@ export class GenerativeAgent {
 	reflectionThreshold: number = 8;
 	memoryImportance: number = 0.0;
 
-    async setup(supabase: any, conversationId: string, agentId: string, llm: any, the_other_agent_id: string): Promise<void> {
+    async setup(supabase: any, conversationId: string, agentId: string, llmSettings: LLMSettings, the_other_agent_id: string): Promise<void> {
         // get agent's profile
         this.storage = supabase;
         const { data: profiles } = await this.storage
@@ -65,7 +65,7 @@ export class GenerativeAgent {
         this.personality = profiles[0].personality;
 
         this.conv_id = conversationId;
-        this.llm = new ChatOpenAI();
+        this.llm = load_llm_from_config(llmSettings);
 
         // create retriever
         const vectorStore = new SupabaseVectorStore(
