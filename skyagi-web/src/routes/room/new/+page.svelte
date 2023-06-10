@@ -19,7 +19,7 @@
     let characters = characterData.map((characterDataPoint) => ({
         ...characterDataPoint,
         image: characterDataPoint.avatar.local_path,
-        model: "",
+        model: models[0].value,
         modelToken: "",
         selected:false,
         avatarStyle: "rounded-lg border-none border-4 hover:border-solid border-indigo-600"
@@ -74,7 +74,7 @@
     let selectedModel=models[0].value;
     let selectedToken="";
     let checkedCharacterGroup = [];
-    let playerCharacterId;
+    let playerCharacterId="";
     function charactersToItems(inputCharacters){
         let rst = []
         for (let i=0; i<inputCharacters.length; i++){
@@ -92,7 +92,35 @@
     function handleTokenInput() {
         lastClickedCharacter.modelToken = selectedToken
     }
-
+    let createDisabled = true
+    function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
+        let selectedCount = 0;
+        // console.log("called")
+        for (let i=0; i<inputCharacters.length; i++){
+            if (inputCharacters[i].selected){
+                selectedCount++
+                if (inputCharacters[i].model=="" || inputCharacters[i].modelToken==""){
+                    console.log("condition1")
+                    return true
+                }
+            }
+        }
+        console.log(selectedCount)
+        if (selectedCount < 2){
+            console.log("condition2")
+            return true
+        }
+        if (inputChatName==""){
+            console.log("condition3")
+            return true
+        }
+        if (inputPlayerCharacter==""){
+            console.log("condition4")
+            return true
+        }
+        return false
+    }
+    $: createDisabled = checkCreateButtonDisabled(characters, chatName, playerCharacterId)
     const handleCreateButton = async () => {
         console.log(selectedCharacters)
         // console.log(selectedCharacters)
@@ -183,7 +211,7 @@
             bind:value={playerCharacterId}
             placeholder = "Select your character" />
         </Label>
-        <Button on:click={handleCreateButton}>
+        <Button on:click={handleCreateButton} bind:disabled={createDisabled}>
             Create
         </Button>
 
