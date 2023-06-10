@@ -11,7 +11,7 @@ def download_db(repo="skyagi"):
         f.write(lance_db.content)
 
     file = zipfile.ZipFile(Path(f"{repo}.zip"))
-    file.extractall(path=Path(f"{repo}_db"))
+    file.extractall(".")
 
 
 download_db()
