@@ -9,5 +9,6 @@
 </script>
 
 <AccordionItem open={open}>
-    <p class="mb-2 text-gray-500 dark:text-gray-400">{conversationSummary}</p>
+    <span slot="header">{conversationSummary.name}</span>
+    <p class="whitespace-pre-line mb-2 text-gray-500 dark:text-gray-400 ">{conversationSummary.text}</p>
 </AccordionItem>
