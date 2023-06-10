@@ -2,16 +2,22 @@
     import Character from '$lib/dashboard-character.svelte';
     import { AccordionItem, Accordion, Button} from 'flowbite-svelte';
     import Conversation from '$lib/dashboard-conversation.svelte'
+	import { globalAvatarImageList } from '$lib/stores.js';
     export let data;
     export const characterData = data.agents
     export const conversationData = data.conversations
     
     
 
-    const characters = characterData.map((characterDataPoint) => ({
-        ...characterDataPoint,
-        image: characterDataPoint.avatar.local_path
-    }))
+    const characters = characterData.map(function(characterDataPoint) {
+		let imagePath = "/assets/Avatar1.png"
+		if (characterDataPoint.avatar!=null && characterDataPoint.avatar.local_path in globalAvatarImageList){
+			imagePath = characterDataPoint.avatar.local_path
+		};
+		return {
+			...characterDataPoint,
+			image: imagePath
+    }})
 
     
     export const conversations = conversationData

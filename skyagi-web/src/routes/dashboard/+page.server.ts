@@ -28,6 +28,8 @@ export const load = (async ({ fetch, locals }) => {
             })
             
             let agentData = await agentResponse.json()
+            console.log(agentData)
+            console.log(message.initiate_agent_id)
             let agentName = agentData.data.name
             rstText += agentName + " " + message.content + "\n"
         }
