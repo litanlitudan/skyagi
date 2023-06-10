@@ -2,6 +2,7 @@
 	import type { CharacterType } from './types';
     import { createEventDispatcher } from 'svelte';
     import { error } from '@sveltejs/kit';
+    import { Img } from 'flowbite-svelte';
     import {notifications} from '$lib/notifications.js'
 	import Toast from '$lib/Toast.svelte'
     import { browser } from '$app/environment';
@@ -9,6 +10,7 @@
 	export let character;
     export let value;
     export let characters;
+    export let avatarStyle = "rounded-lg border-none border-4 hover:border-solid border-indigo-600";
 
 
     // export let lastClickedCharacter;
@@ -57,7 +59,8 @@
                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
     </div>
     <figure>
-        <img src={character.image} alt="" width=100px on:click={updateLastClickedCharacter}/>
+        <img src={character.image} alt="" on:click={updateLastClickedCharacter}
+        class={avatarStyle} />
         <figcaption> {character.name} </figcaption>
     </figure>
 </div>
