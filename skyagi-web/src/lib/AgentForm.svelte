@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { isAgentFormEditing } from './stores';
 	import type { AgentDataType } from './types';
-	import { Label, Input, Button } from 'flowbite-svelte';
+	import { Label, Input, Button, Helper } from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
 	import type { User } from '@supabase/supabase-js';
 
@@ -11,7 +11,7 @@
 		age: '',
 		personalities: '',
 		socialStatus: '',
-		memories: ['']
+		memories: ['', '', '', '', '']
 	};
 
 	export let user: User;
@@ -120,11 +120,16 @@
 						bind:value={memory}
 						on:input={event => updateMemory(index, event)}
 					/>
+
 					<Button type="button" color="red" on:click={() => removeMemory(index)} class="">-</Button>
 				</div>
 			{/each}
 
 			<Button type="button" on:click={addMemory}>+</Button>
+
+			{#if agentData.memories.length < 5}
+				<Helper class="mt-2" color="red">You should enter more than 5 pieces of memory</Helper>
+			{/if}
 		</Label>
 
 		{#if $isAgentFormEditing}
