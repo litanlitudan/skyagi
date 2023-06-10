@@ -1,5 +1,6 @@
 import type { AgentDataType, ConversationDataType, MessageDataType } from '$lib/types';
 import type { PageServerLoad } from './$types';
+import { redirect } from '@sveltejs/kit';
 
 const getConversationMessages = (messages: any[]): MessageDataType[] => messages.map(message => ({
     initiateAgentId: message.agent_id,
@@ -8,7 +9,7 @@ const getConversationMessages = (messages: any[]): MessageDataType[] => messages
     content: message.content,
 }));
 
-export const load = (async ({ params, fetch }) => {
+export const load = (async ({ params, fetch, locals }) => {
     const { id: conversation_id } = params;
 
     const resp = await fetch('/api/get-conversation', {
@@ -30,8 +31,11 @@ export const load = (async ({ params, fetch }) => {
 
     // get Agent data details
     async function fetchAgentData(agentId: string): Promise<AgentDataType | {}> {
-        // TODO: get user_id
-        const user_id = "";
+        const session = await locals.getSession();
+        if (!session) {
+            throw redirect(303, '/');
+        }
+        const user_id = session.user.id;
 
         const resp = await fetch('/api/get-agent', {
             headers: {

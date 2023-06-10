@@ -52,7 +52,6 @@
 
 	onMount(() => {
 		// if the conversation has history, put the history into local storage.
-		console.log('conversationData', conversationData);
 		conversationId.set(conversationData.id);
 		userAgentId.set(conversationData.userAgents[0].id);
 		if (conversationData.messages.length > 0) {
