@@ -47,7 +47,7 @@ export const load = (async ({ params, fetch, locals }) => {
         const data = await resp.json();
 
         if (!data.success) return {}
-
+        console.log('data', data);
         const agent = data.data;
         const agentData: AgentDataType = {
             id: agent.id,
@@ -58,7 +58,7 @@ export const load = (async ({ params, fetch, locals }) => {
             memories: agent.initial_memory.split('\n'),
             archived: agent.archived
         };
-
+        console.log('agentData', agentData);
         return agentData;
     }
 
