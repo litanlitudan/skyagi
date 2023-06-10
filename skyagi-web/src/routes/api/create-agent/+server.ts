@@ -21,7 +21,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 		    age: agent.age,
 			personality: agent.personality,
 			initial_status: agent.status,
-			initial_memory: agent.memory
+			initial_memory: agent.memory,
+			avatar: agent.avatar
 		});
 
 	const { data } = await locals.supabase
