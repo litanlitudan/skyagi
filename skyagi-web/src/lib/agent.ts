@@ -68,6 +68,8 @@ export class GenerativeAgent {
         this.llm = load_llm_from_config(llmSettings);
 
         // create retriever
+        // TODO: (kejiez) create embedding by settings
+        // TODO: (kejiez) pass down embeddingSize to SQL query
         const vectorStore = new SupabaseVectorStore(
             new OpenAIEmbeddings(),
             {

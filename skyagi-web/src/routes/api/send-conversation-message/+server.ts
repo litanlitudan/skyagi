@@ -1,7 +1,7 @@
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { GenerativeAgent } from '$lib/agent';
-import { LLMType, type LLMSettings, ModelProvider } from '$lib/model/model';
+import type { LLMSettings } from '$lib/model/model';
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
@@ -14,20 +14,9 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         initiate_agent_id,
         initiate_agent_model,
         recipient_agent_id,
-        recipient_agent_model_,
+        recipient_agent_model_settings,
         message
     } = await request.json();
-
-    // TODO: (kejiez) get recipient_agent_model from request
-    const recipient_agent_model: LLMSettings = {
-        type: LLMType.ChatOpenAI,
-        provider: ModelProvider.OpenAI,
-        name: 'openai-gpt-3.5-turbo',
-        args: {
-            model_name: 'gpt-3.5-turbo',
-            max_tokens: 1500
-        }
-    };
 
     // get initiate agent name
     const { data: initiateAgentName } = await locals.supabase
@@ -37,7 +26,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
     // create recipient agent
     const agent = new GenerativeAgent();
-    await agent.setup(locals.supabase, conversation_id, recipient_agent_id, recipient_agent_model, initiate_agent_id);
+    await agent.setup(locals.supabase, conversation_id, recipient_agent_id, recipient_agent_model_settings as LLMSettings, initiate_agent_id);
 
     // get reaction
     const newMessage = `${initiateAgentName[0].name} says ${message}`;

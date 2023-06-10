@@ -22,6 +22,14 @@ export interface LLMSettings {
     args: { [k: string]: unknown }
 }
 
+export interface EmbeddingSettings {
+    type: EmbeddingType,
+    provider: ModelProvider,
+    name: string,
+    args: { [k: string]: unknown },
+    embeddingSize: number
+}
+
 // LLM/Chat models registry
 export const llm_type_to_cls_dict = {
     [LLMType.ChatOpenAI]: ChatOpenAI,
@@ -44,8 +52,8 @@ export const providerTemplates = {
                     provider: ModelProvider.OpenAI,
                     name: 'openai-gpt-3.5-turbo',
                     args: {
-                        model_name: 'gpt-3.5-turbo',
-                        max_tokens: 1500
+                        modelName: 'gpt-3.5-turbo',
+                        maxTokens: 1500
                     }
                 },
                 {
@@ -54,8 +62,8 @@ export const providerTemplates = {
                     provider: ModelProvider.OpenAI,
                     name: 'openai-gpt-4',
                     args: {
-                        model_name: 'gpt-4',
-                        max_tokens: 1500
+                        modelName: 'gpt-4',
+                        maxTokens: 1500
                     }
                 },
                 {
@@ -63,8 +71,8 @@ export const providerTemplates = {
                     provider: ModelProvider.OpenAI,
                     name: 'openai-text-davinci-003',
                     args: {
-                        model_name: 'text-davinci-003',
-                        max_tokens: 1500
+                        modelName: 'text-davinci-003',
+                        maxTokens: 1500
                     }
                 }
             ],
@@ -74,9 +82,9 @@ export const providerTemplates = {
                     provider: ModelProvider.OpenAI,
                     name: 'openai-text-embedding-ada-002',
                     args: {
-                        model: 'text-embedding-ada-002'
+                        modelName: 'text-embedding-ada-002'
                     },
-                    embedding_size: 1536
+                    embeddingSize: 1536
                 }
             ]
         }
@@ -93,3 +101,12 @@ export function load_llm_from_config(config: LLMSettings) {
     return new cls(config.args);
 }
 
+export function load_embedding_from_config(config: EmbeddingSettings) {
+    const config_type = config.type;
+    if (!(config_type in embedding_type_to_cls_dict)) {
+        throw new Error(`Loading ${config_type} type Embedding not supported`);
+    }
+
+    const cls = embedding_type_to_cls_dict[config_type];
+    return new cls(config.args);
+}

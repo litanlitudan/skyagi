@@ -23,11 +23,19 @@ export const handle: Handle = async ({ event, resolve }) => {
         return session;
     };
 
-    const session = await event.locals.getSession()
-    if (!session && event.url.pathname !== '/') {
-        // the user is not signed in
-        throw redirect(303, '/')
-    }
+    // TODO: (kejiez) fix this redirection
+    // // Get the cookies from the request
+    // const { cookies } = event;
+
+    // // Get the user token from the cookie
+    // const authToken = cookies.get('sb-auth-token');
+
+    // // Redirect to homepage if authToken not found
+    // // Caveat: Probably need a safer auth mechanism, e.g. using getSession()
+    // if (!authToken && event.url.pathname !== '/') {
+    //     // the user is not signed in
+    //     throw redirect(303, '/')
+    // }
 
     return resolve(event, {
         /**
