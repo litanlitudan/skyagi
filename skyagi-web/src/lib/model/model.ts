@@ -42,7 +42,15 @@ export const embedding_type_to_cls_dict = {
 };
 
 
-export const providerTemplates = {
+export const providerTemplates: {
+    [provider: string]: {
+        provider: ModelProvider,
+        models: {
+            llms: LLMSettings[],
+            embeddings: EmbeddingSettings[]
+        }
+    }
+} = {
     [ModelProvider.OpenAI]: {
         provider: ModelProvider.OpenAI,
         models: {
@@ -109,4 +117,26 @@ export function load_embedding_from_config(config: EmbeddingSettings) {
 
     const cls = embedding_type_to_cls_dict[config_type];
     return new cls(config.args);
+}
+
+// Get all supported LLMs
+export function get_all_llms() {
+    const all_llms: string[] = [];
+    for (const [provider, template] of Object.entries(providerTemplates)) {
+        for (const llm of template.models.llms) {
+            all_llms.push(llm.name);
+        }
+    }
+    return all_llms;
+}
+
+// Get all supported Embeddings
+export function get_all_embeddings() {
+    const all_embeddings: string[] = [];
+    for (const [provider, template] of Object.entries(providerTemplates)) {
+        for (const embedding of template.models.embeddings) {
+            all_embeddings.push(embedding.name);
+        }
+    }
+    return all_embeddings;
 }
