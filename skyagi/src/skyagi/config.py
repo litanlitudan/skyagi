@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
+from typing import Any, Dict
 
-from skyagi.util import load_json_value, set_json_value
+from skyagi.util import load_json_value, set_json_value, set_nested_json_value
 
 
 def set_openai_token(token: str):
@@ -10,6 +11,14 @@ def set_openai_token(token: str):
         config_dir.mkdir(parents=True)
     config_file = Path(config_dir, "config.json")
     set_json_value(config_file, "openai_token", token)
+
+
+def set_provider_credentials(provider: str, credentials: Dict[str, Any]):
+    config_dir = Path(Path.home(), ".skyagi")
+    if not config_dir.exists():
+        config_dir.mkdir(parents=True)
+    config_file = Path(config_dir, "config.json")
+    set_nested_json_value(config_file, ["credentials", provider], credentials)
 
 
 def set_pinecone_token(token: str):

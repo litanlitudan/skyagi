@@ -5,36 +5,133 @@ from pathlib import Path
 import inquirer
 import typer
 from rich.console import Console
+from rich.pretty import pprint
 from rich.prompt import IntPrompt, Prompt
 
 from skyagi import config, util
 from skyagi.discord import client
-from skyagi.model import get_all_embeddings, get_all_llms
-from skyagi.settings import Settings, get_all_model_settings, load_model_setting
+from skyagi.model import get_all_embeddings, get_all_llms, get_all_providers
+from skyagi.settings import (
+    ModelSettings,
+    Settings,
+    get_all_credentials,
+    get_provider_credentials,
+    get_provider_credentials_fields,
+    load_credentials_into_embedding_settings,
+    load_credentials_into_llm_settings,
+    load_embedding_settings_template_from_name,
+    load_llm_settings_template_from_name,
+)
 from skyagi.skyagi import agi_init, agi_step
 
 cli = typer.Typer()
 console = Console()
 
 #######################################################################################
-# Config CLI
+# Credentials CLI
 
-config_cli = typer.Typer()
+credentials_cli = typer.Typer(help="Credentials Management", no_args_is_help=True)
 
 
-@config_cli.command("openai")
-def config_openai():
+@credentials_cli.command("set")
+def set_credentials():
     """
     Configure OpenAI API token
     """
-    token = Prompt.ask("Enter your OpenAI API token").strip()
-    verify_resp = util.verify_openai_token(token)
+    settings = Settings()
+
+    # Ask which provider to set
+    questions = [
+        inquirer.List(
+            "provider",
+            message="Set which provider's credentials?",
+            choices=get_all_providers(),
+        )
+    ]
+    answers = inquirer.prompt(questions=questions)
+    selected_provider = answers["provider"]
+
+    credentials = get_provider_credentials(
+        settings=settings, provider=selected_provider
+    )
+
+    # Ask which credential feild to set
+    provider_credentials_fields = get_provider_credentials_fields(
+        provider=selected_provider
+    )
+    provider_credentials_fields.append("Done")  # add an exit option
+
+    while True:
+        # Show provider's credentials
+        console.print(f"[yellow]{selected_provider} credentials:\n")
+        pprint(credentials, expand_all=True)
+
+        # Ask which credential field to set
+        questions = [
+            inquirer.List(
+                "credential-field",
+                message="Set which credential field? Select 'Done' to exit",
+                choices=provider_credentials_fields,
+            )
+        ]
+        answers = inquirer.prompt(questions=questions)
+        selected_credential_field = answers["credential-field"]
+
+        if selected_credential_field == "Done":
+            break
+
+        # Ask the operation
+        questions = [
+            inquirer.List(
+                "edit-clear",
+                message="Edit or Clear?",
+                choices=["Edit", "Clear"],
+            )
+        ]
+        answers = inquirer.prompt(questions=questions)
+        edit_or_clear = answers["edit-clear"]
+
+        if edit_or_clear == "Edit":
+            value = Prompt.ask(
+                prompt=f"Enter your {selected_credential_field}",
+                default=credentials[selected_credential_field],
+            ).strip()
+            if bool(value):
+                credentials[selected_credential_field] = value
+        elif edit_or_clear == "Clear":
+            credentials[selected_credential_field] = None
+
+    verify_resp = util.verify_provider_credentials(
+        provider=selected_provider, credentials=credentials
+    )
     if verify_resp != "OK":
-        console.print("[Error] OpenAI Token is invalid", style="red")
-        console.print(verify_resp)
+        console.print(
+            f"[Error] Provider {selected_provider}'s credentials are invalid",
+            style="red",
+        )
+        console.print(verify_resp, style="yellow")
         return
-    config.set_openai_token(token)
-    console.print("OpenAI Key is Configured Successfully!", style="green")
+    config.set_provider_credentials(provider=selected_provider, credentials=credentials)
+    console.print(
+        f"Provider {selected_provider}'s credentials are configured successfully!",
+        style="green",
+    )
+
+
+@credentials_cli.command("list")
+def list_credentials():
+    """
+    List all credentials
+    """
+    settings = Settings()
+    console.print("\n[yellow]All credentials:\n")
+    pprint(get_all_credentials(settings), expand_all=True)
+
+
+#######################################################################################
+# Config CLI
+
+config_cli = typer.Typer()
 
 
 @config_cli.command("pinecone")
@@ -78,14 +175,8 @@ def config_main(ctx: typer.Context):
 
     console.print("SkyAGI's Configuration")
 
-    if config.load_openai_token():
-        console.print("OpenAI Token is configured, good job!", style="green")
-    else:
-        console.print(
-            "OpenAI Token not configured yet! This is necessary to use SkyAGI",
-            style="red",
-        )
-        console.print("To config OpenAI token: [yellow]skyagi config openai[/yellow]")
+    list_credentials()
+    console.print("To config credentials: [yellow]skyagi config credentials[/yellow]")
 
     if config.load_pinecone_token():
         console.print("Pinecone Token is configured, good job!", style="green")
@@ -105,6 +196,7 @@ def config_main(ctx: typer.Context):
         console.print("To config Discord token: [yellow]skyagi config discord[/yellow]")
 
 
+config_cli.add_typer(credentials_cli, name="credentials")
 cli.add_typer(config_cli, name="config")
 
 #######################################################################################
@@ -171,21 +263,58 @@ def run():
         inquirer.List(
             "llm-model",
             message="What LLM model you want to use?",
-            choices=get_all_model_settings(),
+            choices=get_all_llms(),
         )
     ]
     answers = inquirer.prompt(questions=questions)
-    settings.model = load_model_setting(answers["llm-model"])
 
-    openai_key = config.load_openai_token()
-    if os.getenv("OPENAI_API_KEY") is None:
-        os.environ["OPENAI_API_KEY"] = openai_key
+    if answers["llm-model"] == "openai-gpt-4":
+        console.print(
+            "OpenAI GPT4 API is in waitlist, makes sure you are granted access."
+            " Check: https://openai.com/waitlist/gpt-4-api",
+            style="yellow",
+        )
 
-    # Model initialization verification
-    res = util.verify_model_initialization(settings)
+    llm_settings = load_llm_settings_template_from_name(answers["llm-model"])
+
+    # Load Provider Credentials into LLM args
+    llm_settings = load_credentials_into_llm_settings(
+        settings=settings, llm_settings=llm_settings
+    )
+
+    # Verify LLM initialization
+    res = util.verify_llm_initialization(llm_settings=llm_settings)
     if res != "OK":
         console.print(res, style="red")
         return
+
+    # Ask Embedding settings
+    questions = [
+        inquirer.List(
+            "embedding-model",
+            message="What Embedding model you want to use?",
+            choices=get_all_embeddings(),
+        )
+    ]
+    answers = inquirer.prompt(questions=questions)
+    embedding_settings = load_embedding_settings_template_from_name(
+        answers["embedding-model"]
+    )
+
+    # Load Provider Credentials into Embedding args
+    embedding_settings = load_credentials_into_embedding_settings(
+        settings=settings, embedding_settings=embedding_settings
+    )
+
+    # Verify Embedding initialization
+    res = util.verify_embedding_initialization(embedding_settings=embedding_settings)
+    if res != "OK":
+        console.print(res, style="red")
+        return
+
+    # this model setting will apply to all agents
+    settings.model = ModelSettings(llm=llm_settings, embedding=embedding_settings)
+
     # Get inputs from the user
     agent_count = IntPrompt.ask(
         "Number of agents to create (at least 2 agents)?", default=3

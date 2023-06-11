@@ -24,8 +24,14 @@ def parse_args():
     parser.add_argument(
         "--llm-model",
         "-m",
-        choices=["openai-gpt-3.5-turbo", "openai-gpt-3.5-text-davinci-003"],
+        choices=["openai-gpt-3.5-turbo", "openai-gpt-4", "openai-text-davinci-003"],
         help="select the LLM model",
+    )
+    parser.add_argument(
+        "--embedding-model",
+        "-e",
+        choices=["openai-text-embedding-ada-002"],
+        help="select the Embedding model",
     )
     args = parser.parse_args()
     return args
@@ -57,7 +63,10 @@ async def client(url: str, name: str, envs: Dict = {}):
             await ws.send_json(
                 {
                     "agent_configs": get_agent_configs(args.folder),
-                    "llm_model": args.llm_model,
+                    "model": {
+                        "llm_model": args.llm_model,
+                        "embedding_model": args.embedding_model,
+                    },
                     "envs": envs if envs else {},
                 }
             )

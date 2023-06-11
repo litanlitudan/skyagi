@@ -38,8 +38,7 @@ def create_new_memory_retriever(ctx: Context):
     # Define your embedding model
     embeddings_model = load_embedding_from_config(ctx.settings.model.embedding)
     # Initialize the vectorstore as empty
-    embedding_size = 1536
-    index = faiss.IndexFlatL2(embedding_size)
+    index = faiss.IndexFlatL2(ctx.settings.model.embedding.embedding_size)
     vectorstore = FAISS(
         embeddings_model.embed_query,
         index,
