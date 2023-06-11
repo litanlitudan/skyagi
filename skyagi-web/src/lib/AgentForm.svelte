@@ -16,6 +16,8 @@
 
 	export let user: User;
 
+	const minMemories = 5;
+
 	async function handleSubmit() {
 		if ($isAgentFormEditing) {
 			const user_id = user.id;
@@ -56,7 +58,7 @@
 						age: agentData.age,
 						personality: agentData.personalities,
 						status: agentData.socialStatus,
-						memory: agentData.memories.join(' ')
+						memory: agentData.memories.join('\n')
 					}
 				})
 			});
@@ -121,13 +123,17 @@
 						on:input={event => updateMemory(index, event)}
 					/>
 
-					<Button type="button" color="red" on:click={() => removeMemory(index)} class="">-</Button>
+					{#if index + 1 > minMemories}
+						<Button type="button" color="red" on:click={() => removeMemory(index)} class=""
+							>-</Button
+						>
+					{/if}
 				</div>
 			{/each}
 
 			<Button type="button" on:click={addMemory}>+</Button>
 
-			{#if agentData.memories.length < 5}
+			{#if agentData.memories.length < minMemories}
 				<Helper class="mt-2" color="red">You should enter more than 5 pieces of memory</Helper>
 			{/if}
 		</Label>
