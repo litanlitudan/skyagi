@@ -21,22 +21,15 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     let agent_ids = agents.map(agent => agent.id);
 
     // create conversation
-    const res = await locals.supabase
+    const { data: conv_id } = await locals.supabase
         .from('conversation')
         .insert({
             user_id: user_id,
             name: name,
             agents: agent_ids,
             user_agents: user_agent_ids
-        });
-
-    // assumption: (user_id, name) combo is unique
-    // TODO: (kejiez) why not get conversation id from above, or why has to be unique
-    const { data: conv_id } = await locals.supabase
-        .from('conversation')
-        .select('id')
-        .eq('user_id', user_id)
-        .eq('name', name);
+        })
+        .select('id');
 
     if (checkValidity(conv_id) === false) {
         return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to find conversation' }), { status: 200 });
