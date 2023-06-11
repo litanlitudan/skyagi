@@ -1,7 +1,6 @@
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { GenerativeAgent } from '$lib/agent';
-import type { LLMSettings } from '$lib/model/model';
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
