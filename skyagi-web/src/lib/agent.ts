@@ -70,6 +70,7 @@ export class GenerativeAgent {
         // create retriever
         const embeddings = load_embedding_from_config(recipient_agent_model_settings.embedding);
         // TODO: (kejiez) pass down embeddingSize to SQL query
+        // TODO: (kejiez) support more embedding size
         const vectorStore = new SupabaseVectorStore(
             embeddings,
             {
