@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { get_all_llms } from '$lib/model/model';
 
 export const load = (async ({ fetch, locals }) => {
     const session = await locals.getSession();
@@ -21,12 +22,11 @@ export const load = (async ({ fetch, locals }) => {
     let agents = [];
     if (agentsData.success) {
         // filter the archived agents
-
         agents = agentsData.agents.filter((agent: { archived: boolean; }) => !agent.archived);
     }
-    
-    let models = [{ value: 'openai-gpt-3.5-turbo', name: 'openai-gpt-3.5-turbo' },
-                { value: 'openai-gpt-4', name: 'openai-gpt-4' }]
+
+    const models = get_all_llms().map((model) => ({ name: model, value: model }));
+
     return {
         agents: agents,
         models: models
