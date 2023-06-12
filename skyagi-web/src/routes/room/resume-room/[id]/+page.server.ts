@@ -37,11 +37,17 @@ export const load = (async ({ params, fetch, locals }) => {
             method: 'PUT',
             body: JSON.stringify({ user_id, agent_id })
         })
+        let agentData = await agentResponse.json()
+        return agentData.agent
     }
-
+    let rstLs = Promise.all(agentIds.map((item)=>(agentIdToAgentData(item))))
     return {
+        conversation_id: conversation_id,
         user: session.user,
-        body: agentData
+        agentData: rstLs,
+        agentIds: agentIds,
+        chatName: chatName,
+        userAgentIds: userAgentIds
     }
 
 }) satisfies PageServerLoad;
