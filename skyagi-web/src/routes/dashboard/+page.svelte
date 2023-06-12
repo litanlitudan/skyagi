@@ -4,8 +4,8 @@
     import Conversation from '$lib/dashboard-conversation.svelte'
 	import { globalAvatarImageList } from '$lib/stores.js';
     export let data;
-    export const characterData = data.agents
-    export const conversationData = data.conversations
+    const characterData = data.agents
+    const conversationData = data.conversations
     
     
 
@@ -21,6 +21,8 @@
 
     
     export const conversations = conversationData
+	let conversationOpenLs = conversations.map((item)=>false)
+	conversationOpenLs[0]=true
 
     function handleCreateAgentClick() {
         window.location.href = '/agent/create'
@@ -37,7 +39,9 @@
     <div>
         <Accordion id="conversationBoard">
             {#each conversations as conversation, i}
-                <Conversation conversationIndex={i+1} conversationSummary = {conversation} >
+                <Conversation conversationIndex={i+1} 
+				conversationSummary = {conversation} 
+				bind:open={conversationOpenLs[i]}>
                 </Conversation>
             {/each}
         </Accordion>
