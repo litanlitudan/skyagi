@@ -18,56 +18,66 @@
 
 	const minMemories = 5;
 
-	async function handleSubmit() {
-		if ($isAgentFormEditing) {
-			const user_id = user.id;
-			const resp = await fetch('/api/update-agent', {
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				method: 'PUT',
-				body: JSON.stringify({
-					agent_id: agentData.id,
-					user_id,
-					agent: {
-						name: agentData.name,
-						age: agentData.age,
-						personality: agentData.personalities,
-						status: agentData.socialStatus,
-						memory: agentData.memories.join('\n')
-					}
-				})
-			});
-			const data = await resp.json();
-			if (!data.success) {
-				alert(data.error);
-			} else {
-				isAgentFormEditing.set(false);
+	function validate(agentForm: AgentDataType) {
+		for (let index = 0; index < minMemories; index++) {
+			if (agentForm.memories[index] == '') {
+				return false;
 			}
-		} else {
-			const user_id = user.id;
-			const resp = await fetch('/api/create-agent', {
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				method: 'PUT',
-				body: JSON.stringify({
-					user_id,
-					agent: {
-						name: agentData.name,
-						age: agentData.age,
-						personality: agentData.personalities,
-						status: agentData.socialStatus,
-						memory: agentData.memories.join('\n')
-					}
-				})
-			});
+		}
+	}
 
-			const data = await resp.json();
-			if (!data.success) {
-				alert(data.error);
+	async function handleSubmit() {
+		if (validate(agentData)) {
+			if ($isAgentFormEditing) {
+				const user_id = user.id;
+				const resp = await fetch('/api/update-agent', {
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					method: 'PUT',
+					body: JSON.stringify({
+						agent_id: agentData.id,
+						user_id,
+						agent: {
+							name: agentData.name,
+							age: agentData.age,
+							personality: agentData.personalities,
+							status: agentData.socialStatus,
+							memory: agentData.memories.join('\n')
+						}
+					})
+				});
+				const data = await resp.json();
+				if (!data.success) {
+					alert(data.error);
+				} else {
+					isAgentFormEditing.set(false);
+				}
 			} else {
-				goto(`/agent/${data.agent_id}`);
+				const user_id = user.id;
+				const resp = await fetch('/api/create-agent', {
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					method: 'PUT',
+					body: JSON.stringify({
+						user_id,
+						agent: {
+							name: agentData.name,
+							age: agentData.age,
+							personality: agentData.personalities,
+							status: agentData.socialStatus,
+							memory: agentData.memories.join('\n')
+						}
+					})
+				});
+
+				const data = await resp.json();
+				if (!data.success) {
+					alert(data.error);
+				} else {
+					goto(`/agent/${data.agent_id}`);
+				}
 			}
 		}
 	}
@@ -132,10 +142,6 @@
 			{/each}
 
 			<Button type="button" on:click={addMemory}>+</Button>
-
-			{#if agentData.memories.length < minMemories}
-				<Helper class="mt-2" color="red">You should enter more than 5 pieces of memory</Helper>
-			{/if}
 		</Label>
 
 		{#if $isAgentFormEditing}
