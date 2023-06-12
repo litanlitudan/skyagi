@@ -8,6 +8,7 @@
     export const characterData = data.agents
     export const modelData = data.models
     import modelTokenDataStore from '$lib/room-store.js';
+    import { globalAvatarImageList } from '$lib/stores.js';
 
     let selectedModelData;
     modelTokenDataStore.subscribe((data) => {
@@ -16,14 +17,19 @@
     let models = modelData
     let chatName = ""
     
-    let characters = characterData.map((characterDataPoint) => ({
+    let characters = characterData.map(function(characterDataPoint) {
+        let imagePath = "/assets/Avatar1.png"
+		if (characterDataPoint.avatar!=null && characterDataPoint.avatar.local_path in globalAvatarImageList){
+			imagePath = characterDataPoint.avatar.local_path
+		};
+        return {
         ...characterDataPoint,
-        image: characterDataPoint.avatar.local_path,
+        image: imagePath,
         model: models[0].value,
         modelToken: "",
         selected:false,
         avatarStyle: "rounded-lg border-none border-4 hover:border-solid border-indigo-600"
-    }))
+    }})
     function filterCharacters(inputCharacters){
         let rst = []
         for (let i=0; i<inputCharacters.length; i++){

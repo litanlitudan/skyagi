@@ -13,6 +13,7 @@
     export let avatarStyle = "rounded-lg border-none border-4 hover:border-solid border-indigo-600";
 
 
+
     // export let lastClickedCharacter;
     const dispatch = createEventDispatcher();
     function updateLastClickedCharacter(){
@@ -60,7 +61,7 @@
     </div>
     <figure>
         <img src={character.image} alt="" on:click={updateLastClickedCharacter}
-        class={avatarStyle} />
+        class={avatarStyle} width=100px />
         <figcaption> {character.name} </figcaption>
     </figure>
 </div>
@@ -69,7 +70,6 @@
     figure {
         text-align: center;
         width: 100px;
-        /* transform: translateX(50px); */
     }
     .container {
         grid-template-columns: 20px 100px;

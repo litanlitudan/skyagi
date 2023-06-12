@@ -4,9 +4,9 @@ import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
 import { PromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
 import { Document } from "langchain/document";
-import { ChatOpenAI } from "langchain/chat_models/openai";
 import type { BaseLanguageModel } from "langchain/base_language";
 import { _ } from "$env/static/private";
+import { load_llm_from_config, type LLMSettings, type EmbeddingSettings, load_embedding_from_config } from "./model/model";
 
 // Future improvements:
 // [Func] support embeddings from different LLM models
@@ -51,13 +51,13 @@ export class GenerativeAgent {
 	reflectionThreshold: number = 8;
 	memoryImportance: number = 0.0;
 
-    async setup(supabase: any, conversationId: string, agentId: string, llm: any, the_other_agent_id: string): Promise<void> {
+    async setup(supabase: any, conversationId: string, agentId: string, recipient_agent_model_settings: { llm: LLMSettings, embedding: EmbeddingSettings }, the_other_agent_id: string): Promise<void> {
         // get agent's profile
         this.storage = supabase;
         const { data: profiles } = await this.storage
             .from('agent')
-		    .select('name, age, personality')
-		    .eq('id', agentId);
+            .select('name, age, personality')
+            .eq('id', agentId);
         this.id = agentId;
         this.the_other_agent_id = the_other_agent_id;
         this.name = profiles[0].name;
@@ -65,11 +65,14 @@ export class GenerativeAgent {
         this.personality = profiles[0].personality;
 
         this.conv_id = conversationId;
-        this.llm = new ChatOpenAI();
+        this.llm = load_llm_from_config(recipient_agent_model_settings.llm);
 
         // create retriever
+        const embeddings = load_embedding_from_config(recipient_agent_model_settings.embedding);
+        // TODO: (kejiez) pass down embeddingSize to SQL query
+        // TODO: (kejiez) support more embedding size
         const vectorStore = new SupabaseVectorStore(
-            new OpenAIEmbeddings(),
+            embeddings,
             {
                 client: this.storage,
                 tableName: "memory",
