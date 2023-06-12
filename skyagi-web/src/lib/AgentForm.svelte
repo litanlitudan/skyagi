@@ -24,6 +24,7 @@
 				return false;
 			}
 		}
+		return true;
 	}
 
 	async function handleSubmit() {
