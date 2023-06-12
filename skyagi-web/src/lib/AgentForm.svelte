@@ -18,6 +18,8 @@
 
 	const minMemories = 5;
 
+	let showError = false;
+
 	function validate(agentForm: AgentDataType) {
 		for (let index = 0; index < minMemories; index++) {
 			if (agentForm.memories[index] == '') {
@@ -80,6 +82,8 @@
 					goto(`/agent/${data.agent_id}`);
 				}
 			}
+		} else {
+			showError = true;
 		}
 	}
 
@@ -133,6 +137,9 @@
 						bind:value={memory}
 						on:input={event => updateMemory(index, event)}
 					/>
+					{#if showError && memory === ''}
+						<Helper class="mt-2" color="red">This entry should not be empty</Helper>
+					{/if}
 
 					{#if index + 1 > minMemories}
 						<Button type="button" color="red" on:click={() => removeMemory(index)} class=""
