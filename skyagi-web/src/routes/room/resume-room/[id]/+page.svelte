@@ -1,8 +1,6 @@
 <script lang="ts">
-    import { createSearchStore, searchHandler } from '$lib/room/stores/search';
     import Character from '$lib/room-new-character.svelte';
     import { Select, Label, Button } from 'flowbite-svelte';
-	import { onDestroy } from 'svelte';
     export let data;
     import { browser } from '$app/environment';
     export const conversationId = data.conversation_id
@@ -10,8 +8,8 @@
     export const agentData = data.agentData
     export const agentIds = data.agentIds
     export const userAgentIds = data.userAgentIds
-    export const 
     export const modelData = data.models
+    export const chatName = data.chatName
     
     import modelTokenDataStore from '$lib/room-store.js';
     import { globalAvatarImageList } from '$lib/stores.js';
@@ -21,39 +19,21 @@
         selectedModelData = data;
     })
     let models = modelData
-    let chatName = ""
     
-    let characters = characterData.map(function(characterDataPoint) {
+    let characters = agentData.map(function(characterDataPoint) {
         let imagePath = "/assets/Avatar1.png"
 		if (characterDataPoint.avatar!=null && characterDataPoint.avatar.local_path in globalAvatarImageList){
-			imagePath = characterDataPoint.avatar.local_path
+			console.log(characterDataPoint.avatar)
+            imagePath = characterDataPoint.avatar.local_path
 		};
         return {
         ...characterDataPoint,
         image: imagePath,
         model: models[0].value,
         modelToken: "",
-        selected:false,
         avatarStyle: "rounded-lg border-none border-4 hover:border-solid border-indigo-600"
     }})
-    function filterCharacters(inputCharacters){
-        let rst = []
-        for (let i=0; i<inputCharacters.length; i++){
-            if (inputCharacters[i].selected == true){
-                rst.push(inputCharacters[i])
-            }
-        }
-        return rst
-    }
-    $: selectedCharacters = filterCharacters(characters)
 
-    const searchStore = createSearchStore(characters);
-
-    const unsubscribe = searchStore.subscribe((model) => searchHandler(model));
-
-    onDestroy(()=> {
-        unsubscribe();
-    });
 
 
     let lastClickedCharacterName = characters[0].name
@@ -85,14 +65,11 @@
 
     let selectedModel=models[0].value;
     let selectedToken="";
-    let checkedCharacterGroup = [];
     let playerCharacterId="";
     function charactersToItems(inputCharacters){
         let rst = []
-        for (let i=0; i<inputCharacters.length; i++){
-            if (inputCharacters[i].selected){
-                rst.push({name: inputCharacters[i].name, value: inputCharacters[i].id})
-            }
+        for (let i=0; i<inputCharacters.length;i++){
+            rst.push({name: inputCharacters[i].name, value: inputCharacters[i].id})
         }
         return rst
     }
@@ -106,44 +83,26 @@
     }
     let createDisabled = true
     function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
-        let selectedCount = 0;
-        // console.log("called")
         for (let i=0; i<inputCharacters.length; i++){
-            if (inputCharacters[i].selected){
-                selectedCount++
-                if (inputCharacters[i].model=="" || inputCharacters[i].modelToken==""){
-                    console.log("condition1")
-                    return true
-                }
+            if (inputCharacters[i].model=="" || inputCharacters[i].modelToken==""){
+                console.log("condition1")
+                return true
             }
         }
-        console.log(selectedCount)
-        if (selectedCount < 2){
-            console.log("condition2")
-            return true
-        }
-        if (inputChatName==""){
-            console.log("condition3")
-            return true
-        }
         if (inputPlayerCharacter==""){
-            console.log("condition4")
             return true
         }
         return false
     }
     $: createDisabled = checkCreateButtonDisabled(characters, chatName, playerCharacterId)
     const handleCreateButton = async () => {
-        console.log(selectedCharacters)
-        // console.log(selectedCharacters)
         
-        let inputAgents = selectedCharacters.map((item) => (
+        let inputAgents = characters.map((item) => (
             {id: item.id, 
             model: {
                 name: item.model,
                 token: item.modelToken
             }}))
-        // console.log(inputAgents)
         const conversationResponse = await fetch("/api/create-conversation", {
             method: 'PUT',
             headers: {
@@ -177,27 +136,31 @@
 <div id="globalGrid">
     
     <div class="scroller">
-        {#each $searchStore.filtered as character, i}
+        {#each characters as character, i}
             <div class="characterInfoSet">
                 <Character bind:character={character} 
                  bind:characters={characters}
-                 on:message={handleOnClickImageMessage} 
-                 bind:bindGroup={checkedCharacterGroup} 
+                 on:message={handleOnClickImageMessage}
                  bind:avatarStyle={characters[i].avatarStyle}
-                 value={character.name}>
+                 value={character.name}
+                 hideCheckbox={"visibility: hidden"}>
                 </Character>
             </div>
         {/each}
     </div>
 
-    <input id="chatNameField" placeholder="Chat name" bind:value={chatName}>
+    
 
     <div>
+        <h1>
+            {chatName}
+        </h1>
+        <!-- <input id="chatNameField" placeholder="Chat name" bind:value={chatName}> -->
         <h1>
             Select Model for {lastClickedCharacterName}
         </h1>
         <Label>Select an option
-            <Select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
+            <Select class="mt-5" size="lg" 
             items={models}
             bind:value={selectedModel}
             id="modelSelect"
@@ -222,20 +185,11 @@
         <Button on:click={handleCreateButton} bind:disabled={createDisabled}>
             Create
         </Button>
-
     </div>
 </div>
 
 
 <style>
-    #searchBar {
-        width: 200px
-    }
-
-    #chatNameField {
-        width: 200px
-    }
-
 
     .scroller {
         width: 600px;
@@ -251,10 +205,9 @@
 
     #globalGrid {
         display: grid;
-        grid-template-rows: repeat(2, 50px);
+        grid-template-columns: repeat(2, 60%, 40%);
         grid-auto-flow: column;
         gap: 10px;
-        /* grid-auto-columns: 400px 400px; */
     }
 
 

@@ -7,6 +7,7 @@
     import { browser } from '$app/environment';
     export const characterData = data.agents
     export const modelData = data.models
+    export const userId = data.userId
     import modelTokenDataStore from '$lib/room-store.js';
     import { globalAvatarImageList } from '$lib/stores.js';
 
@@ -145,7 +146,7 @@
             },
             body: JSON.stringify({
                 name: chatName,
-                user_id: "e776f213-b2c7-4fe1-b874-e2705ef99345",
+                user_id: userId,
                 agents: inputAgents,
                 user_agent_ids: [playerCharacterId]
             })
