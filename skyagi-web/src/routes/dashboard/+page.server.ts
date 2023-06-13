@@ -3,6 +3,7 @@ import type { PageServerLoad } from './$types';
 
 
 export const load = (async ({ fetch, locals }) => {
+    console.log("start of loading")
     const session = await locals.getSession();
     if (!session) {
         throw redirect(303, '/');
