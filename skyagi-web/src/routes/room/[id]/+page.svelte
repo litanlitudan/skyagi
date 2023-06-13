@@ -54,6 +54,7 @@
 		// if the conversation has history, put the history into local storage.
 		conversationId.set(conversationData.id);
 		userAgentId.set(conversationData.userAgents[0].id);
+		console.log('conversationData', conversationData);
 		if (conversationData.messages.length > 0) {
 			let chatHistoryToLoad: { [key: string]: StoreMessageType[] } = {};
 			const conversationId = conversationData.id;
