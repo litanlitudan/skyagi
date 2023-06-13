@@ -7,6 +7,7 @@
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import type { LayoutData } from './$types';
+	import { Button } from 'flowbite-svelte';
 
 	// Vercel Analytics
 	let analyticsId = import.meta.env.VERCEL_ANALYTICS_ID;
@@ -32,12 +33,29 @@
 
 		return () => data.subscription.unsubscribe();
 	});
+
+	function handleHomeButton(){
+		window.location.href = '/dashboard'
+	}
 </script>
 
 <svelte:head>
 	<title>SkyAGI</title>
 </svelte:head>
 
+<div id="header">
+	<Button on:click={handleHomeButton}>
+		Home
+	</Button>
+</div>
 <div class="container" style="padding: 50px 0 100px 0">
 	<slot />
 </div>
+
+<style>
+	#header {
+		text-align: right;
+		margin-top: 20px;
+		margin-right: 20px;
+	}
+</style>
