@@ -32,7 +32,7 @@
     function handleCreateRoomClick() {
         window.location.href = '/room/new'
     }
-
+	console.log("page start")
 </script>
 
 <div id="globalGrid">
