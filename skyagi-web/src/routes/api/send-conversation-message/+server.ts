@@ -48,7 +48,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     }
 
     // update the message history
-    await agent.addMessage(newMessage);
+    await agent.addMessage(message, newMessage);
 
     // update recipient agent memory
     await agent.addMemory(`${agent.name} observed ${newMessage} and said ${respMsg}`);

@@ -392,26 +392,43 @@ export class GenerativeAgent {
 		}
     }
 
-    async addMessage(newMessage: string): Promise<string> {
+    async addMessage(message: string, response: string): Promise<string> {
+		// add the incoming message to the message table
+        const incomingMessageEntry = {
+            conversation_id: this.conv_id,
+            agent_id: this.the_other_agent_id,
+            recipient_agent_id: this.id,
+            create_time:  new Date().toISOString(),
+            content: message 
+        }
+
+        const { error: error1 } = await this.storage
+            .from('message')
+            .insert(incomingMessageEntry)
+
+        if (error1 !== null) {
+            return error1;
+        }
+
         
-        // add conversation to the message table
-        const messageEntry = {
+        // add the response message to the message table
+        const responseMessageEntry = {
             conversation_id: this.conv_id,
             agent_id: this.id,
             recipient_agent_id: this.the_other_agent_id,
             create_time:  new Date().toISOString(),
-            content: newMessage 
+            content: response 
         }
 
-        const { error } = await this.storage
+        const { error: error2 } = await this.storage
             .from('message')
-            .insert(messageEntry)
+            .insert(responseMessageEntry)
 
-        if (error !== null) {
-            return error;
-        } else {
-            return '';
+        if (error2 !== null) {
+            return error2;
         }
+
+        return '';
 	}
 
 }
