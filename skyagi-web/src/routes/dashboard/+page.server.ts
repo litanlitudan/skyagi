@@ -30,12 +30,12 @@ export const load = (async ({ fetch, locals }) => {
             let agentData = await agentResponse.json()
             console.log(agentData)
             console.log(message.initiate_agent_id)
-            let agentName = agentData.data.name
+            let agentName = agentData.agent.name
             rstText += agentName + " " + message.content + "\n"
         }
         return {name: conversation.name, 
                 text: rstText,
-                conversationId: id}
+                conversationId: conversation.id}
     }
 
     const charactersResponse = await fetch("/api/get-agents", {
