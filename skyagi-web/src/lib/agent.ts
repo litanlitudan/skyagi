@@ -348,24 +348,7 @@ export class GenerativeAgent {
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
 		const result = await actionPredictionChain.call(kwargs);
-        
-        // add conversation to the message table
-        const messageEntry = {
-            conversation_id: this.conv_id,
-            agent_id: this.id,
-            recipient_agent_id: this.the_other_agent_id,
-            create_time:  new Date().toISOString(),
-            content: result.text.trim() 
-        }
-        const { error } = await this.storage
-            .from('message')
-            .insert(messageEntry)
-
-        if (error !== null) {
-            return error;
-        } else {
-            return result.text.trim();
-        }
+        return result.text.trim();
 	}
 
     async addMemory(content: string): Promise<void> {
@@ -408,4 +391,27 @@ export class GenerativeAgent {
 			this.status = oldStatus;
 		}
     }
+
+    async addMessage(newMessage: string): Promise<string> {
+        
+        // add conversation to the message table
+        const messageEntry = {
+            conversation_id: this.conv_id,
+            agent_id: this.id,
+            recipient_agent_id: this.the_other_agent_id,
+            create_time:  new Date().toISOString(),
+            content: newMessage 
+        }
+
+        const { error } = await this.storage
+            .from('message')
+            .insert(messageEntry)
+
+        if (error !== null) {
+            return error;
+        } else {
+            return '';
+        }
+	}
+
 }
