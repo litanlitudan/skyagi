@@ -6,7 +6,7 @@
     export let data;
     const characterData = data.agents
     const conversationData = data.conversations
-	export let activeId;
+	export let activeId=conversationData[0].conversationId;
     
     
 
