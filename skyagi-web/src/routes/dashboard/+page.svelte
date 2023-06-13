@@ -45,9 +45,6 @@
 				conversationSummary = {conversation} 
 				bind:activeId={activeId}>
                 </Conversation>
-				<script>
-					console.log(activeId)
-				</script>
 				
             {/each}
         </Accordion>
