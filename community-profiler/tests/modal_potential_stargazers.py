@@ -10,16 +10,19 @@ from sentence_transformers import SentenceTransformer
 from github import Github
 from github.NamedUser import NamedUser
 from tqdm import tqdm
-from modal import Secret, Stub, Image, web_endpoint
+from modal import Secret, Stub, SharedVolume, Image, web_endpoint
+
+CACHE_DIR = "/cache"
 
 image = Image.debian_slim().pip_install(
     "lancedb", "pandas", "tqdm", "PyGithub", "sentence-transformers"
 )
-
+volume = SharedVolume()
 stub = Stub(
     name="community-potential-stargazer",
     image=image,
     secrets=[Secret.from_name("skyagi")],
+    shared_volumes={CACHE_DIR: volume},
 )
 
 
@@ -27,11 +30,11 @@ def download_db(repo: str):
     lance_db = requests.get(
         f"https://skyagi-public.s3.us-west-1.amazonaws.com/{repo}.zip"
     )
-    with open(Path(f"{repo}.zip"), "wb") as f:
+    with open(Path(CACHE_DIR, f"{repo}.zip"), "wb") as f:
         f.write(lance_db.content)
 
-    file = zipfile.ZipFile(Path(f"{repo}.zip"))
-    file.extractall(".")
+    file = zipfile.ZipFile(Path(CACHE_DIR, f"{repo}.zip"))
+    file.extractall(CACHE_DIR)
 
 
 def find_relevant_repos(query: str, db_path: Path):
@@ -119,8 +122,9 @@ def get_potential_stargazers(
 @web_endpoint(method="GET")
 def web(owner: str, repo: str, query: str):
     # download db if not exist
-    db_path = Path(f"{repo}.lancedb")
+    db_path = Path(CACHE_DIR, f"{repo}.lancedb")
     if not os.path.exists(db_path):
+        print("DB not exist, downloading")
         download_db(repo)
     # get potential stargazers
     potential_stargazers = get_potential_stargazers(
@@ -133,8 +137,9 @@ def web(owner: str, repo: str, query: str):
 @stub.function()
 def cli(owner: str, repo: str, query: str):
     # download db if not exist
-    db_path = Path(f"{repo}.lancedb")
+    db_path = Path(CACHE_DIR, f"{repo}.lancedb")
     if not os.path.exists(db_path):
+        print("DB not exist, downloading")
         download_db(repo)
     # get potential stargazers
     potential_stargazers = get_potential_stargazers(
