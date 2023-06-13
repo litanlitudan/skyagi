@@ -3,7 +3,6 @@
     import { AccordionItem, Accordion, Button} from 'flowbite-svelte';
     import Conversation from '$lib/dashboard-conversation.svelte'
 	import { globalAvatarImageList } from '$lib/stores.js';
-	import { LOGNAME } from '$env/static/private';
     export let data;
     const characterData = data.agents
     const conversationData = data.conversations
