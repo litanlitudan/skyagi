@@ -6,6 +6,7 @@
     export let data;
     const characterData = data.agents
     const conversationData = data.conversations
+	export let activeId;
     
     
 
@@ -41,11 +42,14 @@
             {#each conversations as conversation, i}
                 <Conversation conversationIndex={i+1} 
 				conversationSummary = {conversation} 
-				bind:open={conversationOpenLs[i]}>
+				bind:activeId={activeId}>
                 </Conversation>
             {/each}
         </Accordion>
         <div id="buttonGrid">
+			<Button>
+				Resume to the selected conversation
+			</Button>
             <Button on:click={handleCreateRoomClick}>
                 Create new conversation
             </Button>

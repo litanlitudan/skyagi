@@ -34,7 +34,8 @@ export const load = (async ({ fetch, locals }) => {
             rstText += agentName + " " + message.content + "\n"
         }
         return {name: conversation.name, 
-                text: rstText}
+                text: rstText,
+                conversationId: id}
     }
 
     const charactersResponse = await fetch("/api/get-agents", {
