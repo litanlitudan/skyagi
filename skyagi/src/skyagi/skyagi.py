@@ -12,6 +12,7 @@ from skyagi.simulation.simulation import (
     run_conversation,
     talks_to,
 )
+from skyagi.util import get_checkpoint_dir
 
 
 def user_robot_conversation(agent_to_interview: GenerativeAgent, ctx: Context):
@@ -118,6 +119,7 @@ def agi_init(
     settings: Settings,
     user_idx: int = 0,
     webcontext=None,
+    from_checkpoint=False
 ) -> Context:
     ctx = Context(console, settings, webcontext)
     ctx.print("Creating all agents one by one...", style="yellow")
@@ -134,8 +136,13 @@ def agi_init(
                 daily_summaries=[(agent_config["current_status"])],
                 reflection_threshold=8,
             )
-            for memory in agent_config["memories"]:
-                agent.add_memory(memory)
+            checkpoint_dir = get_checkpoint_dir(agent_config["path"])
+            if from_checkpoint and agent.try_load_memory(checkpoint_dir):
+                pass
+            else:
+                for memory in agent_config["memories"]:
+                    agent.add_memory(memory)
+                agent.dump_memory(checkpoint_dir)
         if idx == user_idx:
             ctx.user_agent = agent
         else:
