@@ -57,7 +57,7 @@ def get_stargazers(repo_fullname: str, github_token: str) -> List[NamedUser]:
     try:
         stargazers = Github(github_token).get_repo(repo_fullname).get_stargazers()
         return stargazers
-    except:
+    except Exception:
         print(f"[Error] failed to get stargazers of repo {repo_fullname}")
         return []
 
