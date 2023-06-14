@@ -22,7 +22,6 @@ stub = Stub(
     name="community-potential-stargazer",
     image=image,
     secrets=[Secret.from_name("skyagi")],
-    shared_volumes={CACHE_DIR: volume},
 )
 
 
@@ -118,7 +117,7 @@ def get_potential_stargazers(
     return potential_stargazers
 
 
-@stub.function()
+@stub.function(shared_volumes={CACHE_DIR: volume})
 @web_endpoint(method="GET")
 def web(owner: str, repo: str, query: str):
     # download db if not exist
@@ -134,7 +133,7 @@ def web(owner: str, repo: str, query: str):
     return df.to_json()
 
 
-@stub.function()
+@stub.function(shared_volumes={CACHE_DIR: volume})
 def cli(owner: str, repo: str, query: str):
     # download db if not exist
     db_path = Path(CACHE_DIR, f"{repo}.lancedb")
