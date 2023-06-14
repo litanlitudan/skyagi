@@ -14,8 +14,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         name,
         user_id,
         agents,
-        user_agent_ids,
-        embedding_model_settings
+        user_agent_ids
     } = await request.json();
 
     let agent_ids = agents.map(agent => agent.id);
@@ -36,13 +35,12 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     }
 
     // get agents' initial memory and add to memory
-    // TODO
-    // use per agent model based embedding
-
-    const embeddings = load_embedding_from_config(embedding_model_settings as EmbeddingSettings);
     const currentTime = new Date().toISOString();
 
-    for (const agent_id of agent_ids) {
+    for (const agent of agents) {
+        const agent_id = agent.id;
+        const embedding_model_settings = agent.embedding_model_settings;
+
         const { data: agent_info } = await locals.supabase
             .from('agent')
             .select('initial_status, initial_memory')
@@ -51,6 +49,9 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         if (checkValidity(agent_info) === false) {
             return new Response(JSON.stringify({ 'success': 0, 'error': 'agent not found' }), { status: 200 });
         }
+
+        // load embedding model
+        const embeddings = load_embedding_from_config(embedding_model_settings as EmbeddingSettings);
 
         let embedding;
         try {
