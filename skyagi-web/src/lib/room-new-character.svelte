@@ -11,7 +11,7 @@
     export let value;
     export let characters;
     export let avatarStyle = "rounded-lg border-none border-4 hover:border-solid border-indigo-600";
-
+    export let hideCheckbox="visibility:visible";
 
 
     // export let lastClickedCharacter;
@@ -45,7 +45,6 @@
             character.selected=characterCheck.checked
             characters = characters;
         }
-        console.log(character.selected)
     }
 
 </script>
@@ -57,8 +56,11 @@
                value={value}
                checked={bindGroup.includes(value)}
                on:change={(e) => onChange(e, character.name+"Checkbox")}
-                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-    </div>
+               class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+               style={hideCheckbox}
+               >
+                
+            </div>
     <figure>
         <img src={character.image} alt="" on:click={updateLastClickedCharacter}
         class={avatarStyle} width=100px />

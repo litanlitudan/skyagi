@@ -4,16 +4,18 @@
     import Conversation from '$lib/dashboard-conversation.svelte'
 	import { globalAvatarImageList } from '$lib/stores.js';
     export let data;
-    export const characterData = data.agents
-    export const conversationData = data.conversations
+    const characterData = data.agents
+    const conversationData = data.conversations
+	export let activeId=conversationData[0].conversationId;
     
     
 
     const characters = characterData.map(function(characterDataPoint) {
 		let imagePath = "/assets/Avatar1.png"
-		if (characterDataPoint.avatar!=null && characterDataPoint.avatar.local_path in globalAvatarImageList){
+		if (characterDataPoint.avatar!=null && globalAvatarImageList.includes(characterDataPoint.avatar.local_path)){
+			
 			imagePath = characterDataPoint.avatar.local_path
-		};
+		}
 		return {
 			...characterDataPoint,
 			image: imagePath
@@ -21,6 +23,12 @@
 
     
     export const conversations = conversationData
+	let conversationOpenLs = conversations.map((item)=>false)
+	conversationOpenLs[0]=true
+
+	function handleResumeRoomClick() {
+		window.location.href = '/room/resume-room/' + activeId
+	}
 
     function handleCreateAgentClick() {
         window.location.href = '/agent/create'
@@ -29,7 +37,6 @@
     function handleCreateRoomClick() {
         window.location.href = '/room/new'
     }
-
 </script>
 
 <div id="globalGrid">
@@ -37,11 +44,18 @@
     <div>
         <Accordion id="conversationBoard">
             {#each conversations as conversation, i}
-                <Conversation conversationIndex={i+1} conversationSummary = {conversation} >
+                <Conversation conversationIndex={i+1} 
+				conversationSummary = {conversation} 
+				conversationId = {conversation.conversationId}
+				bind:activeId={activeId}>
                 </Conversation>
+				
             {/each}
         </Accordion>
         <div id="buttonGrid">
+			<Button on:click={handleResumeRoomClick}>
+				Resume to the selected conversation
+			</Button>
             <Button on:click={handleCreateRoomClick}>
                 Create new conversation
             </Button>
