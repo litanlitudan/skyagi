@@ -2,7 +2,6 @@ import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { checkValidity } from '$lib/utils';
 import { type EmbeddingSettings, load_embedding_from_config } from '$lib/model/model';
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 
 
 // Can switch to the edge func if serverless is not necessary
@@ -61,7 +60,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
             console.error(error.message);
             return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to query embedding' }), { status: 200 });
         }
-
         const importance = 0.0;
         const metadata = {
             agent_id: agent_id,
