@@ -22,7 +22,7 @@
     
     let characters = agentData.map(function(characterDataPoint) {
         let imagePath = "/assets/Avatar1.png"
-		if (characterDataPoint.avatar!=null && characterDataPoint.avatar.local_path in globalAvatarImageList){
+		if (characterDataPoint.avatar!=null && globalAvatarImageList.includes(characterDataPoint.avatar.local_path)){
 			console.log(characterDataPoint.avatar)
             imagePath = characterDataPoint.avatar.local_path
 		};

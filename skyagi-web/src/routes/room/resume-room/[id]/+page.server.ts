@@ -9,7 +9,6 @@ export const load = (async ({ params, fetch, locals }) => {
         throw redirect(303, '/');
     }
     const user_id = session.user.id;
-
     const resp = await fetch('/api/get-conversation', {
         headers: {
             'Content-Type': 'application/json'
@@ -18,7 +17,7 @@ export const load = (async ({ params, fetch, locals }) => {
         body: JSON.stringify({ conversation_id })
     });
     const data = await resp.json();
-    if (!data.summary) {
+    if (!data.success) {
         return {
             body: {}
         }
@@ -37,8 +36,7 @@ export const load = (async ({ params, fetch, locals }) => {
             body: JSON.stringify({ user_id, agent_id })
         })
         let agentData = await agentResponse.json()
-        console.log(agentData)
-        return agentData.data
+        return agentData.agent
     }
     let rstLs = Promise.all(agentIds.map((item)=>(agentIdToAgentData(item))))
 

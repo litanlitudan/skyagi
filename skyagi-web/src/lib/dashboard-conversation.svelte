@@ -5,20 +5,23 @@
     export let conversationSummary;
     export let open=false;
     export let activeId;
-    console.log(conversationId)
     if (conversationIndex == 1){
         open=true
     }
-    function handleOpen(openStatus){
+    function handleOpen(openStatus, crtId){
         if (openStatus==true){
             return conversationId
         }
         else {
-            return ""
+            if (conversationId==crtId){
+                return ""
+            }
+            else{
+                return crtId
+            }
         }
-        
     }
-    $: activeId = handleOpen(open)
+    $: activeId = handleOpen(open, activeId)
     
 
 </script>

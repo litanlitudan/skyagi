@@ -45,7 +45,6 @@
             character.selected=characterCheck.checked
             characters = characters;
         }
-        console.log(character.selected)
     }
 
 </script>

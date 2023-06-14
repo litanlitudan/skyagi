@@ -6,17 +6,16 @@
     export let data;
     const characterData = data.agents
     const conversationData = data.conversations
-	console.log(conversationData)
 	export let activeId=conversationData[0].conversationId;
-	console.log(activeId)
     
     
 
     const characters = characterData.map(function(characterDataPoint) {
 		let imagePath = "/assets/Avatar1.png"
-		if (characterDataPoint.avatar!=null && characterDataPoint.avatar.local_path in globalAvatarImageList){
+		if (characterDataPoint.avatar!=null && globalAvatarImageList.includes(characterDataPoint.avatar.local_path)){
+			
 			imagePath = characterDataPoint.avatar.local_path
-		};
+		}
 		return {
 			...characterDataPoint,
 			image: imagePath
@@ -26,6 +25,10 @@
     export const conversations = conversationData
 	let conversationOpenLs = conversations.map((item)=>false)
 	conversationOpenLs[0]=true
+
+	function handleResumeRoomClick() {
+		window.location.href = '/room/resume-room/' + activeId
+	}
 
     function handleCreateAgentClick() {
         window.location.href = '/agent/create'
@@ -50,8 +53,8 @@
             {/each}
         </Accordion>
         <div id="buttonGrid">
-			<Button>
-				Resume to the conversation {activeId}
+			<Button on:click={handleResumeRoomClick}>
+				Resume to the selected conversation
 			</Button>
             <Button on:click={handleCreateRoomClick}>
                 Create new conversation

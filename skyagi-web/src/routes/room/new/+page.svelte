@@ -20,7 +20,7 @@
     
     let characters = characterData.map(function(characterDataPoint) {
         let imagePath = "/assets/Avatar1.png"
-		if (characterDataPoint.avatar!=null && characterDataPoint.avatar.local_path in globalAvatarImageList){
+		if (characterDataPoint.avatar!=null && globalAvatarImageList.includes(characterDataPoint.avatar.local_path)){
 			imagePath = characterDataPoint.avatar.local_path
 		};
         return {
@@ -107,22 +107,18 @@
             if (inputCharacters[i].selected){
                 selectedCount++
                 if (inputCharacters[i].model=="" || inputCharacters[i].modelToken==""){
-                    console.log("condition1")
                     return true
                 }
             }
         }
-        console.log(selectedCount)
         if (selectedCount < 2){
             console.log("condition2")
             return true
         }
         if (inputChatName==""){
-            console.log("condition3")
             return true
         }
         if (inputPlayerCharacter==""){
-            console.log("condition4")
             return true
         }
         return false
