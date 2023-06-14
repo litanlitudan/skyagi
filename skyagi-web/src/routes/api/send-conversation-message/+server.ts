@@ -26,15 +26,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     // create recipient agent
     const agent = new GenerativeAgent();
 
-    //const res = await agent.getAgentMemories(conversation_id, recipient_agent_id);
-    const { data: allMemories } = await locals.supabase
-            .from('memory')
-		    .select('id, content, metadata')
-		    .contains('metadata',{"conversation_id": conversation_id})
-		    .contains('metadata',{"agent_id": recipient_agent_id})
-            .order('metadata->create_time', { ascending: true });
-    return new Response(JSON.stringify(allMemories), { status: 200 });
-
     await agent.setup(locals.supabase, conversation_id, recipient_agent_id, recipient_agent_model_settings, initiate_agent_id);
 
     // get reaction
