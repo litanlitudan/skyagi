@@ -2,6 +2,7 @@ import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { checkValidity } from '$lib/utils';
 import { type EmbeddingSettings, load_embedding_from_config } from '$lib/model/model';
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 
 
 // Can switch to the edge func if serverless is not necessary
@@ -51,7 +52,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         }
 
         // load embedding model
-        const embeddings = load_embedding_from_config(embedding_model_settings as EmbeddingSettings);
+        //const embeddings = load_embedding_from_config(embedding_model_settings as EmbeddingSettings);
+        const embeddings = new OpenAIEmbeddings();
 
         let embedding;
         try {
