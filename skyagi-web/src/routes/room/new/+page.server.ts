@@ -29,6 +29,7 @@ export const load = (async ({ fetch, locals }) => {
 
     return {
         agents: agents,
-        models: models
+        models: models,
+        userId: user_id
     }
 }) satisfies PageServerLoad;
