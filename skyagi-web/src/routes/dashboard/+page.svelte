@@ -6,7 +6,9 @@
     export let data;
     const characterData = data.agents
     const conversationData = data.conversations
+	console.log(conversationData)
 	export let activeId=conversationData[0].conversationId;
+	console.log(activeId)
     
     
 
@@ -32,7 +34,6 @@
     function handleCreateRoomClick() {
         window.location.href = '/room/new'
     }
-	console.log("page start")
 </script>
 
 <div id="globalGrid">
@@ -42,6 +43,7 @@
             {#each conversations as conversation, i}
                 <Conversation conversationIndex={i+1} 
 				conversationSummary = {conversation} 
+				conversationId = {conversation.conversationId}
 				bind:activeId={activeId}>
                 </Conversation>
 				
@@ -49,7 +51,7 @@
         </Accordion>
         <div id="buttonGrid">
 			<Button>
-				Resume to the selected conversation
+				Resume to the conversation {activeId}
 			</Button>
             <Button on:click={handleCreateRoomClick}>
                 Create new conversation

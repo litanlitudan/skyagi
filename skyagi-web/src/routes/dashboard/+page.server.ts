@@ -3,7 +3,6 @@ import type { PageServerLoad } from './$types';
 
 
 export const load = (async ({ fetch, locals }) => {
-    console.log("start of loading")
     const session = await locals.getSession();
     if (!session) {
         throw redirect(303, '/');
@@ -14,7 +13,6 @@ export const load = (async ({ fetch, locals }) => {
         let rstText = ""
         let snapShot = conversation.snapshot
         if (snapShot == null){
-            console.log("returend")
             return rstText
         }
         for (let i=0; i < snapShot.length; i++){
@@ -29,9 +27,7 @@ export const load = (async ({ fetch, locals }) => {
             })
             
             let agentData = await agentResponse.json()
-            console.log(agentData)
-            console.log(message.initiate_agent_id)
-            let agentName = agentData.agent.name
+            let agentName = agentData.data.name
             rstText += agentName + " " + message.content + "\n"
         }
         return {name: conversation.name, 
