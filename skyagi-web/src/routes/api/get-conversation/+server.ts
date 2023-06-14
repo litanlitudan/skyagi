@@ -33,7 +33,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	// a converation could have empty messages, so no need to check if messages is empty
 
     let resp = {
-        'summary': 1,
+        'success': 1,
         'name': conversation[0].name,
         'agent_ids': conversation[0].agents,
         'user_agent_ids': conversation[0].user_agents,

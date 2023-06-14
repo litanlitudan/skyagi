@@ -79,3 +79,7 @@ def load_json(filepath: Path) -> Dict:
                 return {}
             else:
                 raise e
+
+
+def get_checkpoint_dir(agent_file: str) -> str:
+    return "./{}.cpt".format(os.path.basename(agent_file))
