@@ -409,7 +409,6 @@ export class GenerativeAgent {
         if (error1 !== null) {
             return error1;
         }
-
         
         // add the response message to the message table
         const responseMessageEntry = {
