@@ -52,8 +52,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         }
 
         // load embedding model
-        //const embeddings = load_embedding_from_config(embedding_model_settings as EmbeddingSettings);
-        const embeddings = new OpenAIEmbeddings();
+        const embeddings = load_embedding_from_config(embedding_model_settings as EmbeddingSettings);
+        //const embeddings = new OpenAIEmbeddings();
 
         let embedding;
         try {
