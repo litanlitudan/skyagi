@@ -53,7 +53,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
         // load embedding model
         const embeddings = load_embedding_from_config(embedding_model_settings as EmbeddingSettings);
-        //const embeddings = new OpenAIEmbeddings();
 
         let embedding;
         try {
@@ -62,7 +61,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
             console.error(error.message);
             return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to query embedding' }), { status: 200 });
         }
-        return new Response(JSON.stringify({ success: 1, conversation_id: embedding }), { status: 200 });
 
         const importance = 0.0;
         const metadata = {
