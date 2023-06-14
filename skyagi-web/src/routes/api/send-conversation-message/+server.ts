@@ -26,6 +26,9 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     // create recipient agent
     const agent = new GenerativeAgent();
 
+    const res = await agent.getAgentMemories(conversation_id, recipient_agent_id);
+    return new Response(JSON.stringify(res), { status: 200 });
+
     await agent.setup(locals.supabase, conversation_id, recipient_agent_id, recipient_agent_model_settings, initiate_agent_id);
 
     // get reaction
