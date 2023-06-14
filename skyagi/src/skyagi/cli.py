@@ -5,7 +5,7 @@ from pathlib import Path
 import inquirer
 import typer
 from rich.console import Console
-from rich.prompt import IntPrompt, Prompt
+from rich.prompt import IntPrompt, Prompt, Confirm
 
 from skyagi import config, util
 from skyagi.discord import client
@@ -207,6 +207,7 @@ def run():
                 continue
             try:
                 agent_config = util.load_json(Path(agent_file))
+                agent_config["path"] = agent_file
                 if agent_config == {}:
                     console.print(
                         "Empty configuration, please provide a valid one", style="red"
@@ -227,7 +228,10 @@ def run():
         default=agent_names[0],
     )
     user_index = agent_names.index(user_role)
-    ctx = agi_init(agent_configs, console, settings, user_index)
+
+    from_checkpoint = Confirm.ask("Load agents' memories from checkpoint?", default=False)
+
+    ctx = agi_init(agent_configs, console, settings, user_index, from_checkpoint=from_checkpoint)
 
     actions = ["continue", "interview", "exit"]
     while True:
