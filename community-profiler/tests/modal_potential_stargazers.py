@@ -140,6 +140,7 @@ def cli(owner: str, repo: str, query: str):
     if not os.path.exists(db_path):
         print("DB not exist, downloading")
         download_db(repo)
+        print("DB downloaded")
     # get potential stargazers
     potential_stargazers = get_potential_stargazers(
         owner, repo, query, db_path, os.getenv("GITHUB_ACCESS_TOKEN")
