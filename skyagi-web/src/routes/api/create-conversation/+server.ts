@@ -52,6 +52,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
         // load embedding model
         const embeddings = load_embedding_from_config(embedding_model_settings as EmbeddingSettings);
+        return new Response(JSON.stringify({ success: 1, conversation_id: embeddings }), { status: 200 });
+
 
         let embedding;
         try {
@@ -81,7 +83,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         if (error) {
             return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to create new initial memory' }), { status: 200 });
         }
-        break;
     }
 
     return new Response(JSON.stringify({ success: 1, conversation_id: conv_id[0].id }), { status: 200 });
