@@ -20,7 +20,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         .single();
 
     if (checkValidity(agent)) {
-        return new Response(JSON.stringify({ 'success': 1, data: agent }), { status: 200 });
+        return new Response(JSON.stringify({ 'success': 1, agent: agent }), { status: 200 });
     } else {
         console.error(`Fail to find agent: ${error?.message}`);
         return new Response(JSON.stringify({ 'success': 0, 'error': 'agent not found' }), { status: 200 });
