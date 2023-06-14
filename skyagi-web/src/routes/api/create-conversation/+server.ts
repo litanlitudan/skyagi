@@ -33,8 +33,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     if (checkValidity(conv_id) === false) {
         return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to find conversation' }), { status: 200 });
     }
-    return new Response(JSON.stringify({ success: 1, conversation_id: conv_id[0].id }), { status: 200 });
-
 
     // get agents' initial memory and add to memory
     const currentTime = new Date().toISOString();
@@ -83,6 +81,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         if (error) {
             return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to create new initial memory' }), { status: 200 });
         }
+        break;
     }
 
     return new Response(JSON.stringify({ success: 1, conversation_id: conv_id[0].id }), { status: 200 });
