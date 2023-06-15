@@ -13,7 +13,6 @@ export const load = (async ({ fetch, locals }) => {
         let rstText = ""
         let snapShot = conversation.snapshot
         if (snapShot == null){
-            console.log("returend")
             return rstText
         }
         for (let i=0; i < snapShot.length; i++){
@@ -28,13 +27,12 @@ export const load = (async ({ fetch, locals }) => {
             })
             
             let agentData = await agentResponse.json()
-            console.log(agentData)
-            console.log(message.initiate_agent_id)
-            let agentName = agentData.data.name
+            let agentName = agentData.agent.name
             rstText += agentName + " " + message.content + "\n"
         }
         return {name: conversation.name, 
-                text: rstText}
+                text: rstText,
+                conversationId: conversation.id}
     }
 
     const charactersResponse = await fetch("/api/get-agents", {

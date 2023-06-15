@@ -348,24 +348,7 @@ export class GenerativeAgent {
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
 		const result = await actionPredictionChain.call(kwargs);
-        
-        // add conversation to the message table
-        const messageEntry = {
-            conversation_id: this.conv_id,
-            agent_id: this.id,
-            recipient_agent_id: this.the_other_agent_id,
-            create_time:  new Date().toISOString(),
-            content: result.text.trim() 
-        }
-        const { error } = await this.storage
-            .from('message')
-            .insert(messageEntry)
-
-        if (error !== null) {
-            return error;
-        } else {
-            return result.text.trim();
-        }
+        return result.text.trim();
 	}
 
     async addMemory(content: string): Promise<void> {
@@ -408,4 +391,43 @@ export class GenerativeAgent {
 			this.status = oldStatus;
 		}
     }
+
+    async addMessage(message: string, response: string): Promise<string> {
+		// add the incoming message to the message table
+        const incomingMessageEntry = {
+            conversation_id: this.conv_id,
+            agent_id: this.the_other_agent_id,
+            recipient_agent_id: this.id,
+            create_time:  new Date().toISOString(),
+            content: message 
+        }
+
+        const { error: error1 } = await this.storage
+            .from('message')
+            .insert(incomingMessageEntry)
+
+        if (error1 !== null) {
+            return error1;
+        }
+        
+        // add the response message to the message table
+        const responseMessageEntry = {
+            conversation_id: this.conv_id,
+            agent_id: this.id,
+            recipient_agent_id: this.the_other_agent_id,
+            create_time:  new Date().toISOString(),
+            content: response 
+        }
+
+        const { error: error2 } = await this.storage
+            .from('message')
+            .insert(responseMessageEntry)
+
+        if (error2 !== null) {
+            return error2;
+        }
+
+        return '';
+	}
+
 }
