@@ -27,8 +27,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     const agent = new GenerativeAgent();
 
     await agent.setup(locals.supabase, conversation_id, recipient_agent_id, recipient_agent_model_settings, initiate_agent_id);
-    return new Response(JSON.stringify("here"), { status: 200 });
-
 
     // get reaction
     const newMessage = `${initiateAgentName[0].name} says ${message}`;
@@ -38,6 +36,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
     const fullResult = await agent.generateRspn(newMessage, callToActionTemplate);
     const result = fullResult.trim().split('\n')[0];
+    return new Response(JSON.stringify("here"), { status: 200 });
+
 
     var respMsg: string = "";
     var ifContinue: boolean = false;
