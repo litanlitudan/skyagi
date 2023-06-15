@@ -24,12 +24,12 @@ const set = async (query: string) => {
     recipient_agent_id: get(currentAgentId),
     recipient_agent_model_settings: {
       llm: {
-        "type": "ChatOpenAI",
-        "provider": "OpenAI",
-        "name": "openai-gpt-3.5-turbo",
-        "args": {
-          "modelName": "gpt-3.5-turbo",
-          "maxTokens": 1500,
+        type: "ChatOpenAI",
+        provider: "OpenAI",
+        name: "openai-gpt-3.5-turbo",
+        args: {
+          modelName: "gpt-3.5-turbo",
+          maxTokens: 1500,
         }
       }
     },
