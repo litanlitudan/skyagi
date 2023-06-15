@@ -48,7 +48,7 @@
 			</ul>
 		{/if}
 		<Button type="button" on:click={handleEdit}>Edit</Button>
-		<Button type="button" color="red" on:click={() => (popupDeleteModal = true)}>Delete</Button>
+		<!-- <Button type="button" color="red" on:click={() => (popupDeleteModal = true)}>Delete</Button> -->
 	{:else}
 		<p>Agent not found</p>
 	{/if}

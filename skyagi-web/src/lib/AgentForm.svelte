@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { isAgentFormEditing } from './stores';
 	import type { AgentDataType } from './types';
-	import { Label, Input, Button } from 'flowbite-svelte';
+	import { Label, Input, Button, Helper } from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
 	import type { User } from '@supabase/supabase-js';
 
@@ -11,62 +11,79 @@
 		age: '',
 		personalities: '',
 		socialStatus: '',
-		memories: ['']
+		memories: ['', '', '', '', '']
 	};
 
 	export let user: User;
 
+	const minMemories = 5;
+
+	let showError = false;
+
+	function validate(agentForm: AgentDataType) {
+		for (let index = 0; index < minMemories; index++) {
+			if (agentForm.memories[index] == '') {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	async function handleSubmit() {
-		if ($isAgentFormEditing) {
-			const user_id = user.id;
-			const resp = await fetch('/api/update-agent', {
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				method: 'PUT',
-				body: JSON.stringify({
-					agent_id: agentData.id,
-					user_id,
-					agent: {
-						name: agentData.name,
-						age: agentData.age,
-						personality: agentData.personalities,
-						status: agentData.socialStatus,
-						memory: agentData.memories.join('\n')
-					}
-				})
-			});
-			const data = await resp.json();
-			if (!data.success) {
-				alert(data.error);
+		if (validate(agentData)) {
+			if ($isAgentFormEditing) {
+				const user_id = user.id;
+				const resp = await fetch('/api/update-agent', {
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					method: 'PUT',
+					body: JSON.stringify({
+						agent_id: agentData.id,
+						user_id,
+						agent: {
+							name: agentData.name,
+							age: agentData.age,
+							personality: agentData.personalities,
+							status: agentData.socialStatus,
+							memory: agentData.memories.join('\n')
+						}
+					})
+				});
+				const data = await resp.json();
+				if (!data.success) {
+					alert(data.error);
+				} else {
+					isAgentFormEditing.set(false);
+				}
 			} else {
-				isAgentFormEditing.set(false);
+				const user_id = user.id;
+				const resp = await fetch('/api/create-agent', {
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					method: 'PUT',
+					body: JSON.stringify({
+						user_id,
+						agent: {
+							name: agentData.name,
+							age: agentData.age,
+							personality: agentData.personalities,
+							status: agentData.socialStatus,
+							memory: agentData.memories.join('\n')
+						}
+					})
+				});
+
+				const data = await resp.json();
+				if (!data.success) {
+					alert(data.error);
+				} else {
+					goto(`/agent/${data.agent_id}`);
+				}
 			}
 		} else {
-			const user_id = user.id;
-			const resp = await fetch('/api/create-agent', {
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				method: 'PUT',
-				body: JSON.stringify({
-					user_id,
-					agent: {
-						name: agentData.name,
-						age: agentData.age,
-						personality: agentData.personalities,
-						status: agentData.socialStatus,
-						memory: agentData.memories.join(' ')
-					}
-				})
-			});
-
-			const data = await resp.json();
-			if (!data.success) {
-				alert(data.error);
-			} else {
-				goto(`/agent/${data.agent_id}`);
-			}
+			showError = true;
 		}
 	}
 
@@ -120,7 +137,15 @@
 						bind:value={memory}
 						on:input={event => updateMemory(index, event)}
 					/>
-					<Button type="button" color="red" on:click={() => removeMemory(index)} class="">-</Button>
+					{#if showError && memory === ''}
+						<Helper class="mt-2" color="red">This entry should not be empty</Helper>
+					{/if}
+
+					{#if index + 1 > minMemories}
+						<Button type="button" color="red" on:click={() => removeMemory(index)} class=""
+							>-</Button
+						>
+					{/if}
 				</div>
 			{/each}
 
