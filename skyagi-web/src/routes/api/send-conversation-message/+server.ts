@@ -29,6 +29,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	const agent = new GenerativeAgent();
 
 	recipient_agent_model_settings.llm.args.openAIApiKey = OPENAI_API_KEY;
+	recipient_agent_model_settings.embedding.args.openAIApiKey = OPENAI_API_KEY;
 	await agent.setup(locals.supabase, conversation_id, recipient_agent_id, recipient_agent_model_settings, initiate_agent_id);
 
 	// get reaction

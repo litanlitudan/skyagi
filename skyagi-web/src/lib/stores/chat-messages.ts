@@ -31,6 +31,14 @@ const set = async (query: string) => {
           modelName: "gpt-3.5-turbo",
           maxTokens: 1500,
         }
+      },
+      embedding: {
+        type: "OpenAIEmbeddings",
+        provider: "OpenAI",
+        name: "openai-text-embedding-ada-002",
+        args: {
+          modelName: "text-embedding-ada-002",
+        }
       }
     },
     message: query,
