@@ -47,6 +47,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         ifContinue = true;
     }
 
+    respMsg = respMsg.slice(respMsg.startsWith('"') ? 1 : 0, respMsg.endsWith('"') ? -1 : undefined);
+    
     // update the message history
     await agent.addMessage(message, respMsg);
 

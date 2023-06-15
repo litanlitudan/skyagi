@@ -86,7 +86,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         initiator_name: initiator_name,
         recipient_name: recipient_name
     });
-    const msgResp = respChainRes.text.trim();
+    let msgResp = respChainRes.text.trim();
 
     if (msgResp.includes('NOTHING')) {
         return new Response(JSON.stringify({ 'success': 1, 'resp_msg': { 'is_valid': false, 'message': '' } }), { status: 200 });
@@ -113,6 +113,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     if (validationResp.includes('no')) {
         return new Response(JSON.stringify({ 'success': 1, 'resp_msg': { 'is_valid': false, 'message': '' } }), { status: 200 });
     }
+
+    msgResp = msgResp.slice(msgResp.startsWith('"') ? 1 : 0, msgResp.endsWith('"') ? -1 : undefined);
 
     return new Response(JSON.stringify({ 'success': 1, 'resp_msg': { 'is_valid': true, 'message': msgResp } }), { status: 200 });
 }) satisfies RequestHandler;
