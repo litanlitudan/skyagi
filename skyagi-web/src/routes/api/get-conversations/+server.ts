@@ -22,7 +22,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         .eq('user_id', user_id);
         
     if (checkValidity(conversations) === false) {
-        return new Response(JSON.stringify({ 'success': 0, 'error': 'conversations not found' }), { status: 200 });
+        return new Response(JSON.stringify({ 'success': 1, 'conversations': [] }), { status: 200 });
     }
     
     let res_conversations = [];

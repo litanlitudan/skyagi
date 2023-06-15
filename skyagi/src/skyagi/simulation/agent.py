@@ -7,9 +7,9 @@ from typing import List, Optional, Tuple
 from langchain import LLMChain
 from langchain.base_language import BaseLanguageModel
 from langchain.prompts import PromptTemplate
-from langchain.retrievers import TimeWeightedVectorStoreRetriever
 from langchain.schema import Document
 from pydantic import BaseModel, Field
+from skyagi.retriever import Retriever
 from termcolor import colored
 
 
@@ -23,7 +23,7 @@ class GenerativeAgent(BaseModel):
     status: str
     """Current activities of the character."""
     llm: BaseLanguageModel
-    memory_retriever: TimeWeightedVectorStoreRetriever
+    memory_retriever: Retriever
     """The retriever to fetch related memories."""
     verbose: bool = False
 
@@ -138,6 +138,12 @@ class GenerativeAgent(BaseModel):
             return (float(score[0]) / 10) * weight
         else:
             return 0.0
+
+    def try_load_memory(self, path) -> bool:
+        return self.memory_retriever.try_load_memory(path)
+
+    def dump_memory(self, path: str) -> bool:
+        return self.memory_retriever.dump_memory(path)
 
     def add_memory(self, memory_content: str) -> List[str]:
         """Add an observation or memory to the agent's memory."""
