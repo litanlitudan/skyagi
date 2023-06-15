@@ -1,7 +1,6 @@
 import { StoreMessageRole, type StoreMessageType } from '$lib/types';
 import { SSE } from 'sse.js';
 import { get, writable } from 'svelte/store';
-import { OPENAI_API_KEY } from '$env/static/private';
 
 export interface ChatTranscript {
   messages: StoreMessageType[];
@@ -31,7 +30,6 @@ const set = async (query: string) => {
         "args": {
           "modelName": "gpt-3.5-turbo",
           "maxTokens": 1500,
-          "openAIApiKey": OPENAI_API_KEY,
         }
       }
     },
