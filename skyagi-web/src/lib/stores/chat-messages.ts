@@ -1,6 +1,7 @@
 import { StoreMessageRole, type StoreMessageType } from '$lib/types';
 import { SSE } from 'sse.js';
 import { get, writable } from 'svelte/store';
+import { OPENAI_API_KEY } from '$env/static/private';
 
 export interface ChatTranscript {
   messages: StoreMessageType[];
@@ -21,14 +22,18 @@ const set = async (query: string) => {
   const request = {
     conversation_id: get(conversationId),
     initiate_agent_id: get(userAgentId),
-    initiate_agent_model: {
-      name: "gpt-3.5-turbo",
-      token: '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',
-    },
     recipient_agent_id: get(currentAgentId),
-    recipient_agent_model: {
-      name: "gpt-3.5-turbo",
-      token: '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',
+    recipient_agent_model_settings: {
+      llm: {
+        "type": "ChatOpenAI",
+        "provider": "OpenAI",
+        "name": "openai-gpt-3.5-turbo",
+        "args": {
+          "modelName": "gpt-3.5-turbo",
+          "maxTokens": 1500,
+          "openAIApiKey": OPENAI_API_KEY,
+        }
+      }
     },
     message: query,
   }
