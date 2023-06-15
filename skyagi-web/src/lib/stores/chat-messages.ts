@@ -76,7 +76,10 @@ const handleError = <T>(err: T) => {
 
 // put a new AI generated answer to store
 const streamMessage = (e: MessageEvent) => {
+  console.log('e', e);
+  console.log('JSON.parse(e.data)', JSON.parse(e.data));
   console.log('streamMessage', e.data);
+
   try {
     if (e.data === '[DONE]') {
       updateMessages(get(answer), StoreMessageRole.AGENT, get(currentAgentName), 'idle');
