@@ -141,10 +141,26 @@ export class GenerativeAgent {
 				`Do not embellish.` +
 				`\n\nSummary: `
 		);
+		let start, end, elapsedTime;
+		start = performance.now();
 		const relevantMemories = await this.fetchMemories(`${this.name}'s core characteristics`);
 		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
+		end = performance.now();
+		elapsedTime = end - start;
+		console.log(`Get relevant mem: ${elapsedTime} milliseconds`);
+
+		start = performance.now();
 		const chain = new LLMChain({llm: this.llm, prompt});
+		end = performance.now();
+		elapsedTime = end - start;
+		console.log(`Create new chain: ${elapsedTime} milliseconds`);
+
+		start = performance.now();
 		const res = await chain.run({ name: this.name, relatedMemories: relevantMemoriesStr });
+		end = performance.now();
+		elapsedTime = end - start;
+		console.log(`ask LLM: ${elapsedTime} milliseconds`);
+
         return res.trim();
 	}
 
@@ -194,12 +210,7 @@ export class GenerativeAgent {
 	}
 
 	private async getSummary(forceRefresh: boolean = false): Promise<string> {
-		const start = performance.now();
 		let summary = await this.computeAgentSummary();
-		const end = performance.now();
-		const elapsedTime = end - start;
-		// Log the elapsed time
-		console.log(`Execution time: ${elapsedTime} milliseconds`);
 
 		return (
 			`Name: ${this.name} (age: ${this.age})` +
