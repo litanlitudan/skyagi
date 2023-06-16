@@ -36,6 +36,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
     const fullResult = await agent.generateRspn(newMessage, callToActionTemplate);
     const result = fullResult.trim().split('\n')[0];
+    return new Response(JSON.stringify(result), { status: 200 });
 
     var respMsg: string = "";
     var ifContinue: boolean = false;
