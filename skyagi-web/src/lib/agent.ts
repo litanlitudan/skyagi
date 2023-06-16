@@ -320,10 +320,9 @@ export class GenerativeAgent {
 				suffix
 		);
 
-		//const agentSummaryDescription = await this.getSummary();
-		const agentSummaryDescription = "haha";
-		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
+		const agentSummaryDescription = await this.getSummary();
 		return "haha";
+		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
 		const currentTimeStr = new Date().toLocaleString('en-US', {
 			month: 'long',
 			day: 'numeric',
