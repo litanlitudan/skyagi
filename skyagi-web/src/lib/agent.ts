@@ -80,7 +80,7 @@ export class GenerativeAgent {
                 queryName: "match_memories"
             }
         );
-        this.memoryRetriever =  vectorStore.asRetriever(15, {conversation_id: conversationId, agent_id: agentId});
+        this.memoryRetriever =  vectorStore.asRetriever(5, {conversation_id: conversationId, agent_id: agentId});
 
         // get memories
         await this.getAgentMemories(conversationId, agentId);
