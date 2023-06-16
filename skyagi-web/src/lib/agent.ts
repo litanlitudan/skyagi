@@ -7,7 +7,6 @@ import { Document } from "langchain/document";
 import type { BaseLanguageModel } from "langchain/base_language";
 import { _ } from "$env/static/private";
 import { load_llm_from_config, type LLMSettings, type EmbeddingSettings, load_embedding_from_config } from "./model/model";
-import { PerformanceObserver, performance } from 'perf_hooks';
 
 // Future improvements:
 // [Func] support embeddings from different LLM models
@@ -141,26 +140,10 @@ export class GenerativeAgent {
 				`Do not embellish.` +
 				`\n\nSummary: `
 		);
-		let start, end, elapsedTime;
-		start = performance.now();
 		const relevantMemories = await this.fetchMemories(`${this.name}'s core characteristics`);
 		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
-		end = performance.now();
-		elapsedTime = end - start;
-		console.log(`Get relevant mem: ${elapsedTime} milliseconds`);
-
-		start = performance.now();
 		const chain = new LLMChain({llm: this.llm, prompt});
-		end = performance.now();
-		elapsedTime = end - start;
-		console.log(`Create new chain: ${elapsedTime} milliseconds`);
-
-		start = performance.now();
 		const res = await chain.run({ name: this.name, relatedMemories: relevantMemoriesStr });
-		end = performance.now();
-		elapsedTime = end - start;
-		console.log(`ask LLM: ${elapsedTime} milliseconds`);
-
         return res.trim();
 	}
 
@@ -339,7 +322,6 @@ export class GenerativeAgent {
 
 		const agentSummaryDescription = await this.getSummary();
 		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
-		return "haha";
 
 		const currentTimeStr = new Date().toLocaleString('en-US', {
 			month: 'long',
