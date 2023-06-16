@@ -194,7 +194,12 @@ export class GenerativeAgent {
 	}
 
 	private async getSummary(forceRefresh: boolean = false): Promise<string> {
+		const start = performance.now();
 		let summary = await this.computeAgentSummary();
+		const end = performance.now();
+		const elapsedTime = end - start;
+		// Log the elapsed time
+		console.log(`Execution time: ${elapsedTime} milliseconds`);
 
 		return (
 			`Name: ${this.name} (age: ${this.age})` +
@@ -321,12 +326,7 @@ export class GenerativeAgent {
 				suffix
 		);
 
-		const start = performance.now();
 		const agentSummaryDescription = await this.getSummary();
-		const end = performance.now();
-		const elapsedTime = end - start;
-		// Log the elapsed time
-		console.log(`Execution time: ${elapsedTime} milliseconds`);
 		return "haha";
 
 		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
