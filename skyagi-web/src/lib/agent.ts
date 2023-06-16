@@ -80,19 +80,20 @@ export class GenerativeAgent {
             embeddings
         );
 
-		let documents: Document[] = [];
-		for (const mem of this.memories) {
-			const document = new Document({
+		let now = Math.floor(Date.now() / 1000);
+		let documents =	this.memories.map((mem, i) => new Document({
 				pageContent: mem.content,
-				metadata: mem.metadata
-			});
-			documents.push(document);
-			console.log(document);
-        }
+				metadata: {
+					...mem.metadata,
+					created_at: now,
+					last_accessed_at: now,
+					buffer_idx: i
+				}
+			}));
 
 		console.log(documents.length);
 
-		//await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
+		await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
 		end = performance.now();
 		elapsed = end - start;
 		console.log(`VS build time: ${elapsed} milliseconds`);
@@ -102,10 +103,9 @@ export class GenerativeAgent {
 			vectorStore,
 			k: 15,
 			decayRate: 1,
-			//memoryStream: documents,
+			memoryStream: documents,
 			otherScoreKeys: ["importance"]
 		});
-		await this.memoryRetriever.addDocuments(documents);
 		end = performance.now();
 		elapsed = end - start;
 		console.log(`retriever build time: ${elapsed} milliseconds`);
