@@ -6,6 +6,7 @@ import { Document } from "langchain/document";
 import type { BaseLanguageModel } from "langchain/base_language";
 import { _ } from "$env/static/private";
 import { load_llm_from_config, type LLMSettings, type EmbeddingSettings, load_embedding_from_config } from "./model/model";
+import { PerformanceObserver, performance } from 'perf_hooks';
 
 // Future improvements:
 // [Func] support embeddings from different LLM models
@@ -69,6 +70,8 @@ export class GenerativeAgent {
 
         await this.getAgentMemories(conversationId, agentId);
 
+		let start, end, elapsed;
+		start = performance.now();
         // create retriever
         const embeddings = load_embedding_from_config(recipient_agent_model_settings.embedding);
         // TODO: (kejiez) pass down embeddingSize to SQL query
@@ -87,7 +90,11 @@ export class GenerativeAgent {
         }
 
 		await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
+		end = performance.now();
+		elapsed = end - start;
+		console.log(`VS build time: ${elapsed} milliseconds`);
 
+		start = performance.now();
 		this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
 			vectorStore,
 			k: 15,
@@ -95,6 +102,10 @@ export class GenerativeAgent {
 			memoryStream: documents,
 			otherScoreKeys: ["importance"]
 		});
+		end = performance.now();
+		elapsed = end - start;
+		console.log(`retriever build time: ${elapsed} milliseconds`);
+
     }
 
     async getAgentMemories(conversationId: string, agentId: string): Promise<void> {
@@ -320,6 +331,9 @@ export class GenerativeAgent {
 	}
     
     async generateRspn(observation: string, suffix: string): Promise<string> {
+		let start, end, elapsed;
+		start = performance.now();
+
 		const prompt = PromptTemplate.fromTemplate(
 			'{agentSummaryDescription}' +
 				'\nIt is {currentTime}.' +
@@ -360,6 +374,11 @@ export class GenerativeAgent {
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
 		const result = await actionPredictionChain.call(kwargs);
+
+		end = performance.now();
+		elapsed = end - start;
+		console.log(`response time: ${elapsed} milliseconds`);
+
         return result.text.trim();
 	}
 
