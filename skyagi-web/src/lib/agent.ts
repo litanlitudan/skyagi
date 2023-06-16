@@ -7,6 +7,7 @@ import { Document } from "langchain/document";
 import type { BaseLanguageModel } from "langchain/base_language";
 import { _ } from "$env/static/private";
 import { load_llm_from_config, type LLMSettings, type EmbeddingSettings, load_embedding_from_config } from "./model/model";
+import { PerformanceObserver, performance } from 'perf_hooks';
 
 // Future improvements:
 // [Func] support embeddings from different LLM models
@@ -320,8 +321,14 @@ export class GenerativeAgent {
 				suffix
 		);
 
+		const start = performance.now();
 		const agentSummaryDescription = await this.getSummary();
+		const end = performance.now();
+		const elapsedTime = end - start;
+		// Log the elapsed time
+		console.log(`Execution time: ${elapsedTime} milliseconds`);
 		return "haha";
+
 		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
 		const currentTimeStr = new Date().toLocaleString('en-US', {
 			month: 'long',
