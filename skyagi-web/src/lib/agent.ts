@@ -1,6 +1,5 @@
-import type { VectorStoreRetriever } from "langchain/vectorstores";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
+import { TimeWeightedVectorStoreRetriever } from "langchain/retrievers/time_weighted";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { PromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
 import { Document } from "langchain/document";
@@ -30,6 +29,7 @@ interface MemoryMetadata {
 
 interface Memory {
     id: string;
+	embedding: number[];
     content: string;
     metadata: MemoryMetadata;
 }
@@ -44,7 +44,7 @@ export class GenerativeAgent {
 	status: string;
     memories: Memory[];
 	llm: BaseLanguageModel;
-    memoryRetriever: VectorStoreRetriever;
+    memoryRetriever: TimeWeightedVectorStoreRetriever;
     storage: any;
 
 	maxTokensLimit: number = 1200;
@@ -67,29 +67,41 @@ export class GenerativeAgent {
         this.conv_id = conversationId;
         this.llm = load_llm_from_config(recipient_agent_model_settings.llm);
 
+        await this.getAgentMemories(conversationId, agentId);
+
         // create retriever
         const embeddings = load_embedding_from_config(recipient_agent_model_settings.embedding);
         // TODO: (kejiez) pass down embeddingSize to SQL query
         // TODO: (kejiez) support more embedding size
-        const vectorStore = new SupabaseVectorStore(
-            embeddings,
-            {
-                client: this.storage,
-                tableName: "memory",
-                queryName: "match_memories"
-            }
+        const vectorStore = new MemoryVectorStore(
+            embeddings
         );
-        this.memoryRetriever =  vectorStore.asRetriever(15, {conversation_id: conversationId, agent_id: agentId});
 
-        // get memories
-        await this.getAgentMemories(conversationId, agentId);
+		let documents: Document[] = [];
+		for (const mem of this.memories) {
+			const document = new Document({
+				pageContent: mem.content,
+				metadata: mem.metadata
+			});
+			documents.push(document);
+        }
+
+		await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
+
+		this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
+			vectorStore,
+			k: 15,
+			decayRate: 1,
+			memoryStream: documents,
+			otherScoreKeys: ["importance"]
+		});
     }
 
     async getAgentMemories(conversationId: string, agentId: string): Promise<void> {
 
         const { data: allMemories } = await this.storage
             .from('memory')
-		    .select('id, content, metadata')
+		    .select('id, content, embedding, metadata')
 		    .contains('metadata',{"conversation_id": conversationId})
 		    .contains('metadata',{"agent_id": agentId})
             .order('metadata->create_time', { ascending: true });
@@ -363,9 +375,11 @@ export class GenerativeAgent {
                 create_time: nowTime, 
                 last_access_time: nowTime,
                 cur_status: this.status,
+				// [TODO]: the importance score should include time decay
                 importance: importanceScore
             }
 		});
+		// [TODO]: add to memory table instead of retriever
 		await this.memoryRetriever.addDocuments([document]);
         const new_mem: Memory = {
             id: "",
