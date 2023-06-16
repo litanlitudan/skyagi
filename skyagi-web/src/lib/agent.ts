@@ -87,7 +87,10 @@ export class GenerativeAgent {
 				metadata: mem.metadata
 			});
 			documents.push(document);
+			console.log(document);
         }
+
+		console.log(documents.length);
 
 		await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
 		end = performance.now();
