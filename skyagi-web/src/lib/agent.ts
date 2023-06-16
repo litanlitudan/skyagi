@@ -92,7 +92,7 @@ export class GenerativeAgent {
 
 		console.log(documents.length);
 
-		await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
+		//await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
 		end = performance.now();
 		elapsed = end - start;
 		console.log(`VS build time: ${elapsed} milliseconds`);
@@ -102,9 +102,10 @@ export class GenerativeAgent {
 			vectorStore,
 			k: 15,
 			decayRate: 1,
-			memoryStream: documents,
+			//memoryStream: documents,
 			otherScoreKeys: ["importance"]
 		});
+		await this.memoryRetriever.addDocuments(documents);
 		end = performance.now();
 		elapsed = end - start;
 		console.log(`retriever build time: ${elapsed} milliseconds`);
