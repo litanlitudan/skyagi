@@ -91,8 +91,6 @@ export class GenerativeAgent {
 				}
 			}));
 
-		console.log(documents.length);
-
 		await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
 		end = performance.now();
 		elapsed = end - start;
