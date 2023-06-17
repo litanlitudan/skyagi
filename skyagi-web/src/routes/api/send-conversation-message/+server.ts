@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { GenerativeAgent } from '$lib/agent';
+import { getResponseStream } from '$lib/utils';
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
@@ -56,12 +57,11 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     await agent.addMemory(`${agent.name} observed ${newMessage} and said ${respMsg}`);
 
     // return
-    const resp = {
+    const respMetaData = {
         'success': 1,
-        'resp_msg': {
-            'if_continue': ifContinue,
-            'message': respMsg
-        }
+        'if_continue': ifContinue
     }
-    return new Response(JSON.stringify(resp), { status: 200 });
+
+    const stream = await getResponseStream(respMetaData, respMsg);
+    return new Response(stream);
 }) satisfies RequestHandler;

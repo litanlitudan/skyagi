@@ -355,6 +355,7 @@ export class GenerativeAgent {
 
 		const agentSummaryDescription = await this.getSummary();
 		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
+
 		const currentTimeStr = new Date().toLocaleString('en-US', {
 			month: 'long',
 			day: 'numeric',
