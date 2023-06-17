@@ -170,10 +170,21 @@ export class GenerativeAgent {
 				`Do not embellish.` +
 				`\n\nSummary: `
 		);
+		let start, end, elapsed;
+
+		start = performance.now();
 		const relevantMemories = await this.fetchMemories(`${this.name}'s core characteristics`);
 		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
+		end = performance.now();
+		elapsed = end - start;
+		console.log(`FetchMemories build time: ${elapsed} milliseconds`);
+
+		start = performance.now();
 		const chain = new LLMChain({llm: this.llm, prompt});
 		const res = await chain.run({ name: this.name, relatedMemories: relevantMemoriesStr });
+		end = performance.now();
+		elapsed = end - start;
+		console.log(`Getsummary build time: ${elapsed} milliseconds`);
         return res.trim();
 	}
 
