@@ -169,6 +169,7 @@ export class GenerativeAgent {
 
     private async fetchMemories(observation: string): Promise<Document[]> {
 		const mems = await this.memoryRetriever.getRelevantDocuments(observation);
+		console.log(`feth mem: ${mems.length}`);
 		for (const mem of mems) {
             await this.updateMemoryAccessTime(mem)
         }
