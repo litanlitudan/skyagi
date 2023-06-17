@@ -81,13 +81,13 @@ export class GenerativeAgent {
             this.embeddings
         );
 
-		let now = Math.floor(Date.now() / 1000);
 		let documents =	this.memories.map((mem, i) => new Document({
 				pageContent: mem.content,
+				// This is the hack to create a ephemeral TWretriever with time history 
 				metadata: {
 					...mem.metadata,
-					created_at: now,
-					last_accessed_at: now,
+					created_at: mem.metadata.create_time,
+					last_accessed_at: mem.metadata.last_access_time,
 					buffer_idx: i
 				}
 			}));
@@ -404,7 +404,6 @@ export class GenerativeAgent {
                 create_time: nowTime,
                 last_access_time: nowTime,
                 cur_status: this.status,
-				// [TODO]: the importance score should include time decay
                 importance: importanceScore
             }
         }
