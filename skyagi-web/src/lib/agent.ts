@@ -407,10 +407,12 @@ export class GenerativeAgent {
                 importance: importanceScore
             }
         }
-		const { data: new_mem_id } = await this.storage
+		const { data: new_mem_id, error } = await this.storage
 		    .from('memory')
 			.insert(new_mem)
 			.select('id');
+		console.log("new_mem_id", new_mem_id);
+		console.log("error", error);
 		
 		const local_new_mem: Memory ={
 			...new_mem,
