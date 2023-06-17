@@ -141,7 +141,7 @@ export class GenerativeAgent {
 			if (mem.content === content && mem.metadata.create_time === create_time) {
 				mem.metadata.last_access_time = new Date().toISOString();	
 				mem.updated = true;
-				console.log("update last_access_time");
+				console.log(`[update last_access_time]: ${mem.id} - ${mem.metadata.last_access_time}`);
 				break;
 			}
 		}
@@ -483,6 +483,9 @@ export class GenerativeAgent {
 						metadata: mem.metadata
 					})
 					.eq('id', mem.id);
+		        console.log("update mem_id", mem.id);
+		        console.log("error", error);
+
 			}
 		}
     }
