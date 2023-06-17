@@ -17,17 +17,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         message
     } = await request.json();
 
-    /*************************** */
-    const { data: allMemories } = await locals.supabase
-        .from('memory')
-		.select('id, content, embedding, metadata')
-		.contains('metadata',{"conversation_id": conversation_id})
-		.contains('metadata',{"agent_id": recipient_agent_id})
-        .order('metadata->create_time', { ascending: true });
-    return new Response(JSON.stringify({"cid": conversation_id, "aid": recipient_agent_id}), { status: 200 });
-    /*************************** */
-
-
     // get initiate agent name
     const { data: initiateAgentName } = await locals.supabase
         .from('agent')
