@@ -72,10 +72,10 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         start(controller) {
             const successMessage = {'success': 1};
             controller.enqueue(JSON.stringify(successMessage));
-            sleep(100); // Sleep for 0.1 second
+            sleep(1000); // Sleep for 0.1 second
             const ifContinueMessage = {'if_continue': ifContinue};
             controller.enqueue(JSON.stringify(ifContinueMessage));
-            sleep(100); // Sleep for 0.1 second
+            sleep(1000); // Sleep for 0.1 second
 
             let totalLen = respMsg.length;
             let chunkSize = 10, start = 0, end = chunkSize;
@@ -88,7 +88,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
                     clearInterval(interval);
                     controller.close();
                 }
-            }, 100);
+            }, 1000);
         },
     });
 
