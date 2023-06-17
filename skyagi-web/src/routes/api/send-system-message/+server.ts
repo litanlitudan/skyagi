@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
-import { checkValidity } from '$lib/utils';
+import { checkValidity, getResponseStream } from '$lib/utils';
 import { AIMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate, SystemMessagePromptTemplate } from "langchain/prompts"
 import { LLMChain } from "langchain/chains";
 import { load_llm_from_config } from '$lib/model/model';
@@ -89,7 +89,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     let msgResp = respChainRes.text.trim();
 
     if (msgResp.includes('NOTHING')) {
-        return new Response(JSON.stringify({ 'success': 1, 'resp_msg': { 'is_valid': false, 'message': '' } }), { status: 200 });
+        return new Response(JSON.stringify({ 'success': 1, 'is_valid': false, 'message': '' }), { status: 200 });
     }
 
     chatMessages.push(AIMessagePromptTemplate.fromTemplate(msgResp));
@@ -111,10 +111,20 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     const validationResp = validationChainRes.text.trim();
 
     if (validationResp.includes('no')) {
-        return new Response(JSON.stringify({ 'success': 1, 'resp_msg': { 'is_valid': false, 'message': '' } }), { status: 200 });
+        return new Response(JSON.stringify({ 'success': 1, 'is_valid': false, 'message': '' }), { status: 200 });
     }
 
     msgResp = msgResp.slice(msgResp.startsWith('"') ? 1 : 0, msgResp.endsWith('"') ? -1 : undefined);
 
+    /*
     return new Response(JSON.stringify({ 'success': 1, 'resp_msg': { 'is_valid': true, 'message': msgResp } }), { status: 200 });
+    */
+    const respMetaData = {
+        'success': 1,
+        'is_valid': true 
+    }
+
+    const stream = await getResponseStream(respMetaData, msgResp);
+    return new Response(stream);
+
 }) satisfies RequestHandler;
