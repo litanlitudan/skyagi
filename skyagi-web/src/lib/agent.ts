@@ -45,6 +45,7 @@ export class GenerativeAgent {
 	status: string;
     memories: Memory[];
 	llm: BaseLanguageModel;
+	embeddings: any;
     memoryRetriever: TimeWeightedVectorStoreRetriever;
     storage: any;
 
@@ -73,11 +74,11 @@ export class GenerativeAgent {
 		let start, end, elapsed;
 		start = performance.now();
         // create retriever
-        const embeddings = load_embedding_from_config(recipient_agent_model_settings.embedding);
+        this.embeddings = load_embedding_from_config(recipient_agent_model_settings.embedding);
         // TODO: (kejiez) pass down embeddingSize to SQL query
         // TODO: (kejiez) support more embedding size
         const vectorStore = new MemoryVectorStore(
-            embeddings
+            this.embeddings
         );
 
 		let now = Math.floor(Date.now() / 1000);
@@ -392,33 +393,31 @@ export class GenerativeAgent {
         const importanceScore = await this.scoreMemoryImportance(content);
 		this.memoryImportance += importanceScore;
         const nowTime = new Date().toISOString();
-		const document = new Document({
-			pageContent: content,
-			metadata: { 
-                conversation_id: this.conv_id,
-                agent_id: this.id,
-                create_time: nowTime, 
-                last_access_time: nowTime,
-                cur_status: this.status,
-				// [TODO]: the importance score should include time decay
-                importance: importanceScore
-            }
-		});
-		// [TODO]: add to memory table instead of retriever
-		await this.memoryRetriever.addDocuments([document]);
-        const new_mem: Memory = {
-            id: "",
+        const embedding = await this.embeddings.embedQuery(content);
+
+        const new_mem = {
             content: content,
+			embedding: embedding,
             metadata: {
                 conversation_id: this.conv_id,
                 agent_id: this.id,
                 create_time: nowTime,
                 last_access_time: nowTime,
                 cur_status: this.status,
+				// [TODO]: the importance score should include time decay
                 importance: importanceScore
             }
         }
-        this.memories.push(new_mem);
+		const { data: new_mem_id } = await this.storage
+		    .from('memory')
+			.insert(new_mem)
+			.select('id');
+		
+		const local_new_mem: Memory ={
+			...new_mem,
+			id: new_mem_id
+		}
+        this.memories.push(local_new_mem);
 		if (
 			this.memoryImportance > this.reflectionThreshold &&
 			this.status !== 'Reflecting'
