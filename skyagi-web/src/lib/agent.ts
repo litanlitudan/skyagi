@@ -7,6 +7,7 @@ import { Document } from "langchain/document";
 import type { BaseLanguageModel } from "langchain/base_language";
 import { _ } from "$env/static/private";
 import { load_llm_from_config, type LLMSettings, type EmbeddingSettings, load_embedding_from_config } from "./model/model";
+import { PerformanceObserver, performance } from 'perf_hooks';
 
 // Future improvements:
 // [Func] support embeddings from different LLM models
@@ -71,6 +72,8 @@ export class GenerativeAgent {
         const embeddings = load_embedding_from_config(recipient_agent_model_settings.embedding);
         // TODO: (kejiez) pass down embeddingSize to SQL query
         // TODO: (kejiez) support more embedding size
+		let start, end, elapsed;
+		start = performance.now();
         const vectorStore = new SupabaseVectorStore(
             embeddings,
             {
@@ -79,7 +82,15 @@ export class GenerativeAgent {
                 queryName: "match_memories"
             }
         );
-        this.memoryRetriever =  vectorStore.asRetriever(3, {conversation_id: conversationId, agent_id: agentId});
+		end = performance.now();
+		elapsed = end - start;
+		console.log(`VS build time: ${elapsed} milliseconds`);
+
+		start = performance.now();
+        this.memoryRetriever =  vectorStore.asRetriever(15, {conversation_id: conversationId, agent_id: agentId});
+		end = performance.now();
+		elapsed = end - start;
+		console.log(`retriever build time: ${elapsed} milliseconds`);
 
         // get memories
         await this.getAgentMemories(conversationId, agentId);
@@ -140,10 +151,22 @@ export class GenerativeAgent {
 				`Do not embellish.` +
 				`\n\nSummary: `
 		);
+		let start, end, elapsed;
+
+		start = performance.now();
 		const relevantMemories = await this.fetchMemories(`${this.name}'s core characteristics`);
 		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
+		end = performance.now();
+		elapsed = end - start;
+		console.log(`FetchMemories build time: ${elapsed} milliseconds`);
+
+		start = performance.now();
 		const chain = new LLMChain({llm: this.llm, prompt});
 		const res = await chain.run({ name: this.name, relatedMemories: relevantMemoriesStr });
+		end = performance.now();
+		elapsed = end - start;
+		console.log(`Getsummary build time: ${elapsed} milliseconds`);
+
         return res.trim();
 	}
 
