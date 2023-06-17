@@ -78,7 +78,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
             sleep(1000); // Sleep for 0.1 second
 
             let totalLen = respMsg.length;
-            let chunkSize = 10, start = 0, end = chunkSize;
+            let chunkSize = 5, start = 0, end = chunkSize;
             const interval = setInterval(() => {
                 const encodedData = encoder.encode(respMsg.slice(start, end));
                 controller.enqueue(encodedData);
