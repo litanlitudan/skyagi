@@ -484,9 +484,8 @@ export class GenerativeAgent {
 						metadata: mem.metadata
 					})
 					.eq('id', mem.id);
-		        //console.log("update mem_id", mem.id);
+		        console.log("update mem_id", mem.id);
 		        //console.log("error", error);
-
 			}
 		}
     }
