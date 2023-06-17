@@ -20,12 +20,12 @@ function parseList(text: string): string[] {
 }
 
 interface MemoryMetadata {
-  conversation_id: string;
-  agent_id: string;
-  create_time: string;
-  last_access_time: string;
-  cur_status: string;
-  importance: number;
+	conversation_id: string;
+    agent_id: string;
+    create_time: string;
+    last_access_time: string;
+    cur_status: string;
+    importance: number;
 }
 
 interface Memory {
@@ -33,6 +33,7 @@ interface Memory {
 	embedding: number[];
     content: string;
     metadata: MemoryMetadata;
+	updated: boolean;
 }
 
 export class GenerativeAgent {
@@ -120,6 +121,9 @@ export class GenerativeAgent {
 		    .contains('metadata',{"agent_id": agentId})
             .order('metadata->create_time', { ascending: true });
         this.memories = allMemories;
+		for (const m of this.memories) {
+			console.log(m);
+		}
 		if (this.memories.length !== 0) {
 			this.status = this.memories[this.memories.length - 1].metadata.cur_status;
 		} else {
