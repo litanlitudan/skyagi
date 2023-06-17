@@ -50,6 +50,9 @@ export const filterHistory = (key: string) => {
 const getHistory = (key: string) => getLocalHistory()[key]; //Returns the history for a given key
 
 export const loadMessages = (query: string, agentName: string, agentId: string) => {
+    console.log('query', query);
+    console.log('agentName', agentName);
+    console.log('agentId', agentId);
     if (get(chatMessages).chatState !== 'idle') return; //Prevents switching between messages while loading
     if (!query) return;
 
