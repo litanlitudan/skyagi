@@ -121,7 +121,11 @@ export class GenerativeAgent {
 		    .contains('metadata',{"agent_id": agentId})
             .order('metadata->create_time', { ascending: true });
         this.memories = allMemories;
-        this.status = this.memories[this.memories.length - 1].metadata.cur_status;
+		if (this.memories.length !== 0) {
+			this.status = this.memories[this.memories.length - 1].metadata.cur_status;
+		} else {
+			this.status = "";	
+		}
     }
 
     private async updateMemoryAccessTime(mem: Document): Promise<void> {
