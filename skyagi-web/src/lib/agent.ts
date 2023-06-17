@@ -71,8 +71,8 @@ export class GenerativeAgent {
 
         await this.getAgentMemories(conversationId, agentId);
 
-		let start, end, elapsed;
-		start = performance.now();
+		//let start, end, elapsed;
+		//start = performance.now();
         // create retriever
         this.embeddings = load_embedding_from_config(recipient_agent_model_settings.embedding);
         // TODO: (kejiez) pass down embeddingSize to SQL query
@@ -93,11 +93,11 @@ export class GenerativeAgent {
 			}));
 
 		await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
-		end = performance.now();
-		elapsed = end - start;
-		console.log(`VS build time: ${elapsed} milliseconds`);
+		//end = performance.now();
+		//elapsed = end - start;
+		//console.log(`VS build time: ${elapsed} milliseconds`);
 
-		start = performance.now();
+		//start = performance.now();
 		this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
 			vectorStore,
 			k: 15,
@@ -105,9 +105,9 @@ export class GenerativeAgent {
 			memoryStream: documents,
 			otherScoreKeys: ["importance"]
 		});
-		end = performance.now();
-		elapsed = end - start;
-		console.log(`retriever build time: ${elapsed} milliseconds`);
+		//end = performance.now();
+		//elapsed = end - start;
+		//console.log(`retriever build time: ${elapsed} milliseconds`);
 
     }
 
@@ -177,14 +177,14 @@ export class GenerativeAgent {
 		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
 		end = performance.now();
 		elapsed = end - start;
-		console.log(`FetchMemories build time: ${elapsed} milliseconds`);
+		//console.log(`FetchMemories build time: ${elapsed} milliseconds`);
 
 		start = performance.now();
 		const chain = new LLMChain({llm: this.llm, prompt});
 		const res = await chain.run({ name: this.name, relatedMemories: relevantMemoriesStr });
 		end = performance.now();
 		elapsed = end - start;
-		console.log(`Getsummary build time: ${elapsed} milliseconds`);
+		//console.log(`Getsummary build time: ${elapsed} milliseconds`);
         return res.trim();
 	}
 
@@ -365,8 +365,17 @@ export class GenerativeAgent {
 		);
 
 		const agentSummaryDescription = await this.getSummary();
-		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
+		end = performance.now();
+		elapsed = end - start;
+		console.log(`getSummary time: ${elapsed} milliseconds`);
 
+		start = performance.now();
+		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
+		end = performance.now();
+		elapsed = end - start;
+		console.log(`summarize related memory time: ${elapsed} milliseconds`);
+
+		start = performance.now();
 		const currentTimeStr = new Date().toLocaleString('en-US', {
 			month: 'long',
 			day: 'numeric',
@@ -396,7 +405,7 @@ export class GenerativeAgent {
 
 		end = performance.now();
 		elapsed = end - start;
-		console.log(`response time: ${elapsed} milliseconds`);
+		console.log(`rest of response time: ${elapsed} milliseconds`);
 
         return result.text.trim();
 	}
