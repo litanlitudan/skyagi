@@ -116,9 +116,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
     msgResp = msgResp.slice(msgResp.startsWith('"') ? 1 : 0, msgResp.endsWith('"') ? -1 : undefined);
 
-    /*
-    return new Response(JSON.stringify({ 'success': 1, 'resp_msg': { 'is_valid': true, 'message': msgResp } }), { status: 200 });
-    */
     const respMetaData = {
         'success': 1,
         'is_valid': true 

@@ -57,16 +57,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     await agent.addMemory(`${agent.name} observed ${newMessage} and said ${respMsg}`);
 
     // return
-    /*
-    const resp = {
-        'success': 1,
-        'resp_msg': {
-            'if_continue': ifContinue,
-            'message': respMsg
-        }
-    }
-    return new Response(JSON.stringify(resp), { status: 200 });
-    */
     const respMetaData = {
         'success': 1,
         'if_continue': ifContinue
