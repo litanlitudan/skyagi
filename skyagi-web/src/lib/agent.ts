@@ -79,7 +79,7 @@ export class GenerativeAgent {
                 queryName: "match_memories"
             }
         );
-        this.memoryRetriever =  vectorStore.asRetriever(15, {conversation_id: conversationId, agent_id: agentId});
+        this.memoryRetriever =  vectorStore.asRetriever(3, {conversation_id: conversationId, agent_id: agentId});
 
         // get memories
         await this.getAgentMemories(conversationId, agentId);
@@ -322,6 +322,7 @@ export class GenerativeAgent {
 
 		const agentSummaryDescription = await this.getSummary();
 		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
+
 		const currentTimeStr = new Date().toLocaleString('en-US', {
 			month: 'long',
 			day: 'numeric',
