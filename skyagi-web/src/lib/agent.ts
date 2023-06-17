@@ -71,6 +71,7 @@ export class GenerativeAgent {
         this.llm = load_llm_from_config(recipient_agent_model_settings.llm);
 
         await this.getAgentMemories(conversationId, agentId);
+		console.log(`size of the memory: ${this.memories.length}`);
 
 		//let start, end, elapsed;
 		//start = performance.now();
@@ -141,7 +142,7 @@ export class GenerativeAgent {
 			if (mem.content === content && mem.metadata.create_time === create_time) {
 				mem.metadata.last_access_time = new Date().toISOString();	
 				mem.updated = true;
-				console.log(`[update last_access_time]: ${mem.id} - ${mem.metadata.last_access_time}`);
+				//console.log(`[update last_access_time]: ${mem.id} - ${mem.metadata.last_access_time}`);
 				break;
 			}
 		}
@@ -473,8 +474,8 @@ export class GenerativeAgent {
 				    .from('memory')
 			        .insert(mem_to_add)
 			        .select('id');
-		        console.log("new_mem_id", new_mem_id);
-		        console.log("error", error);
+		        //console.log("new_mem_id", new_mem_id);
+		        //console.log("error", error);
 			} else if (mem.updated === true) {
 				// update existing memory
 				const { error } = await this.storage
@@ -483,8 +484,8 @@ export class GenerativeAgent {
 						metadata: mem.metadata
 					})
 					.eq('id', mem.id);
-		        console.log("update mem_id", mem.id);
-		        console.log("error", error);
+		        //console.log("update mem_id", mem.id);
+		        //console.log("error", error);
 
 			}
 		}
