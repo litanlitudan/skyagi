@@ -5,3 +5,9 @@ export const checkValidity = (data: any) => {
         return true;
     }
 };
+
+
+export function sleep(ms: number): void {
+  const start = Date.now();
+  while (Date.now() - start < ms) {}
+}

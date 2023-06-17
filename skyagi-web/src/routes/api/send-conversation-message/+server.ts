@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { GenerativeAgent } from '$lib/agent';
+import { sleep } from '$lib/utils';
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
@@ -56,6 +57,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     await agent.addMemory(`${agent.name} observed ${newMessage} and said ${respMsg}`);
 
     // return
+    /*
     const resp = {
         'success': 1,
         'resp_msg': {
@@ -64,4 +66,35 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         }
     }
     return new Response(JSON.stringify(resp), { status: 200 });
+    */
+    const encoder = new TextEncoder();
+    const stream = new ReadableStream({
+        start(controller) {
+            const successMessage = {'success': 1};
+            controller.enqueue(JSON.stringify(successMessage));
+            sleep(100); // Sleep for 0.1 second
+            const ifContinueMessage = {'if_continue': ifContinue};
+            controller.enqueue(JSON.stringify(ifContinueMessage));
+            sleep(100); // Sleep for 0.1 second
+
+            let totalLen = respMsg.length;
+            let chunkSize = 10, start = 0, end = chunkSize;
+            const interval = setInterval(() => {
+                const encodedData = encoder.encode(respMsg.slice(start, end));
+                controller.enqueue(encodedData);
+                start = end;
+                end = end + chunkSize >= totalLen ? totalLen : end + chunkSize;
+                if (start >= end) {
+                    clearInterval(interval);
+                    controller.close();
+                }
+            }, 100);
+        },
+    });
+
+    const responseHeaders = {
+        'Content-Type': 'application/json',
+    };
+
+    return new Response(stream, { headers: responseHeaders });
 }) satisfies RequestHandler;
