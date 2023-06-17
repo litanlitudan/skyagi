@@ -122,7 +122,7 @@ export class GenerativeAgent {
             .order('metadata->create_time', { ascending: true });
         this.memories = allMemories;
 		for (const m of this.memories) {
-			console.log(m);
+			console.log(m.updated);
 		}
 		if (this.memories.length !== 0) {
 			this.status = this.memories[this.memories.length - 1].metadata.cur_status;
