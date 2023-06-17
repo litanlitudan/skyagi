@@ -134,13 +134,20 @@ export class GenerativeAgent {
     private async updateMemoryAccessTime(mem: Document): Promise<void> {
         // get all metadata
         const content = mem.pageContent;
-        const agent_id = mem.metadata.agent_id;
-        const conv_id = mem.metadata.conversation_id;
         const create_time = mem.metadata.create_time;
-        const importance = mem.metadata.importance;
-        const cur_status = mem.metadata.cur_status;
+		
+        // update last_access_time
+		for (const mem of this.memories) {
+			if (mem.content === content && mem.metadata.create_time === create_time) {
+				mem.metadata.last_access_time = new Date().toISOString();	
+				mem.updated = true;
+				console.log("update last_access_time");
+				break;
+			}
+		}
 
         // update last_access_time
+		/*
         const { error } = await this.storage
 		    .from('memory')
             .update({metadata: {
@@ -156,15 +163,14 @@ export class GenerativeAgent {
 		    .contains('metadata', {'conversation_id': conv_id})
 		    .contains('metadata', {'create_time': create_time})
             .eq('content', content);
+			*/
     }
 
     private async fetchMemories(observation: string): Promise<Document[]> {
 		const mems = await this.memoryRetriever.getRelevantDocuments(observation);
-		/*
 		for (const mem of mems) {
             await this.updateMemoryAccessTime(mem)
         }
-		*/
         return mems;
 	}
 
@@ -341,13 +347,37 @@ export class GenerativeAgent {
 		return parseList(result);
 	}
 
+    private async addNewMemLocal(content: string): Promise<void> {
+        const importanceScore = await this.scoreMemoryImportance(content);
+		this.memoryImportance += importanceScore;
+        const nowTime = new Date().toISOString();
+        const embedding = await this.embeddings.embedQuery(content);
+
+        const new_mem: Memory = {
+			id: "",
+            content: content,
+			embedding: embedding,
+            metadata: {
+                conversation_id: this.conv_id,
+                agent_id: this.id,
+                create_time: nowTime,
+                last_access_time: nowTime,
+                cur_status: this.status,
+                importance: importanceScore
+            },
+			updated: true
+        }
+		
+        this.memories.push(new_mem);
+    }
+
     private async pauseToReflect(): Promise<string[]> {
 		const newInsights: string[] = [];
 		const topics = await this.getTopicsOfReflection();
 		for (const topic of topics) {
 			const insights = await this.getInsightsOnTopic(topic);
 			for (const insight of insights) {
-				this.addMemory(insight);
+				this.addNewMemLocal(insight);
 			}
 			newInsights.push(...insights);
 		}
@@ -417,35 +447,8 @@ export class GenerativeAgent {
 	}
 
     async addMemory(content: string): Promise<void> {
-        const importanceScore = await this.scoreMemoryImportance(content);
-		this.memoryImportance += importanceScore;
-        const nowTime = new Date().toISOString();
-        const embedding = await this.embeddings.embedQuery(content);
-
-        const new_mem = {
-            content: content,
-			embedding: embedding,
-            metadata: {
-                conversation_id: this.conv_id,
-                agent_id: this.id,
-                create_time: nowTime,
-                last_access_time: nowTime,
-                cur_status: this.status,
-                importance: importanceScore
-            }
-        }
-		const { data: new_mem_id, error } = await this.storage
-		    .from('memory')
-			.insert(new_mem)
-			.select('id');
-		console.log("new_mem_id", new_mem_id);
-		console.log("error", error);
+		this.addNewMemLocal(content);
 		
-		const local_new_mem: Memory ={
-			...new_mem,
-			id: new_mem_id
-		}
-        this.memories.push(local_new_mem);
 		if (
 			this.memoryImportance > this.reflectionThreshold &&
 			this.status !== 'Reflecting'
@@ -455,6 +458,32 @@ export class GenerativeAgent {
 			await this.pauseToReflect();
 			this.memoryImportance = 0.0;
 			this.status = oldStatus;
+		}
+
+		// sync with storage
+		for (const mem of this.memories) {
+			if (mem.id === "") {
+			    // new memory
+				const mem_to_add = {
+					content: mem.content,
+			        embedding: mem.embedding,
+					metadata: mem.metadata
+				}
+				const { data: new_mem_id, error } = await this.storage
+				    .from('memory')
+			        .insert(mem_to_add)
+			        .select('id');
+		        console.log("new_mem_id", new_mem_id);
+		        console.log("error", error);
+			} else if (mem.updated === true) {
+				// update existing memory
+				const { error } = await this.storage
+				    .from('memory')
+					.update({
+						metadata: mem.metadata
+					})
+					.eq('id', mem.id);
+			}
 		}
     }
 
