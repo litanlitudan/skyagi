@@ -55,7 +55,7 @@
 		conversationId.set(conversationData.id);
 		userAgentId.set(conversationData.userAgents[0].id);
 		console.log('conversationData', conversationData);
-		if (conversationData.messages?.length > 0) {
+		if (conversationData.messages && conversationData.messages.length > 0) {
 			let chatHistoryToLoad: { [key: string]: StoreMessageType[] } = {};
 			const conversationId = conversationData.id;
 			const userAgentId = conversationData.userAgents[0].id;
