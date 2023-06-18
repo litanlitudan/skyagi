@@ -74,6 +74,7 @@
 					content: message.content
 				});
 			});
+			console.log('chatHistoryToLoad', chatHistoryToLoad);
 			loadHistoryToLocalStorage(chatHistoryToLoad);
 		}
 	});
