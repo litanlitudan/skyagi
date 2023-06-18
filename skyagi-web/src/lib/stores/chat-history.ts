@@ -25,7 +25,7 @@ export const chatHistory = derived(chatMessages, ($chatMessages) => {
 
     if (!history && $chatMessages.messages.length === 1) return null;
 
-    if (history && $chatMessages.messages.length === 1) return JSON.parse(history);
+    if (history && $chatMessages.messages && $chatMessages.messages.length === 1) return JSON.parse(history);
 
     const key = get(currentChatQueryKey); //conversation id + agent id is the query key
     const value = $chatMessages.messages;
