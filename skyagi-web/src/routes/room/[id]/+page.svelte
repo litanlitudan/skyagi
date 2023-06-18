@@ -55,7 +55,9 @@
 		conversationId.set(conversationData.id);
 		userAgentId.set(conversationData.userAgents[0].id);
 		console.log('conversationData', conversationData);
+		console.log('Start loading conversation history');
 		if (conversationData.messages && conversationData.messages.length > 0) {
+			console.log('in the middle of loading conversation history');
 			let chatHistoryToLoad: { [key: string]: StoreMessageType[] } = {};
 			const conversationId = conversationData.id;
 			const userAgentId = conversationData.userAgents[0].id;
@@ -78,6 +80,7 @@
 			loadHistoryToLocalStorage(chatHistoryToLoad);
 		}
 	});
+	console.log('Finish loading conversation history');
 </script>
 
 <section class="flex max-w-6xl w-full pt-4 justify-center">
