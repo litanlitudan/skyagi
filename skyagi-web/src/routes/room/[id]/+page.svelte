@@ -79,8 +79,8 @@
 			console.log('chatHistoryToLoad', chatHistoryToLoad);
 			loadHistoryToLocalStorage(chatHistoryToLoad);
 		}
+		console.log('Finish loading conversation history');
 	});
-	console.log('Finish loading conversation history');
 </script>
 
 <section class="flex max-w-6xl w-full pt-4 justify-center">
