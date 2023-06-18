@@ -28,10 +28,10 @@ export const chatHistory = derived(chatMessages, ($chatMessages) => {
     if (history && $chatMessages.messages && $chatMessages.messages.length === 1) return JSON.parse(history);
 
     const key = get(currentChatQueryKey); //conversation id + agent id is the query key
-    const value = $chatMissages.messages;
+    const value = $chatMessages.messages;
     const obj = { [key]: value };
 
-    console.log('value = $chatMissages.messages', $chatMissages.messages);
+    console.log('value = $chatMessages.messages', $chatMessages.messages);
 
     if (!history) setLocalHistory(obj);
 
