@@ -1,16 +1,31 @@
 <script>
     import { Sidebar, SidebarBrand, SidebarCta, SidebarDropdownItem, SidebarDropdownWrapper, 
             SidebarGroup, SidebarItem, SidebarWrapper } from 'flowbite-svelte';
-    import { Label, Input } from 'flowbite-svelte'
+    import { Label, Input, Button } from 'flowbite-svelte'
     let spanClass = 'flex-1 ml-3 whitespace-nowrap';
     export let data;
     const models = data.models;
+    import preSavedModelTokenDataStore from '$lib/token-store.js';
+    $: preSavedModelTokenData = $preSavedModelTokenDataStore
+    
     export let modelTokenData = models.map((item)=>({
         model: item.name,
         token: ""
     }))
-    // $: activeUrl = $page.url.pathname
+    if (preSavedModelTokenData != null) {
+        modelTokenData = preSavedModelTokenData
+    }
+    
+    
+    console.log(preSavedModelTokenData)
+    function handleSubmit() {
+        preSavedModelTokenDataStore.update((currentData) => {
+            console.log(modelTokenData)
+            return modelTokenData
+        })
+    }
 </script>
+
 <div id="globalGrid">
     <Sidebar>
         <SidebarWrapper>
@@ -28,15 +43,11 @@
             <Label for={modelTokenDataPoint.model} class='text-8xl text-white text-opacity-100'>{modelTokenDataPoint.model}</Label>
             <Input id={modelTokenDataPoint.model} size="lg" placeholder="Your token" bind:value={modelTokenDataPoint.token}/>
         {/each}
+        <Button on:click={handleSubmit}>
+            Submit
+        </Button>
     </div>
-    <div>
-        <input
-            type="submit"
-            class="button block primary"
-            value={loading ? 'Loading...' : 'Update'}
-            disabled={loading}
-        />
-    </div>
+    
 </div>
 
 <style>
