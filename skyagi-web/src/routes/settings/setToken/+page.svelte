@@ -6,24 +6,29 @@
     export let data;
     const models = data.models;
     import preSavedModelTokenDataStore from '$lib/token-store.js';
-    $: preSavedModelTokenData = $preSavedModelTokenDataStore
-    
+    let preSavedModelTokenDataIsEmpty = $preSavedModelTokenDataStore.length == 0;
     export let modelTokenData = models.map((item)=>({
         model: item.name,
         token: ""
     }))
-    if (preSavedModelTokenData != null) {
-        modelTokenData = preSavedModelTokenData
+    let preSavedModelTokenData = $preSavedModelTokenDataStore
+    if ((preSavedModelTokenDataIsEmpty || (preSavedModelTokenDataStore == null)) !== true) {
+        console.log(preSavedModelTokenData)
+        modelTokenData = JSON.parse(preSavedModelTokenData)
     }
     
-    
-    console.log(preSavedModelTokenData)
+    console.log("predefined")
+    console.log(preSavedModelTokenData[0])
+    console.log("predefined end")
     function handleSubmit() {
-        preSavedModelTokenDataStore.update((currentData) => {
-            console.log(modelTokenData)
-            return modelTokenData
-        })
+        console.log(modelTokenData)
+        preSavedModelTokenDataStore.set(JSON.stringify(modelTokenData))
     }
+    function handleClear() {
+        preSavedModelTokenDataStore.set([])
+        window.location.href = '/settings/setToken'
+    }
+
 </script>
 
 <div id="globalGrid">
@@ -45,6 +50,9 @@
         {/each}
         <Button on:click={handleSubmit}>
             Submit
+        </Button>
+        <Button on:click={handleClear}>
+            Clear
         </Button>
     </div>
     
