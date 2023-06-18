@@ -63,7 +63,7 @@ export const loadMessages = (query: string, agentName: string, agentId: string) 
     if (get(chatMessages).chatState !== 'idle') return; //Prevents switching between messages while loading
     if (!query) return;
 
-    const newMessages = getHistory(query);
+    const newMessages = getHistory(query) || [];
     currentChatQueryKey.set(query);
     currentAgentName.set(agentName);
     currentAgentId.set(agentId);
