@@ -26,7 +26,7 @@ export const load = (async ({ params, fetch, locals }) => {
         }
     }
 
-    const agent = data.data;
+    const agent = data.agent;
     const agentData: AgentDataType = {
         id: agent.id,
         name: agent.name,
