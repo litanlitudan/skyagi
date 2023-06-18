@@ -18,6 +18,9 @@ export const chatHistory = derived(chatMessages, ($chatMessages) => {
 
     let history = localStorage.getItem('chatHistory');
 
+    console.log('history', history);
+    console.log('$chatMessages.messages', $chatMessages.messages);
+
     if (!history && !$chatMessages.messages) return null;
 
     if (!history && $chatMessages.messages.length === 1) return null;
