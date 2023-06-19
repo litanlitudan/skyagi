@@ -19,7 +19,6 @@
     let preSavedModelTokenData = $preSavedModelTokenDataStore
     if ((preSavedModelTokenDataIsEmpty || (preSavedModelTokenDataStore == null)) !== true) {
         let tempModelTokenData = JSON.parse(preSavedModelTokenData)
-        console.log(tempModelTokenData)
         modelTokenPair = {}
         for (let i=0; i<tempModelTokenData.length; i++){
             modelTokenPair[tempModelTokenData[i].model] = tempModelTokenData[i].token
@@ -71,8 +70,6 @@
     characters[0].avatarStyle = "rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
     let showedModelValue = models[0].value
     let showedTokenValue = modelTokenPair[models[0].value]
-    console.log(showedModelValue)
-    console.log(showedTokenValue)
     function handleOnClickImageMessage(event) {
         lastClickedCharacterName = event.detail.character.name;
         lastClickedCharacter = event.detail.character;

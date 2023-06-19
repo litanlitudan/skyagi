@@ -45,6 +45,7 @@ export const load = (async ({ params, fetch, locals }) => {
     return {
         conversation_id: conversation_id,
         user: session.user,
+        userId: user_id,
         agentData: rstLs,
         agentIds: agentIds,
         chatName: chatName,

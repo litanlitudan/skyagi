@@ -5,6 +5,7 @@
     import { browser } from '$app/environment';
     export const conversationId = data.conversation_id
     export const user = data.user
+    export const userId = data.userId
     export const agentData = data.agentData
     export const agentIds = data.agentIds
     export const userAgentIds = data.userAgentIds
@@ -19,6 +20,20 @@
         selectedModelData = data;
     })
     let models = modelData
+    import preSavedModelTokenDataStore from '$lib/token-store.js';
+    let preSavedModelTokenDataIsEmpty = $preSavedModelTokenDataStore.length == 0;
+    export let modelTokenPair = modelData.map((item)=>({
+        [item.name]: ""
+    }))
+    let preSavedModelTokenData = $preSavedModelTokenDataStore
+    if ((preSavedModelTokenDataIsEmpty || (preSavedModelTokenDataStore == null)) !== true) {
+        let tempModelTokenData = JSON.parse(preSavedModelTokenData)
+        console.log(tempModelTokenData)
+        modelTokenPair = {}
+        for (let i=0; i<tempModelTokenData.length; i++){
+            modelTokenPair[tempModelTokenData[i].model] = tempModelTokenData[i].token
+        }
+    }
     
     let characters = agentData.map(function(characterDataPoint) {
         let imagePath = "/assets/Avatar1.png"
@@ -30,7 +45,7 @@
         ...characterDataPoint,
         image: imagePath,
         model: models[0].value,
-        modelToken: "",
+        modelTokenPair: {...modelTokenPair},
         avatarStyle: "rounded-lg border-none border-4 hover:border-solid border-indigo-600"
     }})
 
@@ -40,12 +55,12 @@
     let lastClickedCharacter = characters[0]
     characters[0].avatarStyle = "rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
     let showedModelValue = models[0].value
-    let showedTokenValue = ""
+    let showedTokenValue = modelTokenPair[models[0].value]
     function handleOnClickImageMessage(event) {
         lastClickedCharacterName = event.detail.character.name;
         lastClickedCharacter = event.detail.character;
         showedModelValue = event.detail.character.model;
-        showedTokenValue = event.detail.character.modelToken;
+        showedTokenValue = event.detail.character.modelTokenPair[showedModelValue];
         for (let i=0; i<characters.length; i++){
             if (characters[i].name==lastClickedCharacterName){
                 characters[i].avatarStyle="rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
@@ -64,7 +79,7 @@
 
 
     let selectedModel=models[0].value;
-    let selectedToken="";
+    let selectedToken=modelTokenPair[models[0].value];
     let playerCharacterId="";
     function charactersToItems(inputCharacters){
         let rst = []
@@ -76,16 +91,16 @@
 
     function handleModelChange() {
         lastClickedCharacter.model = selectedModel
+        selectedToken = lastClickedCharacter.modelTokenPair[selectedModel]
     }
 
     function handleTokenInput() {
-        lastClickedCharacter.modelToken = selectedToken
+        lastClickedCharacter.modelTokenPair[selectedModel] = selectedToken
     }
     let createDisabled = true
     function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
         for (let i=0; i<inputCharacters.length; i++){
-            if (inputCharacters[i].model=="" || inputCharacters[i].modelToken==""){
-                console.log("condition1")
+            if (inputCharacters[i].model=="" || inputCharacters[i].modelTokenPair[inputCharacters[i].model]==""){
                 return true
             }
         }
@@ -101,7 +116,7 @@
             {id: item.id, 
             model: {
                 name: item.model,
-                token: item.modelToken
+                token: item.modelTokenPair[item.model]
             }}))
         const conversationResponse = await fetch("/api/create-conversation", {
             method: 'PUT',
@@ -110,7 +125,7 @@
             },
             body: JSON.stringify({
                 name: chatName,
-                user_id: "e776f213-b2c7-4fe1-b874-e2705ef99345",
+                user_id: userId,
                 agents: inputAgents,
                 user_agent_ids: [playerCharacterId]
             })
@@ -120,7 +135,7 @@
             return characters.map((item) => ({
                 agent_id: item.id, 
                 model: item.model,
-                token: item.modelToken
+                token: item.modelTokenPair[item.model]
             }))
         })
         console.log(conversation_id)
