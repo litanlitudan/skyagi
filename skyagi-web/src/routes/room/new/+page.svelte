@@ -10,6 +10,21 @@
     export const userId = data.userId
     import modelTokenDataStore from '$lib/room-store.js';
     import { globalAvatarImageList } from '$lib/stores.js';
+    
+    import preSavedModelTokenDataStore from '$lib/token-store.js';
+    let preSavedModelTokenDataIsEmpty = $preSavedModelTokenDataStore.length == 0;
+    export let modelTokenPair = modelData.map((item)=>({
+        [item.name]: ""
+    }))
+    let preSavedModelTokenData = $preSavedModelTokenDataStore
+    if ((preSavedModelTokenDataIsEmpty || (preSavedModelTokenDataStore == null)) !== true) {
+        let tempModelTokenData = JSON.parse(preSavedModelTokenData)
+        console.log(tempModelTokenData)
+        modelTokenPair = {}
+        for (let i=0; i<tempModelTokenData.length; i++){
+            modelTokenPair[tempModelTokenData[i].model] = tempModelTokenData[i].token
+        }
+    }
 
     let selectedModelData;
     modelTokenDataStore.subscribe((data) => {
@@ -27,7 +42,7 @@
         ...characterDataPoint,
         image: imagePath,
         model: models[0].value,
-        modelToken: "",
+        modelTokenPair: {...modelTokenPair},
         selected:false,
         avatarStyle: "rounded-lg border-none border-4 hover:border-solid border-indigo-600"
     }})
@@ -55,12 +70,14 @@
     let lastClickedCharacter = characters[0]
     characters[0].avatarStyle = "rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
     let showedModelValue = models[0].value
-    let showedTokenValue = ""
+    let showedTokenValue = modelTokenPair[models[0].value]
+    console.log(showedModelValue)
+    console.log(showedTokenValue)
     function handleOnClickImageMessage(event) {
         lastClickedCharacterName = event.detail.character.name;
         lastClickedCharacter = event.detail.character;
         showedModelValue = event.detail.character.model;
-        showedTokenValue = event.detail.character.modelToken;
+        showedTokenValue = event.detail.character.modelTokenPair[showedModelValue];
         for (let i=0; i<characters.length; i++){
             if (characters[i].name==lastClickedCharacterName){
                 characters[i].avatarStyle="rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
@@ -79,7 +96,7 @@
 
 
     let selectedModel=models[0].value;
-    let selectedToken="";
+    let selectedToken=modelTokenPair[models[0].value];
     let checkedCharacterGroup = [];
     let playerCharacterId="";
     function charactersToItems(inputCharacters){
@@ -94,10 +111,11 @@
 
     function handleModelChange() {
         lastClickedCharacter.model = selectedModel
+        selectedToken = lastClickedCharacter.modelTokenPair[selectedModel]
     }
 
     function handleTokenInput() {
-        lastClickedCharacter.modelToken = selectedToken
+        lastClickedCharacter.modelTokenPair[selectedModel] = selectedToken
     }
     let createDisabled = true
     function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
@@ -106,13 +124,12 @@
         for (let i=0; i<inputCharacters.length; i++){
             if (inputCharacters[i].selected){
                 selectedCount++
-                if (inputCharacters[i].model=="" || inputCharacters[i].modelToken==""){
+                if (inputCharacters[i].model=="" || inputCharacters[i].modelTokenPair[inputCharacters[i].model]==""){
                     return true
                 }
             }
         }
         if (selectedCount < 2){
-            console.log("condition2")
             return true
         }
         if (inputChatName==""){
@@ -132,7 +149,7 @@
             {id: item.id, 
             model: {
                 name: item.model,
-                token: item.modelToken
+                token: item.modelTokenPair[item.model]
             }}))
         // console.log(inputAgents)
         const conversationResponse = await fetch("/api/create-conversation", {
@@ -152,7 +169,7 @@
             return characters.map((item) => ({
                 agent_id: item.id, 
                 model: item.model,
-                token: item.modelToken
+                token: item.modelTokenPair[item.model]
             }))
         })
         console.log(conversation_id)
