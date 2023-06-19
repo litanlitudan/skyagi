@@ -22,45 +22,45 @@
         })
     };
 
-    export let bindGroup = [];
+    // export let bindGroup = [];
 
-    function onChange({ target }, elementId) {
-        const { value, checked } = target;
-            if (checked) {
-                bindGroup = [...bindGroup, value]
-                if (bindGroup.length > 4) {
-                    notifications.warning("Please select no more than 4 characters", 2000)
-                    console.log("Should pop up warnings")
-                    if (browser) {
-                        let characterCheck = document.getElementById(elementId);
-                        characterCheck.checked=false;
-                        bindGroup = bindGroup.filter((item) => item !== value)
-                    }
-        }
-            } else {
-                bindGroup = bindGroup.filter((item) => item !== value)
-            }
-        if (browser){
-            let characterCheck = document.getElementById(elementId);
-            character.selected=characterCheck.checked
-            characters = characters;
-        }
-    }
+    // function onChange({ target }, elementId) {
+    //     const { value, checked } = target;
+    //         if (checked) {
+    //             bindGroup = [...bindGroup, value]
+    //             if (bindGroup.length > 4) {
+    //                 notifications.warning("Please select no more than 4 characters", 2000)
+    //                 console.log("Should pop up warnings")
+    //                 if (browser) {
+    //                     let characterCheck = document.getElementById(elementId);
+    //                     characterCheck.checked=false;
+    //                     bindGroup = bindGroup.filter((item) => item !== value)
+    //                 }
+    //     }
+    //         } else {
+    //             bindGroup = bindGroup.filter((item) => item !== value)
+    //         }
+    //     if (browser){
+    //         let characterCheck = document.getElementById(elementId);
+    //         character.selected=characterCheck.checked
+    //         characters = characters;
+    //     }
+    // }
 
 </script>
 
 <div class="container">
     <div class=characterCheck>
-        <input type=checkbox 
+        <!-- <input type=checkbox 
                id={character.name+"Checkbox"}
                value={value}
                checked={bindGroup.includes(value)}
                on:change={(e) => onChange(e, character.name+"Checkbox")}
                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                style={hideCheckbox}
-               >
+               > -->
                 
-            </div>
+    </div>
     <figure>
         <img src={character.image} alt="" on:click={updateLastClickedCharacter}
         class={avatarStyle} width=100px />

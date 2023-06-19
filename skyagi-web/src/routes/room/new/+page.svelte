@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createSearchStore, searchHandler } from '$lib/room/stores/search';
     import Character from '$lib/room-new-character.svelte';
-    import { Select, Label, Button } from 'flowbite-svelte';
+    import { Select, Label, Button, Dropdown, DropdownItem, Chevron, Checkbox, Search } from 'flowbite-svelte';
 	import { onDestroy } from 'svelte';
     export let data;
     import { browser } from '$app/environment';
@@ -95,6 +95,7 @@
     let selectedModel=models[0].value;
     let selectedToken=modelTokenPair[models[0].value];
     let checkedCharacterGroup = [];
+    let checkedAgentGroup = [];
     let playerCharacterId="";
     function charactersToItems(inputCharacters){
         let rst = []
@@ -182,11 +183,21 @@
 <div id="globalGrid">
     
     <div>
-        <input id="searchBar" type="search" placeholder="Search..." bind:value={$searchStore.search} />
+        <Button><Chevron>Available Characters</Chevron>></Button>
+            <Dropdown>
+                <div slot="header" class="p-3">
+                    <Search id="searchBar" placeholder="Search..." bind:value={$searchStore.search} />  
+                </div>
+                {#each $searchStore.filtered as character, i}
+                <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+                    <Checkbox bind:group={checkedAgentGroup} value={character}>{character.name}</Checkbox>
+                </li>
+                {/each}
+            </Dropdown>
     </div>
     
     <div class="scroller">
-        {#each $searchStore.filtered as character, i}
+        {#each checkedAgentGroup as character, i}
             <div class="characterInfoSet">
                 <Character bind:character={character} 
                  bind:characters={characters}
