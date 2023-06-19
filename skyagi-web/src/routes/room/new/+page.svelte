@@ -45,16 +45,16 @@
         selected:false,
         avatarStyle: "rounded-lg border-none border-4 hover:border-solid border-indigo-600"
     }})
-    function filterCharacters(inputCharacters){
-        let rst = []
-        for (let i=0; i<inputCharacters.length; i++){
-            if (inputCharacters[i].selected == true){
-                rst.push(inputCharacters[i])
-            }
-        }
-        return rst
-    }
-    $: selectedCharacters = filterCharacters(characters)
+    // function filterCharacters(inputCharacters){
+    //     let rst = []
+    //     for (let i=0; i<inputCharacters.length; i++){
+    //         if (inputCharacters[i].selected == true){
+    //             rst.push(inputCharacters[i])
+    //         }
+    //     }
+    //     return rst
+    // }
+    // $: selectedCharacters = filterCharacters(characters)
 
     const searchStore = createSearchStore(characters);
 
@@ -95,7 +95,6 @@
     let selectedModel=models[0].value;
     let selectedToken=modelTokenPair[models[0].value];
     let checkedCharacterGroup = [];
-    let checkedAgentGroup = [];
     let playerCharacterId="";
     function charactersToItems(inputCharacters){
         let rst = []
@@ -120,12 +119,10 @@
         let selectedCount = 0;
         // console.log("called")
         for (let i=0; i<inputCharacters.length; i++){
-            if (inputCharacters[i].selected){
                 selectedCount++
                 if (inputCharacters[i].model=="" || inputCharacters[i].modelTokenPair[inputCharacters[i].model]==""){
                     return true
                 }
-            }
         }
         if (selectedCount < 2){
             return true
@@ -138,18 +135,15 @@
         }
         return false
     }
-    $: createDisabled = checkCreateButtonDisabled(characters, chatName, playerCharacterId)
+    $: createDisabled = checkCreateButtonDisabled(checkedCharacterGroup, chatName, playerCharacterId)
     const handleCreateButton = async () => {
-        console.log(selectedCharacters)
-        // console.log(selectedCharacters)
         
-        let inputAgents = selectedCharacters.map((item) => (
+        let inputAgents = checkedCharacterGroup.map((item) => (
             {id: item.id, 
             model: {
                 name: item.model,
                 token: item.modelTokenPair[item.model]
             }}))
-        // console.log(inputAgents)
         const conversationResponse = await fetch("/api/create-conversation", {
             method: 'PUT',
             headers: {
@@ -190,21 +184,19 @@
                 </div>
                 {#each $searchStore.filtered as character, i}
                 <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600">
-                    <Checkbox bind:group={checkedAgentGroup} value={character}>{character.name}</Checkbox>
+                    <Checkbox bind:group={checkedCharacterGroup} value={character}>{character.name}</Checkbox>
                 </li>
                 {/each}
             </Dropdown>
     </div>
     
     <div class="scroller">
-        {#each checkedAgentGroup as character, i}
+        {#each checkedCharacterGroup as character, i}
             <div class="characterInfoSet">
                 <Character bind:character={character} 
                  bind:characters={characters}
                  on:message={handleOnClickImageMessage} 
-                 bind:bindGroup={checkedCharacterGroup} 
-                 bind:avatarStyle={characters[i].avatarStyle}
-                 value={character.name}>
+                 bind:avatarStyle={characters[i].avatarStyle}>
                 </Character>
             </div>
         {/each}
@@ -235,7 +227,7 @@
 
         <Label class="mb-10 w-1/2">Select an option
             <Select id="playerDropDown" class="mt-5" size="lg" 
-            items={charactersToItems(characters)} 
+            items={checkedCharacterGroup} 
             bind:value={playerCharacterId}
             placeholder = "Select your character" />
         </Label>
