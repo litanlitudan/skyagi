@@ -9,8 +9,10 @@
     export const agentData = data.agentData
     export const agentIds = data.agentIds
     export const userAgentIds = data.userAgentIds
+    export const userAgentNames = data.userAgentNames
     export const modelData = data.models
     export const chatName = data.chatName
+    export const messages = data.messages
     
     import modelTokenDataStore from '$lib/room-store.js';
     import { globalAvatarImageList } from '$lib/stores.js';
@@ -28,7 +30,6 @@
     let preSavedModelTokenData = $preSavedModelTokenDataStore
     if ((preSavedModelTokenDataIsEmpty || (preSavedModelTokenDataStore == null)) !== true) {
         let tempModelTokenData = JSON.parse(preSavedModelTokenData)
-        console.log(tempModelTokenData)
         modelTokenPair = {}
         for (let i=0; i<tempModelTokenData.length; i++){
             modelTokenPair[tempModelTokenData[i].model] = tempModelTokenData[i].token
@@ -38,7 +39,6 @@
     let characters = agentData.map(function(characterDataPoint) {
         let imagePath = "/assets/Avatar1.png"
 		if (characterDataPoint.avatar!=null && globalAvatarImageList.includes(characterDataPoint.avatar.local_path)){
-			console.log(characterDataPoint.avatar)
             imagePath = characterDataPoint.avatar.local_path
 		};
         return {
@@ -112,25 +112,6 @@
     $: createDisabled = checkCreateButtonDisabled(characters, chatName, playerCharacterId)
     const handleCreateButton = async () => {
         
-        let inputAgents = characters.map((item) => (
-            {id: item.id, 
-            model: {
-                name: item.model,
-                token: item.modelTokenPair[item.model]
-            }}))
-        const conversationResponse = await fetch("/api/create-conversation", {
-            method: 'PUT',
-            headers: {
-                "Content-Type" : 'application/json'
-            },
-            body: JSON.stringify({
-                name: chatName,
-                user_id: userId,
-                agents: inputAgents,
-                user_agent_ids: [playerCharacterId]
-            })
-        })
-        let conversation_id = await conversationResponse.json()
         modelTokenDataStore.update((currentData) => {
             return characters.map((item) => ({
                 agent_id: item.id, 
@@ -138,13 +119,7 @@
                 token: item.modelTokenPair[item.model]
             }))
         })
-        console.log(conversation_id)
-        if (conversation_id.success){
-            window.location.href = '/room/' + conversation_id.conversation_id
-        }
-        else{
-            console.log(conversation_id.error)
-        }
+        window.location.href = '/room/' + conversationId
     }
 </script>
 
@@ -156,9 +131,7 @@
                 <Character bind:character={character} 
                  bind:characters={characters}
                  on:message={handleOnClickImageMessage}
-                 bind:avatarStyle={characters[i].avatarStyle}
-                 value={character.name}
-                 hideCheckbox={"visibility: hidden"}>
+                 bind:avatarStyle={characters[i].avatarStyle}>
                 </Character>
             </div>
         {/each}
@@ -191,12 +164,9 @@
          bind:value={selectedToken}>
 
 
-        <Label class="mb-10 w-1/2">Select an option
-            <Select id="playerDropDown" class="mt-5" size="lg" 
-            items={charactersToItems(characters)} 
-            bind:value={playerCharacterId}
-            placeholder = "Select your character" />
-        </Label>
+        <h1>
+            Your character is {userAgentNames[0]}
+        </h1>
         <Button on:click={handleCreateButton} bind:disabled={createDisabled}>
             Create
         </Button>

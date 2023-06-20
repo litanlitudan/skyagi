@@ -26,6 +26,7 @@ export const load = (async ({ params, fetch, locals }) => {
     const chatName = data.name
     const agentIds = data.agent_ids
     const userAgentIds = data.user_agent_ids
+    const messages = data.messages
 
     const agentIdToAgentData = async (agent_id) => {
         let agentResponse = await fetch('/api/get-agent', {
@@ -36,10 +37,23 @@ export const load = (async ({ params, fetch, locals }) => {
             body: JSON.stringify({ user_id, agent_id })
         })
         let agentData = await agentResponse.json()
+        console.log(agentData.agent)
         return agentData.agent
     }
-    let rstLs = Promise.all(agentIds.map((item)=>(agentIdToAgentData(item))))
-
+    let rstLs = await Promise.all(agentIds.map((item)=>(agentIdToAgentData(item))))
+    let userAgentNames = []
+    console.log(userAgentIds)
+    console.log(agentIds)
+    for (let i=0; i<userAgentIds.length; i++){
+        for (let j=0; j<agentIds.length; j++){
+            if (userAgentIds[i] == agentIds[j]){
+                userAgentNames.push(rstLs[j].name)
+                continue
+            }
+        }
+        
+    }
+    console.log(userAgentNames)
 
     const models = get_all_llms().map((model) => ({ name: model, value: model }));
     return {
@@ -50,7 +64,9 @@ export const load = (async ({ params, fetch, locals }) => {
         agentIds: agentIds,
         chatName: chatName,
         userAgentIds: userAgentIds,
-        models: models
+        userAgentNames: userAgentNames,
+        models: models,
+        messages: messages
     }
 
 }) satisfies PageServerLoad;

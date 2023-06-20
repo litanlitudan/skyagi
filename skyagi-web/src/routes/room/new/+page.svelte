@@ -89,12 +89,11 @@
     function charactersToItems(inputCharacters){
         let rst = []
         for (let i=0; i<inputCharacters.length; i++){
-            if (inputCharacters[i].selected){
-                rst.push({name: inputCharacters[i].name, value: inputCharacters[i].id})
-            }
+            rst.push({name: inputCharacters[i].name, value: inputCharacters[i].id})
         }
         return rst
     }
+    $: characterItems= charactersToItems(checkedCharacterGroup);
 
     function handleModelChange() {
         lastClickedCharacter.model = selectedModel
@@ -108,6 +107,7 @@
     function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
         let selectedCount = 0;
         // console.log("called")
+        // console.log(inputPlayerCharacter)
         for (let i=0; i<inputCharacters.length; i++){
                 selectedCount++
                 if (inputCharacters[i].model=="" || inputCharacters[i].modelTokenPair[inputCharacters[i].model]==""){
@@ -140,7 +140,7 @@
                 },
                 embeddingSize: 1536
             }}))
-        console.log(inputAgents)
+        console.log([playerCharacterId])
         const conversationResponse = await fetch("/api/create-conversation", {
             method: 'PUT',
             headers: {
@@ -162,6 +162,7 @@
             }))
         })
         console.log(conversation_id)
+        console.log(checkedCharacterGroup)
         if (conversation_id.success){
             window.location.href = '/room/' + conversation_id.conversation_id
         }
@@ -224,7 +225,7 @@
 
         <Label class="mb-10 w-1/2">Select an option
             <Select id="playerDropDown" class="mt-5" size="lg" 
-            items={checkedCharacterGroup} 
+            items={characterItems} 
             bind:value={playerCharacterId}
             placeholder = "Select your character" />
         </Label>
