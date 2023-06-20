@@ -45,16 +45,6 @@
         selected:false,
         avatarStyle: "rounded-lg border-none border-4 hover:border-solid border-indigo-600"
     }})
-    // function filterCharacters(inputCharacters){
-    //     let rst = []
-    //     for (let i=0; i<inputCharacters.length; i++){
-    //         if (inputCharacters[i].selected == true){
-    //             rst.push(inputCharacters[i])
-    //         }
-    //     }
-    //     return rst
-    // }
-    // $: selectedCharacters = filterCharacters(characters)
 
     const searchStore = createSearchStore(characters);
 
@@ -140,10 +130,17 @@
         
         let inputAgents = checkedCharacterGroup.map((item) => (
             {id: item.id, 
-            model: {
+            embedding_model_settings: {
+                type: "OpenAIEmbeddings",
+                provider: "OpenAI",
                 name: item.model,
-                token: item.modelTokenPair[item.model]
+                args:{
+                    modelName: "text-embedding-ada-002",
+                    openAIApiKey: item.modelTokenPair[item.model]
+                },
+                embeddingSize: 1536
             }}))
+        console.log(inputAgents)
         const conversationResponse = await fetch("/api/create-conversation", {
             method: 'PUT',
             headers: {
@@ -221,7 +218,7 @@
             Model Token
         </h1>
         <input id="tokenField" placeholder="Input key"
-         on:input={handleTokenInput}
+         on:focusout={handleTokenInput}
          bind:value={selectedToken}>
 
 
