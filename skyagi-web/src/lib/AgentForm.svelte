@@ -12,7 +12,8 @@
 		age: '',
 		personalities: '',
 		socialStatus: '',
-		memories: ['', '', '', '', '']
+		memories: ['', '', '', '', ''],
+		avatarPath: ''
 	};
 
 	export let user: User;
@@ -47,7 +48,11 @@
 							age: agentData.age,
 							personality: agentData.personalities,
 							status: agentData.socialStatus,
-							memory: agentData.memories.join('\n')
+							memory: agentData.memories.join('\n'),
+							avatar: {
+								cloud_path: "",
+								local_path: agentData.avatarPath
+							}
 						}
 					})
 				});
@@ -101,6 +106,10 @@
 		agentData.memories.splice(index, 1);
 		agentData.memories = [...agentData.memories];
 	}
+
+	function handleAvatarClick(inputPath: string) {
+		agentData.avatarPath = inputPath
+	}
 </script>
 
 <main>
@@ -125,14 +134,19 @@
 			<Input id="social-status" type="text" class="mt-5" bind:value={agentData.socialStatus} />
 		</Label>
 
-		<Button><Chevron>Choose Avatar</Chevron></Button>
+		<Label for="avatar-path" class="mb-8 w-1/4 text-white">
+		Profile Picture:
+		<Button id="avatar-path">
+			<Avatar src={agentData.avatarPath} size="lg" rounded/>
+		</Button>
 		<Dropdown class="w-48 overflow-y-auto py-1 h-48">
 		{#each globalAvatarImageList as avatarImage, i}
-			<DropdownItem class="flex items-center text-base font-semibold gap-2">
-				<Avatar src={avatarImage} size="lg"/>
+			<DropdownItem class="flex items-center text-base font-semibold gap-2" on:click={()=>handleAvatarClick(avatarImage)}>
+				<Avatar src={avatarImage} size="lg" rounded/>
 			</DropdownItem>
 		{/each}
 		</Dropdown>
+		</Label>
 
 		<Label for="memories" class="mb-10 w-1/2 text-white">
 			Memories:
