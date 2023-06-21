@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { isAgentFormEditing } from './stores';
 	import type { AgentDataType } from './types';
-	import { Label, Input, Button, Helper } from 'flowbite-svelte';
+	import { Label, Input, Button, Helper, Chevron, Dropdown, Avatar, DropdownItem } from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
 	import type { User } from '@supabase/supabase-js';
+	import { globalAvatarImageList } from '$lib/stores.js';
 
 	export let agentData: AgentDataType = {
 		id: '',
@@ -104,27 +105,36 @@
 
 <main>
 	<form on:submit|preventDefault={handleSubmit}>
-		<Label class="mb-8 w-1/4">
+		<Label class="mb-8 w-1/4 text-white">
 			Name:
 			<Input id="name" type="text" class="mt-5" bind:value={agentData.name} />
 		</Label>
 
-		<Label for="age" class="mb-8 w-1/4">
+		<Label for="age" class="mb-8 w-1/4 text-white">
 			Age:
 			<Input id="age" type="number" class="mt-5" bind:value={agentData.age} />
 		</Label>
 
-		<Label for="personalities" class="mb-8 w-1/4">
+		<Label for="personalities" class="mb-8 w-1/4 text-white">
 			Personalities:
 			<Input id="personalities" type="text" class="mt-5" bind:value={agentData.personalities} />
 		</Label>
 
-		<Label for="social-status" class="mb-8 w-1/4">
+		<Label for="social-status" class="mb-8 w-1/4 text-white">
 			Social status:
 			<Input id="social-status" type="text" class="mt-5" bind:value={agentData.socialStatus} />
 		</Label>
 
-		<Label for="memories" class="mb-10 w-1/2">
+		<Button><Chevron>Choose Avatar</Chevron></Button>
+		<Dropdown class="w-48 overflow-y-auto py-1 h-48">
+		{#each globalAvatarImageList as avatarImage, i}
+			<DropdownItem class="flex items-center text-base font-semibold gap-2">
+				<Avatar src={avatarImage} size="lg"/>
+			</DropdownItem>
+		{/each}
+		</Dropdown>
+
+		<Label for="memories" class="mb-10 w-1/2 text-white">
 			Memories:
 
 			{#each agentData.memories as memory, index}
