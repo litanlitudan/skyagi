@@ -37,6 +37,10 @@
 	function handleHomeButton(){
 		window.location.href = '/dashboard'
 	}
+
+	function handleSettingsButton(){
+		window.location.href = '/settings/account'
+	}
 </script>
 
 <svelte:head>
@@ -44,6 +48,9 @@
 </svelte:head>
 
 <div id="header">
+	<Button on:click={handleSettingsButton}>
+		Settings
+	</Button>
 	<Button on:click={handleHomeButton}>
 		Home
 	</Button>

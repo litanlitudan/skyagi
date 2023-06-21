@@ -6,8 +6,10 @@
     export let data;
     const characterData = data.agents
     const conversationData = data.conversations
-	export let activeId=conversationData[0].conversationId;
-    
+	export let activeId="";
+	if (conversationData.length != 0){
+		conversationData[0].conversationId;
+	}
     
 
     const characters = characterData.map(function(characterDataPoint) {

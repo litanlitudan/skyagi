@@ -5,11 +5,14 @@
     import { browser } from '$app/environment';
     export const conversationId = data.conversation_id
     export const user = data.user
+    export const userId = data.userId
     export const agentData = data.agentData
     export const agentIds = data.agentIds
     export const userAgentIds = data.userAgentIds
+    export const userAgentNames = data.userAgentNames
     export const modelData = data.models
     export const chatName = data.chatName
+    export const messages = data.messages
     
     import modelTokenDataStore from '$lib/room-store.js';
     import { globalAvatarImageList } from '$lib/stores.js';
@@ -19,18 +22,30 @@
         selectedModelData = data;
     })
     let models = modelData
+    import preSavedModelTokenDataStore from '$lib/token-store.js';
+    let preSavedModelTokenDataIsEmpty = $preSavedModelTokenDataStore.length == 0;
+    export let modelTokenPair = modelData.map((item)=>({
+        [item.name]: ""
+    }))
+    let preSavedModelTokenData = $preSavedModelTokenDataStore
+    if ((preSavedModelTokenDataIsEmpty || (preSavedModelTokenDataStore == null)) !== true) {
+        let tempModelTokenData = JSON.parse(preSavedModelTokenData)
+        modelTokenPair = {}
+        for (let i=0; i<tempModelTokenData.length; i++){
+            modelTokenPair[tempModelTokenData[i].model] = tempModelTokenData[i].token
+        }
+    }
     
     let characters = agentData.map(function(characterDataPoint) {
         let imagePath = "/assets/Avatar1.png"
 		if (characterDataPoint.avatar!=null && globalAvatarImageList.includes(characterDataPoint.avatar.local_path)){
-			console.log(characterDataPoint.avatar)
             imagePath = characterDataPoint.avatar.local_path
 		};
         return {
         ...characterDataPoint,
         image: imagePath,
         model: models[0].value,
-        modelToken: "",
+        modelTokenPair: {...modelTokenPair},
         avatarStyle: "rounded-lg border-none border-4 hover:border-solid border-indigo-600"
     }})
 
@@ -40,12 +55,12 @@
     let lastClickedCharacter = characters[0]
     characters[0].avatarStyle = "rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
     let showedModelValue = models[0].value
-    let showedTokenValue = ""
+    let showedTokenValue = modelTokenPair[models[0].value]
     function handleOnClickImageMessage(event) {
         lastClickedCharacterName = event.detail.character.name;
         lastClickedCharacter = event.detail.character;
         showedModelValue = event.detail.character.model;
-        showedTokenValue = event.detail.character.modelToken;
+        showedTokenValue = event.detail.character.modelTokenPair[showedModelValue];
         for (let i=0; i<characters.length; i++){
             if (characters[i].name==lastClickedCharacterName){
                 characters[i].avatarStyle="rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
@@ -64,7 +79,7 @@
 
 
     let selectedModel=models[0].value;
-    let selectedToken="";
+    let selectedToken=modelTokenPair[models[0].value];
     let playerCharacterId="";
     function charactersToItems(inputCharacters){
         let rst = []
@@ -76,16 +91,16 @@
 
     function handleModelChange() {
         lastClickedCharacter.model = selectedModel
+        selectedToken = lastClickedCharacter.modelTokenPair[selectedModel]
     }
 
     function handleTokenInput() {
-        lastClickedCharacter.modelToken = selectedToken
+        lastClickedCharacter.modelTokenPair[selectedModel] = selectedToken
     }
     let createDisabled = true
     function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
         for (let i=0; i<inputCharacters.length; i++){
-            if (inputCharacters[i].model=="" || inputCharacters[i].modelToken==""){
-                console.log("condition1")
+            if (inputCharacters[i].model=="" || inputCharacters[i].modelTokenPair[inputCharacters[i].model]==""){
                 return true
             }
         }
@@ -97,39 +112,14 @@
     $: createDisabled = checkCreateButtonDisabled(characters, chatName, playerCharacterId)
     const handleCreateButton = async () => {
         
-        let inputAgents = characters.map((item) => (
-            {id: item.id, 
-            model: {
-                name: item.model,
-                token: item.modelToken
-            }}))
-        const conversationResponse = await fetch("/api/create-conversation", {
-            method: 'PUT',
-            headers: {
-                "Content-Type" : 'application/json'
-            },
-            body: JSON.stringify({
-                name: chatName,
-                user_id: "e776f213-b2c7-4fe1-b874-e2705ef99345",
-                agents: inputAgents,
-                user_agent_ids: [playerCharacterId]
-            })
-        })
-        let conversation_id = await conversationResponse.json()
         modelTokenDataStore.update((currentData) => {
             return characters.map((item) => ({
                 agent_id: item.id, 
                 model: item.model,
-                token: item.modelToken
+                token: item.modelTokenPair[item.model]
             }))
         })
-        console.log(conversation_id)
-        if (conversation_id.success){
-            window.location.href = '/room/' + conversation_id.conversation_id
-        }
-        else{
-            console.log(conversation_id.error)
-        }
+        window.location.href = '/room/' + conversationId
     }
 </script>
 
@@ -141,9 +131,7 @@
                 <Character bind:character={character} 
                  bind:characters={characters}
                  on:message={handleOnClickImageMessage}
-                 bind:avatarStyle={characters[i].avatarStyle}
-                 value={character.name}
-                 hideCheckbox={"visibility: hidden"}>
+                 bind:avatarStyle={characters[i].avatarStyle}>
                 </Character>
             </div>
         {/each}
@@ -176,12 +164,9 @@
          bind:value={selectedToken}>
 
 
-        <Label class="mb-10 w-1/2">Select an option
-            <Select id="playerDropDown" class="mt-5" size="lg" 
-            items={charactersToItems(characters)} 
-            bind:value={playerCharacterId}
-            placeholder = "Select your character" />
-        </Label>
+        <h1>
+            Your character is {userAgentNames[0]}
+        </h1>
         <Button on:click={handleCreateButton} bind:disabled={createDisabled}>
             Create
         </Button>

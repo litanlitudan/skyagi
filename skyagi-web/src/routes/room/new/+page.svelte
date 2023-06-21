@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createSearchStore, searchHandler } from '$lib/room/stores/search';
     import Character from '$lib/room-new-character.svelte';
-    import { Select, Label, Button } from 'flowbite-svelte';
+    import { Select, Label, Button, Dropdown, DropdownItem, Chevron, Checkbox, Search } from 'flowbite-svelte';
 	import { onDestroy } from 'svelte';
     export let data;
     import { browser } from '$app/environment';
@@ -10,6 +10,20 @@
     export const userId = data.userId
     import modelTokenDataStore from '$lib/room-store.js';
     import { globalAvatarImageList } from '$lib/stores.js';
+    
+    import preSavedModelTokenDataStore from '$lib/token-store.js';
+    let preSavedModelTokenDataIsEmpty = $preSavedModelTokenDataStore.length == 0;
+    export let modelTokenPair = modelData.map((item)=>({
+        [item.name]: ""
+    }))
+    let preSavedModelTokenData = $preSavedModelTokenDataStore
+    if ((preSavedModelTokenDataIsEmpty || (preSavedModelTokenDataStore == null)) !== true) {
+        let tempModelTokenData = JSON.parse(preSavedModelTokenData)
+        modelTokenPair = {}
+        for (let i=0; i<tempModelTokenData.length; i++){
+            modelTokenPair[tempModelTokenData[i].model] = tempModelTokenData[i].token
+        }
+    }
 
     let selectedModelData;
     modelTokenDataStore.subscribe((data) => {
@@ -27,20 +41,10 @@
         ...characterDataPoint,
         image: imagePath,
         model: models[0].value,
-        modelToken: "",
+        modelTokenPair: {...modelTokenPair},
         selected:false,
         avatarStyle: "rounded-lg border-none border-4 hover:border-solid border-indigo-600"
     }})
-    function filterCharacters(inputCharacters){
-        let rst = []
-        for (let i=0; i<inputCharacters.length; i++){
-            if (inputCharacters[i].selected == true){
-                rst.push(inputCharacters[i])
-            }
-        }
-        return rst
-    }
-    $: selectedCharacters = filterCharacters(characters)
 
     const searchStore = createSearchStore(characters);
 
@@ -55,12 +59,12 @@
     let lastClickedCharacter = characters[0]
     characters[0].avatarStyle = "rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
     let showedModelValue = models[0].value
-    let showedTokenValue = ""
+    let showedTokenValue = modelTokenPair[models[0].value]
     function handleOnClickImageMessage(event) {
         lastClickedCharacterName = event.detail.character.name;
         lastClickedCharacter = event.detail.character;
         showedModelValue = event.detail.character.model;
-        showedTokenValue = event.detail.character.modelToken;
+        showedTokenValue = event.detail.character.modelTokenPair[showedModelValue];
         for (let i=0; i<characters.length; i++){
             if (characters[i].name==lastClickedCharacterName){
                 characters[i].avatarStyle="rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
@@ -79,40 +83,38 @@
 
 
     let selectedModel=models[0].value;
-    let selectedToken="";
+    let selectedToken=modelTokenPair[models[0].value];
     let checkedCharacterGroup = [];
     let playerCharacterId="";
     function charactersToItems(inputCharacters){
         let rst = []
         for (let i=0; i<inputCharacters.length; i++){
-            if (inputCharacters[i].selected){
-                rst.push({name: inputCharacters[i].name, value: inputCharacters[i].id})
-            }
+            rst.push({name: inputCharacters[i].name, value: inputCharacters[i].id})
         }
         return rst
     }
+    $: characterItems= charactersToItems(checkedCharacterGroup);
 
     function handleModelChange() {
         lastClickedCharacter.model = selectedModel
+        selectedToken = lastClickedCharacter.modelTokenPair[selectedModel]
     }
 
     function handleTokenInput() {
-        lastClickedCharacter.modelToken = selectedToken
+        lastClickedCharacter.modelTokenPair[selectedModel] = selectedToken
     }
     let createDisabled = true
     function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
         let selectedCount = 0;
         // console.log("called")
+        // console.log(inputPlayerCharacter)
         for (let i=0; i<inputCharacters.length; i++){
-            if (inputCharacters[i].selected){
                 selectedCount++
-                if (inputCharacters[i].model=="" || inputCharacters[i].modelToken==""){
+                if (inputCharacters[i].model=="" || inputCharacters[i].modelTokenPair[inputCharacters[i].model]==""){
                     return true
                 }
-            }
         }
         if (selectedCount < 2){
-            console.log("condition2")
             return true
         }
         if (inputChatName==""){
@@ -123,18 +125,22 @@
         }
         return false
     }
-    $: createDisabled = checkCreateButtonDisabled(characters, chatName, playerCharacterId)
+    $: createDisabled = checkCreateButtonDisabled(checkedCharacterGroup, chatName, playerCharacterId)
     const handleCreateButton = async () => {
-        console.log(selectedCharacters)
-        // console.log(selectedCharacters)
         
-        let inputAgents = selectedCharacters.map((item) => (
+        let inputAgents = checkedCharacterGroup.map((item) => (
             {id: item.id, 
-            model: {
+            embedding_model_settings: {
+                type: "OpenAIEmbeddings",
+                provider: "OpenAI",
                 name: item.model,
-                token: item.modelToken
+                args:{
+                    modelName: "text-embedding-ada-002",
+                    openAIApiKey: item.modelTokenPair[item.model]
+                },
+                embeddingSize: 1536
             }}))
-        // console.log(inputAgents)
+        console.log([playerCharacterId])
         const conversationResponse = await fetch("/api/create-conversation", {
             method: 'PUT',
             headers: {
@@ -152,10 +158,11 @@
             return characters.map((item) => ({
                 agent_id: item.id, 
                 model: item.model,
-                token: item.modelToken
+                token: item.modelTokenPair[item.model]
             }))
         })
         console.log(conversation_id)
+        console.log(checkedCharacterGroup)
         if (conversation_id.success){
             window.location.href = '/room/' + conversation_id.conversation_id
         }
@@ -168,18 +175,26 @@
 <div id="globalGrid">
     
     <div>
-        <input id="searchBar" type="search" placeholder="Search..." bind:value={$searchStore.search} />
+        <Button><Chevron>Available Characters</Chevron>></Button>
+            <Dropdown>
+                <div slot="header" class="p-3">
+                    <Search id="searchBar" placeholder="Search..." bind:value={$searchStore.search} />  
+                </div>
+                {#each $searchStore.filtered as character, i}
+                <li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+                    <Checkbox bind:group={checkedCharacterGroup} value={character}>{character.name}</Checkbox>
+                </li>
+                {/each}
+            </Dropdown>
     </div>
     
     <div class="scroller">
-        {#each $searchStore.filtered as character, i}
+        {#each checkedCharacterGroup as character, i}
             <div class="characterInfoSet">
                 <Character bind:character={character} 
                  bind:characters={characters}
                  on:message={handleOnClickImageMessage} 
-                 bind:bindGroup={checkedCharacterGroup} 
-                 bind:avatarStyle={characters[i].avatarStyle}
-                 value={character.name}>
+                 bind:avatarStyle={characters[i].avatarStyle}>
                 </Character>
             </div>
         {/each}
@@ -204,13 +219,13 @@
             Model Token
         </h1>
         <input id="tokenField" placeholder="Input key"
-         on:input={handleTokenInput}
+         on:focusout={handleTokenInput}
          bind:value={selectedToken}>
 
 
         <Label class="mb-10 w-1/2">Select an option
             <Select id="playerDropDown" class="mt-5" size="lg" 
-            items={charactersToItems(characters)} 
+            items={characterItems} 
             bind:value={playerCharacterId}
             placeholder = "Select your character" />
         </Label>
