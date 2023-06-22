@@ -12,6 +12,7 @@ export interface AgentDataType {
     personalities: string;
     socialStatus: string;
     memories: string[];
+    avatarPath: string;
     archived?: boolean;
 }
 
