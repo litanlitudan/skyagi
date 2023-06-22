@@ -3,7 +3,7 @@
 	import type { User } from '@supabase/supabase-js';
 	import { isAgentFormEditing } from './stores';
 	import type { AgentDataType } from './types';
-	import { Button, Modal } from 'flowbite-svelte';
+	import { Button, Modal, Avatar } from 'flowbite-svelte';
 
 	export let agentData: AgentDataType;
 
@@ -35,6 +35,7 @@
 	{#if agentData && Object.keys(agentData).length !== 0 && !agentData.archived}
 		<h1>Agent Details</h1>
 		<!-- Display the form data -->
+		<Avatar src={agentData.avatarPath} size="lg"></Avatar>
 		<p>Name: {agentData.name}</p>
 		<p>Age: {agentData.age}</p>
 		<p>Personalities: {agentData.personalities}</p>
