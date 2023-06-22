@@ -36,7 +36,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
             .eq('id', agent_id);
 
         if (error || (checkValidity(agent_info) === false)) {
-            return new Response(JSON.stringify({ 'success': 0, 'error': 'agent not found' }), { status: 200 });
+            return new Response(JSON.stringify({ 'success': 0, 'error': `agent not found, id: ${agent_id}` }), { status: 200 });
         }
         agentInfos.push(agent_info);
 
@@ -48,7 +48,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
             embedding = await embeddings.embedQuery(agent_info[0].initial_memory);
         } catch (error: any) {
             console.error(error.message);
-            return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to query embedding' }), { status: 200 });
+            return new Response(JSON.stringify({ 'success': 0, 'error': `failed to query embedding for agent: ${agent_id}` }), { status: 200 });
         }
 
         initialMemoryEmbeddings.push(embedding);
@@ -74,8 +74,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
     // DB call: create Memory for all agents
     const createdMemoryIds: string[] = [];
-    agents.map(async (agent: { id: string; }, i: number) => {
-        const agent_id = agent.id;
+    for (let i = 0; i < agents.length; ++i) {
+        const agent_id = agents[i].id;
         const importance = 0.0;
         const metadata = {
             agent_id: agent_id,
@@ -122,11 +122,11 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
             }
 
             // error out
-            return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to create new initial memory' }), { status: 200 });
+            return new Response(JSON.stringify({ 'success': 0, 'error': `failed to create new initial memory for agent ${agent_id}` }), { status: 200 });
         }
 
         createdMemoryIds.push(memory_id[0].id);
-    });
+    }
 
 
     // commit the conversation and memory creation by updating the status to SUCCESS
@@ -158,80 +158,3 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
     return new Response(JSON.stringify({ success: 1, conversation_id: conv_id[0].id }), { status: 200 });
 }) satisfies RequestHandler;
-
-// export const PUT = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
-//     const {
-//         name,
-//         user_id,
-//         agents,
-//         user_agent_ids
-//     } = await request.json();
-
-//     let agent_ids = agents.map(agent => agent.id);
-
-//     // create conversation
-//     const { data: conv_id } = await locals.supabase
-//         .from('conversation')
-//         .insert({
-//             user_id: user_id,
-//             name: name,
-//             agents: agent_ids,
-//             user_agents: user_agent_ids
-//         })
-//         .select('id');
-
-//     if (checkValidity(conv_id) === false) {
-//         return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to find conversation' }), { status: 200 });
-//     }
-
-//     // get agents' initial memory and add to memory
-//     const currentTime = new Date().toISOString();
-
-//     for (const agent of agents) {
-//         const agent_id = agent.id;
-//         const embedding_model_settings = agent.embedding_model_settings;
-
-//         const { data: agent_info } = await locals.supabase
-//             .from('agent')
-//             .select('initial_status, initial_memory')
-//             .eq('id', agent_id);
-
-//         if (checkValidity(agent_info) === false) {
-//             return new Response(JSON.stringify({ 'success': 0, 'error': 'agent not found' }), { status: 200 });
-//         }
-
-//         // load embedding model
-//         const embeddings = load_embedding_from_config(embedding_model_settings as EmbeddingSettings);
-
-//         let embedding;
-//         try {
-//             embedding = await embeddings.embedQuery(agent_info[0].initial_memory);
-//         } catch (error) {
-//             console.error(error.message);
-//             return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to query embedding' }), { status: 200 });
-//         }
-//         const importance = 0.0;
-//         const metadata = {
-//             agent_id: agent_id,
-//             cur_status: agent_info[0].initial_status,
-//             importance: importance,
-//             create_time: currentTime,
-//             conversation_id: conv_id[0].id,
-//             last_access_time: currentTime
-//         };
-
-//         const { error } = await locals.supabase
-//             .from('memory')
-//             .insert({
-//                 content: agent_info[0].initial_memory,
-//                 embedding: embedding,
-//                 metadata: metadata
-//             });
-
-//         if (error) {
-//             return new Response(JSON.stringify({ 'success': 0, 'error': 'failed to create new initial memory' }), { status: 200 });
-//         }
-//     }
-
-//     return new Response(JSON.stringify({ success: 1, conversation_id: conv_id[0].id }), { status: 200 });
-// }) satisfies RequestHandler;
