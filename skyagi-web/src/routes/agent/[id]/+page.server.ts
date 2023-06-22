@@ -34,7 +34,8 @@ export const load = (async ({ params, fetch, locals }) => {
         personalities: agent.personality,
         socialStatus: agent.initial_status,
         memories: agent.initial_memory.split('\n'),
-        archived: agent.archived
+        archived: agent.archived,
+        avatarPath: agent.avatar.local_path
     };
 
     return {
