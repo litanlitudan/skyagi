@@ -2,16 +2,12 @@ import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { checkValidity } from '$lib/utils';
 import { type EmbeddingSettings, load_embedding_from_config } from '$lib/model/model';
+import { TransactionStatus } from '$lib/types';
 
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
     runtime: 'nodejs18.x'
-};
-
-enum Status {
-    SUCCESS = 'SUCCESS',
-    PENDING = 'PENDING'
 };
 
 export const PUT = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
@@ -63,7 +59,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
             name: name,
             agents: agents.map((agent: { id: string; }) => agent.id),
             user_agents: user_agent_ids,
-            status: Status.PENDING,
+            status: TransactionStatus.PENDING,
             createdAt: currentTime
         })
         .select('id');
@@ -92,7 +88,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
                 content: agentInfos[i][0].initial_memory,
                 embedding: initialMemoryEmbeddings[i],
                 metadata: metadata,
-                status: Status.PENDING,
+                status: TransactionStatus.PENDING,
                 createdAt: currentTime
             })
             .select('id');
@@ -133,7 +129,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     const { error: updateConversationError } = await locals.supabase
         .from('conversation')
         .update({
-            status: Status.SUCCESS
+            status: TransactionStatus.SUCCESS
         })
         .eq('id', conv_id[0].id);
 
@@ -146,7 +142,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         const { error } = await locals.supabase
             .from('memory')
             .update({
-                status: Status.SUCCESS
+                status: TransactionStatus.SUCCESS
             })
             .eq('id', memory_id);
 
