@@ -76,7 +76,11 @@
 							age: agentData.age,
 							personality: agentData.personalities,
 							status: agentData.socialStatus,
-							memory: agentData.memories.join('\n')
+							memory: agentData.memories.join('\n'),
+							avatar: {
+								cloud_path: "",
+								local_path: agentData.avatarPath
+							}
 						}
 					})
 				});
