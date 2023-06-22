@@ -7,6 +7,7 @@ import { Document } from "langchain/document";
 import type { BaseLanguageModel } from "langchain/base_language";
 import { _ } from "$env/static/private";
 import { load_llm_from_config, type LLMSettings, type EmbeddingSettings, load_embedding_from_config } from "./model/model";
+import { TransactionStatus } from "./types";
 
 // Future improvements:
 // [Func] support embeddings from different LLM models
@@ -90,6 +91,7 @@ export class GenerativeAgent {
         const { data: allMemories } = await this.storage
             .from('memory')
 		    .select('id, content, metadata')
+            .or(`status.eq.${TransactionStatus.SUCCESS},status.is.null`)
 		    .contains('metadata',{"conversation_id": conversationId})
 		    .contains('metadata',{"agent_id": agentId})
             .order('metadata->create_time', { ascending: true });
@@ -118,6 +120,7 @@ export class GenerativeAgent {
                 last_access_time: new Date().toISOString()
               }
             })
+            .or(`status.eq.${TransactionStatus.SUCCESS},status.is.null`)
 		    .contains('metadata', {'agent_id': agent_id})
 		    .contains('metadata', {'conversation_id': conv_id})
 		    .contains('metadata', {'create_time': create_time})
