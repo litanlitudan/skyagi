@@ -24,10 +24,12 @@ export const handle: Handle = async ({ event, resolve }) => {
     };
 
     const session = await event.locals.getSession()
+    /*
     if (!session && event.url.pathname !== '/') {
         // the user is not signed in
         throw redirect(303, '/')
     }
+    */
 
     return resolve(event, {
         /**
