@@ -1,7 +1,7 @@
 <script lang="ts">
     import { createSearchStore, searchHandler } from '$lib/room/stores/search';
     import Character from '$lib/room-new-character.svelte';
-    import { Select, Label, Button, Dropdown, DropdownItem, Chevron, Checkbox, Search } from 'flowbite-svelte';
+    import { Select, Label, Button, Dropdown, DropdownItem, Chevron, Checkbox, Search, Alert } from 'flowbite-svelte';
 	import { onDestroy } from 'svelte';
     export let data;
     import { browser } from '$app/environment';
@@ -10,8 +10,10 @@
     export const userId = data.userId
     import modelTokenDataStore from '$lib/room-store.js';
     import { globalAvatarImageList } from '$lib/stores.js';
+    import Toast from '$lib/Toast.svelte';
     
     import preSavedModelTokenDataStore from '$lib/token-store.js';
+	import { notifications } from '$lib/notifications.js';
     let preSavedModelTokenDataIsEmpty = $preSavedModelTokenDataStore.length == 0;
     export let modelTokenPair = modelData.map((item)=>({
         [item.name]: ""
@@ -106,28 +108,49 @@
     let createDisabled = true
     function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
         let selectedCount = 0;
-        // console.log("called")
-        // console.log(inputPlayerCharacter)
         for (let i=0; i<inputCharacters.length; i++){
                 selectedCount++
                 if (inputCharacters[i].model=="" || inputCharacters[i].modelTokenPair[inputCharacters[i].model]==""){
-                    return true
+                    return -1
                 }
         }
         if (selectedCount < 2){
-            return true
+            return -2
+        }
+        if (selectedCount > 4){
+            return -3
         }
         if (inputChatName==""){
-            return true
+            return -4
         }
         if (inputPlayerCharacter==""){
-            return true
+            return -5
         }
-        return false
+        return 1
     }
     $: createDisabled = checkCreateButtonDisabled(checkedCharacterGroup, chatName, playerCharacterId)
     const handleCreateButton = async () => {
-        
+        let createStatus = checkCreateButtonDisabled(checkedCharacterGroup, chatName, playerCharacterId)
+        if (createStatus == -1){
+            notifications.danger("One or more characters' model or token is not specified", 2000)
+            return null
+        }
+        if (createStatus == -2){
+            notifications.danger("Need to choose 2 or more characters", 2000)
+            return null
+        }
+        if (createStatus == -3){
+            notifications.danger("Need to choose 4 or less characters", 2000)
+            return null
+        }
+        if (createStatus == -4){
+            notifications.danger("Chat name is not specified", 2000)
+            return null
+        }
+        if (createStatus == -5){
+            notifications.danger("Player character is not specified", 2000)
+            return null
+        }
         let inputAgents = checkedCharacterGroup.map((item) => (
             {id: item.id, 
             embedding_model_settings: {
@@ -170,6 +193,9 @@
             console.log(conversation_id.error)
         }
     }
+    // function testHandle(){
+    //     notifications.danger("abc", 1000)
+    // }
 </script>
 
 <div id="globalGrid">
@@ -229,12 +255,13 @@
             bind:value={playerCharacterId}
             placeholder = "Select your character" />
         </Label>
-        <Button on:click={handleCreateButton} bind:disabled={createDisabled}>
+        <Button on:click={handleCreateButton}>
             Create
         </Button>
 
     </div>
 </div>
+<Toast />
 
 
 <style>
