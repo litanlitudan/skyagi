@@ -106,7 +106,7 @@ export class GenerativeAgent {
 
 		//start = performance.now();
 		this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
-			vectorStore: this.vectorStore,
+			this.vectorStore,
 			searchKwargs: 0,
 			k: 0,
 			decayRate: 1,
