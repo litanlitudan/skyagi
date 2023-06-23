@@ -2,5 +2,4 @@
 	import { DarkMode } from 'flowbite-svelte';
 </script>
 
-<DarkMode />
 <slot />
