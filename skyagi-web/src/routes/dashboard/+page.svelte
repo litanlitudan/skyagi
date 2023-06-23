@@ -46,8 +46,8 @@
 	<div>
 		<Accordion
 			id="conversationBoard"
-			activeClasses="bg-gray-800 text-white focus:ring-4 focus:ring-blue-800"
-			inactiveClasses="text-gray-400 hover:bg-gray-800"
+			activeClasses="bg-gray-800 text-white focus:ring-4 focus:ring-blue-800 text-2xl"
+			inactiveClasses="text-gray-400 hover:bg-gray-800 text-2xl"
 		>
 			{#each conversations as conversation, i}
 				<Conversation
@@ -59,9 +59,11 @@
 			{/each}
 		</Accordion>
 		<div id="buttonGrid">
-			<Button on:click={handleResumeRoomClick}>Resume to the selected conversation</Button>
-			<Button on:click={handleCreateRoomClick}>Create new conversation</Button>
-			<Button on:click={handleCreateAgentClick}>Create new agent</Button>
+			<Button size="xl" on:click={handleResumeRoomClick}>
+				Resume to the selected conversation
+			</Button>
+			<Button size="xl" on:click={handleCreateRoomClick}>Create new conversation</Button>
+			<Button size="xl" on:click={handleCreateAgentClick}>Create new agent</Button>
 		</div>
 	</div>
 
@@ -77,23 +79,19 @@
 </div>
 
 <style>
-	#conversationBoard {
-		height: 1000px;
-	}
-
 	.scroller {
 		width: 600px;
 		height: 500px;
 		top: 20px;
 		position: relative;
-		overflow-x: scroll;
-		overflow-y: scroll;
+		overflow-x: hidden;
+		overflow-y: auto;
 		display: grid;
 		grid-template-columns: repeat(3, 200px);
 		grid-template-rows: repeat(auto-fill, 220px);
 	}
 	#conversationBoard {
-		height: 1000px;
+		height: 2000px;
 		white-space: pre-line;
 	}
 
@@ -101,12 +99,12 @@
 		display: grid;
 		grid-template-columns: repeat(2, 40%);
 		grid-auto-flow: column;
-		gap: 10px;
+		gap: 200px;
 		/* grid-auto-columns: 400px 400px; */
 	}
 
 	#buttonGrid {
 		display: grid;
-		grid-template-rows: (2, 50%);
+		grid-template-rows: (3, 50%);
 	}
 </style>
