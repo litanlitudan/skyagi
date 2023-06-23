@@ -47,7 +47,6 @@ export class GenerativeAgent {
     memories: Memory[];
 	llm: BaseLanguageModel;
 	embeddings: any;
-	vectorStore: MemoryVectorStore;
     memoryRetriever: TimeWeightedVectorStoreRetriever;
     storage: any;
 
@@ -80,7 +79,7 @@ export class GenerativeAgent {
         this.embeddings = load_embedding_from_config(recipient_agent_model_settings.embedding);
         // TODO: (kejiez) pass down embeddingSize to SQL query
         // TODO: (kejiez) support more embedding size
-        this.vectorStore = new MemoryVectorStore(
+        const vectorStore = new MemoryVectorStore(
             this.embeddings
         );
 
@@ -95,8 +94,8 @@ export class GenerativeAgent {
 				}
 			}));
 
-		await this.vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
-        const debugreturn = await this.vectorStore.similaritySearchWithScore("i am debugging", 5);
+		await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
+        const debugreturn = await vectorStore.similaritySearchWithScore("i am debugging", 5);
 		console.log(`debug return: ${debugreturn.length}`);
 
 
@@ -106,7 +105,7 @@ export class GenerativeAgent {
 
 		//start = performance.now();
 		this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
-			this.vectorStore,
+			vectorStore,
 			searchKwargs: 0,
 			k: 0,
 			decayRate: 1,
@@ -175,7 +174,7 @@ export class GenerativeAgent {
 
     private async fetchMemories(observation: string): Promise<Document[]> {
 		const mems = await this.memoryRetriever.getRelevantDocuments(observation);
-		console.log(`fetch mem: ${mems.length}`);
+		console.log(`feth mem: ${mems.length}`);
 		for (const mem of mems) {
             await this.updateMemoryAccessTime(mem)
         }
