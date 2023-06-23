@@ -33,23 +33,38 @@
 
 <main>
 	{#if agentData && Object.keys(agentData).length !== 0 && !agentData.archived}
-		<h1>Agent Details</h1>
+		<h1 class="mb-8 text-5xl">Agent Profile</h1>
 		<!-- Display the form data -->
-		<Avatar src={agentData.avatarPath} size="lg"></Avatar>
-		<p>Name: {agentData.name}</p>
-		<p>Age: {agentData.age}</p>
-		<p>Personalities: {agentData.personalities}</p>
-		<p>Social status: {agentData.socialStatus}</p>
-		<p>Memories:</p>
-		{#if agentData.memories}
-			<ul>
-				{#each agentData.memories as memory}
-					<li>{memory}</li>
-				{/each}
-			</ul>
-		{/if}
-		<Button type="button" on:click={handleEdit}>Edit</Button>
-		<!-- <Button type="button" color="red" on:click={() => (popupDeleteModal = true)}>Delete</Button> -->
+		<div id="globalGrid">
+			<div>
+				<Avatar src={agentData.avatarPath} size="lg" />
+			</div>
+			<div>
+				<h2 class="text-3xl">Basic information</h2>
+				<div id="textGrid" class="my-4">
+					<div>Name:</div>
+					<div class="text-sky-500">{agentData.name}</div>
+					<div>Age:</div>
+					<div class="text-sky-500">{agentData.age}</div>
+					<div>Personalities:</div>
+					<div class="text-sky-500">{agentData.personalities}</div>
+					<div>Social status:</div>
+					<div class="text-sky-500">{agentData.socialStatus}</div>
+				</div>
+				{#if agentData.memories}
+					<h2 class="text-3xl">Memories</h2>
+					<div class="my-4 indent-14">
+						<ul>
+							{#each agentData.memories as memory}
+								<li class="list-disc list-inside text-sky-500 my-2">{memory}</li>
+							{/each}
+						</ul>
+					</div>
+				{/if}
+				<Button type="button" size="xl" on:click={handleEdit}>Edit</Button>
+				<!-- <Button type="button" color="red" on:click={() => (popupDeleteModal = true)}>Delete</Button> -->
+			</div>
+		</div>
 	{:else}
 		<p>Agent not found</p>
 	{/if}
@@ -78,3 +93,24 @@
 		</div>
 	</Modal>
 </main>
+
+<style>
+	main {
+		font-size: 25px;
+	}
+
+	#globalGrid {
+		display: grid;
+		grid-template-columns: 12% 80%;
+		grid-auto-flow: row;
+		/* grid-auto-columns: 400px 400px; */
+	}
+
+	#textGrid {
+		display: grid;
+		text-indent: 56px;
+		grid-template-columns: 20% 50%;
+		grid-auto-flow: row;
+		gap: 10px;
+	}
+</style>
