@@ -6,11 +6,8 @@ import { Document } from "langchain/document";
 import type { BaseLanguageModel } from "langchain/base_language";
 import { _ } from "$env/static/private";
 import { load_llm_from_config, type LLMSettings, type EmbeddingSettings, load_embedding_from_config } from "./model/model";
-import { PerformanceObserver, performance } from 'perf_hooks';
 
 // Future improvements:
-// [Func] support embeddings from different LLM models
-// [Func] config llm based on the user's request
 // [Performance] cache summary in supabase memory table
 // [Accuracy] prompt management
 
@@ -71,10 +68,7 @@ export class GenerativeAgent {
         this.llm = load_llm_from_config(recipient_agent_model_settings.llm);
 
         await this.getAgentMemories(conversationId, agentId);
-		console.log(`size of the memory: ${this.memories.length}`);
 
-		//let start, end, elapsed;
-		//start = performance.now();
         // create retriever
         this.embeddings = load_embedding_from_config(recipient_agent_model_settings.embedding);
         // TODO: (kejiez) pass down embeddingSize to SQL query
@@ -95,11 +89,7 @@ export class GenerativeAgent {
 			}));
 
 		await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
-		//end = performance.now();
-		//elapsed = end - start;
-		//console.log(`VS build time: ${elapsed} milliseconds`);
 
-		//start = performance.now();
 		this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
 			vectorStore,
 			searchKwargs: 15,
@@ -108,10 +98,6 @@ export class GenerativeAgent {
 			memoryStream: documents,
 			otherScoreKeys: ["importance"]
 		});
-		//end = performance.now();
-		//elapsed = end - start;
-		//console.log(`retriever build time: ${elapsed} milliseconds`);
-
     }
 
     async getAgentMemories(conversationId: string, agentId: string): Promise<void> {
@@ -143,34 +129,13 @@ export class GenerativeAgent {
 			if (mem.content === content && mem.metadata.create_time === create_time) {
 				mem.metadata.last_access_time = new Date().toISOString();	
 				mem.updated = true;
-				//console.log(`[update last_access_time]: ${mem.id} - ${mem.metadata.last_access_time}`);
 				break;
 			}
 		}
-
-        // update last_access_time
-		/*
-        const { error } = await this.storage
-		    .from('memory')
-            .update({metadata: {
-                agent_id: agent_id,
-                cur_status: cur_status,
-                importance: importance,
-                create_time: create_time, 
-                conversation_id: conv_id,
-                last_access_time: new Date().toISOString()
-              }
-            })
-		    .contains('metadata', {'agent_id': agent_id})
-		    .contains('metadata', {'conversation_id': conv_id})
-		    .contains('metadata', {'create_time': create_time})
-            .eq('content', content);
-			*/
     }
 
     private async fetchMemories(observation: string): Promise<Document[]> {
 		const mems = await this.memoryRetriever.getRelevantDocuments(observation);
-		console.log(`feth mem: ${mems.length}`);
 		for (const mem of mems) {
             await this.updateMemoryAccessTime(mem)
         }
@@ -185,21 +150,12 @@ export class GenerativeAgent {
 				`Do not embellish.` +
 				`\n\nSummary: `
 		);
-		let start, end, elapsed;
 
-		start = performance.now();
 		const relevantMemories = await this.fetchMemories(`${this.name}'s core characteristics`);
 		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
-		end = performance.now();
-		elapsed = end - start;
-		//console.log(`FetchMemories build time: ${elapsed} milliseconds`);
 
-		start = performance.now();
 		const chain = new LLMChain({llm: this.llm, prompt});
 		const res = await chain.run({ name: this.name, relatedMemories: relevantMemoriesStr });
-		end = performance.now();
-		elapsed = end - start;
-		//console.log(`Getsummary build time: ${elapsed} milliseconds`);
         return res.trim();
 	}
 
@@ -388,9 +344,6 @@ export class GenerativeAgent {
 	}
     
     async generateRspn(observation: string, suffix: string): Promise<string> {
-		let start, end, elapsed;
-		start = performance.now();
-
 		const prompt = PromptTemplate.fromTemplate(
 			'{agentSummaryDescription}' +
 				'\nIt is {currentTime}.' +
@@ -404,17 +357,7 @@ export class GenerativeAgent {
 		);
 
 		const agentSummaryDescription = await this.getSummary();
-		end = performance.now();
-		elapsed = end - start;
-		console.log(`getSummary time: ${elapsed} milliseconds`);
-
-		start = performance.now();
 		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
-		end = performance.now();
-		elapsed = end - start;
-		console.log(`summarize related memory time: ${elapsed} milliseconds`);
-
-		start = performance.now();
 		const currentTimeStr = new Date().toLocaleString('en-US', {
 			month: 'long',
 			day: 'numeric',
@@ -441,10 +384,6 @@ export class GenerativeAgent {
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
 		const result = await actionPredictionChain.call(kwargs);
-
-		end = performance.now();
-		elapsed = end - start;
-		console.log(`rest of response time: ${elapsed} milliseconds`);
 
         return result.text.trim();
 	}
@@ -476,8 +415,6 @@ export class GenerativeAgent {
 				    .from('memory')
 			        .insert(mem_to_add)
 			        .select('id');
-		        //console.log("new_mem_id", new_mem_id);
-		        //console.log("error", error);
 			} else if (mem.updated === true) {
 				// update existing memory
 				const { error } = await this.storage
@@ -486,8 +423,6 @@ export class GenerativeAgent {
 						metadata: mem.metadata
 					})
 					.eq('id', mem.id);
-		        //console.log("update mem_id", mem.id);
-		        //console.log("error", error);
 			}
 		}
     }
