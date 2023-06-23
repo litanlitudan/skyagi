@@ -88,7 +88,7 @@
 		overflow-y: auto;
 		display: grid;
 		grid-template-columns: repeat(3, 200px);
-		grid-template-rows: repeat(auto-fill, 220px);
+		/*grid-template-rows: repeat(auto-fill, 220px);*/
 	}
 	#conversationBoard {
 		height: 2000px;
