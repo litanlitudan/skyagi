@@ -23,7 +23,9 @@
 </script>
 
 <AccordionItem bind:open id="accordion">
-	<span slot="header">{conversationSummary.name}</span>
+	<span slot="header">
+		{conversationSummary.name}
+	</span>
 	<div slot="arrowup">
 		<svg
 			class="w-6 h-6 shrink-0 rotate-180"
