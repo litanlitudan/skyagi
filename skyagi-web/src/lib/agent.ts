@@ -95,10 +95,6 @@ export class GenerativeAgent {
 			}));
 
 		await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
-        const debugreturn = await vectorStore.similaritySearchWithScore("i am debugging", 5);
-		console.log(`debug return: ${debugreturn.length}`);
-
-
 		//end = performance.now();
 		//elapsed = end - start;
 		//console.log(`VS build time: ${elapsed} milliseconds`);
