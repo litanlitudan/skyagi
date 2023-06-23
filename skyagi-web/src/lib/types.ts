@@ -16,3 +16,7 @@ export interface AgentDataType {
     archived?: boolean;
 }
 
+export enum TransactionStatus {
+    SUCCESS = 'SUCCESS',
+    PENDING = 'PENDING'
+};

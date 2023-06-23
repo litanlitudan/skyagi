@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { checkValidity } from '$lib/utils';
+import { TransactionStatus } from '$lib/types';
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
@@ -17,6 +18,7 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	const { data: agent_memories} = await locals.supabase
 		.from('memory')
 		.select('content')
+        .or(`status.eq.${TransactionStatus.SUCCESS},status.is.null`)
 		.contains('metadata', {'agent_id': agent_id})
 		.contains('metadata', {'conversation_id': conversation_id});
 
