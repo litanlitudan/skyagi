@@ -50,7 +50,6 @@ const set = async (query: string) => {
     headers: {
       'Content-Type': 'application/json'
     },
-    method: 'PUT',
     payload: JSON.stringify(request)
   });
 
@@ -77,7 +76,6 @@ const handleError = <T>(err: T) => {
 // put a new AI generated answer to store
 const streamMessage = (e: MessageEvent) => {
   console.log('e', e);
-  console.log('JSON.parse(e.data)', JSON.parse(e.data));
   console.log('streamMessage', e.data);
 
   try {
