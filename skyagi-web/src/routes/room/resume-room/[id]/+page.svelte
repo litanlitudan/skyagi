@@ -23,7 +23,6 @@
     export let modelTokenPair = modelData.map((item)=>({
         [item.name]: ""
     }))
-    let testData = $modelTokenDataStore
     let preSavedModelTokenData = $preSavedModelTokenDataStore
     if ((preSavedModelTokenDataIsEmpty || (preSavedModelTokenDataStore == null)) !== true) {
         let tempModelTokenData = JSON.parse(preSavedModelTokenData)
@@ -121,7 +120,6 @@
                 data: findModelDataByName(item.model)
             })))
         })
-        testData = $modelTokenDataStore
         window.location.href = '/room/' + conversationId
     }
 </script>
