@@ -27,10 +27,6 @@
         }
     }
 
-    let selectedModelData;
-    modelTokenDataStore.subscribe((data) => {
-        selectedModelData = data;
-    })
     let models = modelData
     let chatName = ""
     
@@ -42,7 +38,7 @@
         return {
         ...characterDataPoint,
         image: imagePath,
-        model: models[0].value,
+        model: models[0].name,
         modelTokenPair: {...modelTokenPair},
         selected:false,
         avatarStyle: "rounded-lg border-none border-4 hover:border-solid border-indigo-600"
@@ -60,8 +56,8 @@
     let lastClickedCharacterName = characters[0].name
     let lastClickedCharacter = characters[0]
     characters[0].avatarStyle = "rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
-    let showedModelValue = models[0].value
-    let showedTokenValue = modelTokenPair[models[0].value]
+    let showedModelValue = models[0].name
+    let showedTokenValue = modelTokenPair[models[0].name]
     function handleOnClickImageMessage(event) {
         lastClickedCharacterName = event.detail.character.name;
         lastClickedCharacter = event.detail.character;
@@ -84,8 +80,8 @@
     }
 
 
-    let selectedModel=models[0].value;
-    let selectedToken=modelTokenPair[models[0].value];
+    let selectedModel=models[0].name;
+    let selectedToken=modelTokenPair[models[0].name];
     let checkedCharacterGroup = [];
     let playerCharacterId="";
     function charactersToItems(inputCharacters){
@@ -105,7 +101,6 @@
     function handleTokenInput() {
         lastClickedCharacter.modelTokenPair[selectedModel] = selectedToken
     }
-    let createDisabled = true
     function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
         let selectedCount = 0;
         for (let i=0; i<inputCharacters.length; i++){
@@ -128,7 +123,11 @@
         }
         return 1
     }
-    $: createDisabled = checkCreateButtonDisabled(checkedCharacterGroup, chatName, playerCharacterId)
+
+    function findModelDataByName (modelName){
+        let dataPoint = modelData.find((item)=>(item.name==modelName))
+        return dataPoint.data
+    }
     const handleCreateButton = async () => {
         let createStatus = checkCreateButtonDisabled(checkedCharacterGroup, chatName, playerCharacterId)
         if (createStatus == -1){
@@ -163,7 +162,6 @@
                 },
                 embeddingSize: 1536
             }}))
-        console.log([playerCharacterId])
         const conversationResponse = await fetch("/api/create-conversation", {
             method: 'PUT',
             headers: {
@@ -178,14 +176,13 @@
         })
         let conversation_id = await conversationResponse.json()
         modelTokenDataStore.update((currentData) => {
-            return characters.map((item) => ({
+            return JSON.stringify(characters.map((item) => ({
                 agent_id: item.id, 
                 model: item.model,
-                token: item.modelTokenPair[item.model]
-            }))
+                token: item.modelTokenPair[item.model],
+                data: findModelDataByName(item.model)
+            })))
         })
-        console.log(conversation_id)
-        console.log(checkedCharacterGroup)
         if (conversation_id.success){
             window.location.href = '/room/' + conversation_id.conversation_id
         }
@@ -193,9 +190,6 @@
             console.log(conversation_id.error)
         }
     }
-    // function testHandle(){
-    //     notifications.danger("abc", 1000)
-    // }
 </script>
 
 <div id="globalGrid">
