@@ -222,8 +222,8 @@
 
 <div id="globalGrid">
 	<div>
-		<Button size="xl"><Chevron>Pick your characters (upto 4)</Chevron>></Button>
-		<Dropdown>
+		<Button size="xl"><Chevron>Pick your characters (upto 4)</Chevron></Button>
+		<Dropdown class="overflow-y-auto py-1 h-64">
 			<div slot="header" class="p-3">
 				<Search id="searchBar" placeholder="Search..." bind:value={$searchStore.search} />
 			</div>
@@ -231,7 +231,7 @@
 				<li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600">
 					<Checkbox bind:group={checkedCharacterGroup} value={character}>
 						<Avatar src={character.image} size="md" />
-						{character.name}
+						<div class="ml-4 text-green-950 text-lg">{character.name}</div>
 					</Checkbox>
 				</li>
 			{/each}
