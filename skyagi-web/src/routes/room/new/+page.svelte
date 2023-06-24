@@ -11,7 +11,8 @@
 		Checkbox,
 		Search,
 		Alert,
-		Avatar
+		Avatar,
+		Input
 	} from 'flowbite-svelte';
 	import { onDestroy } from 'svelte';
 	export let data;
@@ -220,9 +221,25 @@
 	// }
 </script>
 
+<Label class="mb-8 w-1/2 text-white normal-case">
+	<div class="text-2xl">Conversation name</div>
+	<Input
+		id="name"
+		type="text"
+		size="lg"
+		class="mt-5 bg-stone-950 text-white font-sans"
+		placeholder="Type in your conversation name"
+		required
+	/>
+</Label>
+
 <div id="globalGrid">
 	<div>
-		<Button size="xl"><Chevron>Pick your characters (upto 4)</Chevron></Button>
+		<Label class="mb-4 w-1/2 text-white normal-case">
+			<div class="text-2xl">Pick the characters (up to 4)</div>
+		</Label>
+
+		<Button size="xl"><Chevron>Characters</Chevron></Button>
 		<Dropdown class="overflow-y-auto py-1 h-64">
 			<div slot="header" class="p-3">
 				<Search id="searchBar" placeholder="Search..." bind:value={$searchStore.search} />
@@ -251,14 +268,12 @@
 		{/each}
 	</div>
 
-	<input id="chatNameField" placeholder="Chat name" bind:value={chatName} />
-
 	<div>
 		<h1>
 			Select Model for {lastClickedCharacterName}
 		</h1>
-		<Label
-			>Select an option
+		<Label>
+			Select an option
 			<Select
 				class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
 				items={models}
@@ -299,7 +314,7 @@
 	}
 
 	#chatNameField {
-		width: 200px;
+		width: 400px;
 	}
 
 	.scroller {
