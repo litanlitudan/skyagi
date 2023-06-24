@@ -147,6 +147,15 @@ export function get_all_llms(): string[] {
     return all_llms;
 }
 
+export function get_all_llms_data() {
+    const all_llms = [];
+    for (const [provider, template] of Object.entries(providerTemplates)) {
+        for (const llm of template.models.llms) {
+            all_llms.push(llm);
+        }
+    }
+    return all_llms;
+}
 // Get all supported Embeddings
 export function get_all_embeddings(): string[] {
     const all_embeddings: string[] = [];

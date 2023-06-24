@@ -17,16 +17,13 @@
     import modelTokenDataStore from '$lib/room-store.js';
     import { globalAvatarImageList } from '$lib/stores.js';
 
-    // let selectedModelData;
-    // modelTokenDataStore.subscribe((data) => {
-    //     selectedModelData = data;
-    // })
     let models = modelData
     import preSavedModelTokenDataStore from '$lib/token-store.js';
     let preSavedModelTokenDataIsEmpty = $preSavedModelTokenDataStore.length == 0;
     export let modelTokenPair = modelData.map((item)=>({
         [item.name]: ""
     }))
+    let testData = $modelTokenDataStore
     let preSavedModelTokenData = $preSavedModelTokenDataStore
     if ((preSavedModelTokenDataIsEmpty || (preSavedModelTokenDataStore == null)) !== true) {
         let tempModelTokenData = JSON.parse(preSavedModelTokenData)
@@ -124,9 +121,7 @@
                 data: findModelDataByName(item.model)
             })))
         })
-        // console.log(selectedModelData)
-        // console.log("test")
-        // console.log(findModelDataByName(characters[0].model))
+        testData = $modelTokenDataStore
         window.location.href = '/room/' + conversationId
     }
 </script>

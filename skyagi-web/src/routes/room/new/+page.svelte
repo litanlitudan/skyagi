@@ -176,7 +176,7 @@
         })
         let conversation_id = await conversationResponse.json()
         modelTokenDataStore.update((currentData) => {
-            return JSON.stringify(characters.map((item) => ({
+            return JSON.stringify(checkedCharacterGroup.map((item) => ({
                 agent_id: item.id, 
                 model: item.model,
                 token: item.modelTokenPair[item.model],
