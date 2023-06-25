@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { get_all_llms } from '$lib/model/model';
+import { get_all_llms_data } from '$lib/model/model';
 
 export const load = (async ({ params, fetch, locals }) => {
     const { id: conversation_id } = params;
@@ -37,13 +37,10 @@ export const load = (async ({ params, fetch, locals }) => {
             body: JSON.stringify({ user_id, agent_id })
         })
         let agentData = await agentResponse.json()
-        console.log(agentData.agent)
         return agentData.agent
     }
     let rstLs = await Promise.all(agentIds.map((item)=>(agentIdToAgentData(item))))
     let userAgentNames = []
-    console.log(userAgentIds)
-    console.log(agentIds)
     for (let i=0; i<userAgentIds.length; i++){
         for (let j=0; j<agentIds.length; j++){
             if (userAgentIds[i] == agentIds[j]){
@@ -53,9 +50,8 @@ export const load = (async ({ params, fetch, locals }) => {
         }
         
     }
-    console.log(userAgentNames)
 
-    const models = get_all_llms().map((model) => ({ name: model, value: model }));
+    const models = get_all_llms_data().map((model) => ({ name: model.name, value: model.name, data: model }));
     return {
         conversation_id: conversation_id,
         user: session.user,
