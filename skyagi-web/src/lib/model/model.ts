@@ -21,8 +21,6 @@ export interface LLMSettings {
     provider: ModelProvider;
     name: string;
     args: { [k: string]: unknown };
-    credentials: { [k: string]: unknown };
-    configuration?: { [k: string]: unknown };
 }
 
 export interface EmbeddingSettings {
@@ -30,8 +28,6 @@ export interface EmbeddingSettings {
     provider: ModelProvider;
     name: string;
     args: { [k: string]: unknown };
-    credentials: { [k: string]: unknown };
-    configuration?: { [k: string]: unknown };
     embeddingSize: number;
 }
 
@@ -70,13 +66,11 @@ export const providerTemplates: {
                     type: LLMType.ChatOpenAI,
                     provider: ModelProvider.OpenAI,
                     name: 'openai-gpt-3.5-turbo',
-                    credentials: {
-                        // NOTE: This should be given by user
-                        openAIApiKey: ""
-                    },
                     args: {
                         modelName: 'gpt-3.5-turbo',
-                        maxTokens: 1500
+                        maxTokens: 1500,
+                        // NOTE: This should be given by user
+                        openAIApiKey: ""
                     }
                 },
                 {
@@ -84,26 +78,22 @@ export const providerTemplates: {
                     type: LLMType.ChatOpenAI,
                     provider: ModelProvider.OpenAI,
                     name: 'openai-gpt-4',
-                    credentials: {
-                        // NOTE: This should be given by user
-                        openAIApiKey: ""
-                    },
                     args: {
                         modelName: 'gpt-4',
-                        maxTokens: 1500
+                        maxTokens: 1500,
+                        // NOTE: This should be given by user
+                        openAIApiKey: ""
                     }
                 },
                 {
                     type: LLMType.OpenAI,
                     provider: ModelProvider.OpenAI,
                     name: 'openai-text-davinci-003',
-                    credentials: {
-                        // NOTE: This should be given by user
-                        openAIApiKey: ""
-                    },
                     args: {
                         modelName: 'text-davinci-003',
-                        maxTokens: 1500
+                        maxTokens: 1500,
+                        // NOTE: This should be given by user
+                        openAIApiKey: ""
                     }
                 }
             ],
@@ -112,12 +102,10 @@ export const providerTemplates: {
                     type: EmbeddingType.OpenAIEmbeddings,
                     provider: ModelProvider.OpenAI,
                     name: 'openai-text-embedding-ada-002',
-                    credentials: {
+                    args: {
+                        modelName: 'text-embedding-ada-002',
                         // NOTE: This should be given by user
                         openAIApiKey: ""
-                    },
-                    args: {
-                        modelName: 'text-embedding-ada-002'
                     },
                     embeddingSize: 1536
                 }
@@ -135,16 +123,14 @@ export const providerTemplates: {
                     type: LLMType.ChatOpenAI,
                     provider: ModelProvider.ModelZ,
                     name: 'modelz-host-model',
-                    credentials: {
-                        // NOTE: This should be given by user
-                        openAIApiKey: ""
-                    },
                     args: {
-                        maxTokens: 1500
-                    },
-                    configuration: {
+                        maxTokens: 1500,
                         // NOTE: This should be given by user
-                        basePath: ""
+                        openAIApiKey: "",
+                        configuration: {
+                            // NOTE: This should be given by user
+                            basePath: ""
+                        }
                     }
                 }
             ]
@@ -159,7 +145,7 @@ export function load_llm_from_config(config: LLMSettings) {
     }
 
     const cls = llm_type_to_cls_dict[config_type];
-    return new cls(config.args, config.configuration);
+    return new cls(config.args);
 }
 
 export function load_embedding_from_config(config: EmbeddingSettings) {
@@ -192,28 +178,4 @@ export function get_all_embeddings(): string[] {
         }
     }
     return all_embeddings;
-}
-
-// Get corresponding LLM's credentials fields
-export function get_llm_credentials_fields(modelName: string): string[] {
-    for (const [provider, template] of Object.entries(providerTemplates)) {
-        for (const llm of (template.models.llms || [])) {
-            if (modelName === llm.name) {
-                return Object.keys(llm.credentials);
-            }
-        }
-    }
-    return [];
-}
-
-// Get corresponding Embedding's credentials fields
-export function get_embedding_credentials_fields(modelName: string): string[] {
-    for (const [provider, template] of Object.entries(providerTemplates)) {
-        for (const embedding of (template.models.embeddings || [])) {
-            if (modelName === embedding.name) {
-                return Object.keys(embedding.credentials);
-            }
-        }
-    }
-    return [];
 }
