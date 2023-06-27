@@ -68,7 +68,7 @@
 		unsubscribe();
 	});
 
-	let lastClickedCharacterName = characters[0].name;
+	let lastClickedCharacterName;
 	let lastClickedCharacter = characters[0];
 	characters[0].avatarStyle =
 		'rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600';
@@ -266,7 +266,10 @@
 
 	<div class="mt-12">
 		<Label class="mb-8 w-1/2 text-white normal-case">
-			<div class="text-2xl mb-8">Select Model for {lastClickedCharacterName}</div>
+			<div class="text-4xl mb-8">Agent: {lastClickedCharacterName}</div>
+		</Label>
+		<Label class="mb-8 w-1/2 text-white normal-case">
+			<div class="text-2xl mb-8">Select an LLM Model</div>
 			<Select
 				id="modelSelect"
 				class="font-semibold bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
