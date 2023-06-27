@@ -17,10 +17,6 @@
     import modelTokenDataStore from '$lib/room-store.js';
     import { globalAvatarImageList } from '$lib/stores.js';
 
-    let selectedModelData;
-    modelTokenDataStore.subscribe((data) => {
-        selectedModelData = data;
-    })
     let models = modelData
     import preSavedModelTokenDataStore from '$lib/token-store.js';
     let preSavedModelTokenDataIsEmpty = $preSavedModelTokenDataStore.length == 0;
@@ -109,15 +105,20 @@
         }
         return false
     }
+    function findModelDataByName (modelName){
+        let dataPoint = modelData.find((item)=>(item.name==modelName))
+        return dataPoint.data
+    }
     $: createDisabled = checkCreateButtonDisabled(characters, chatName, playerCharacterId)
     const handleCreateButton = async () => {
         
         modelTokenDataStore.update((currentData) => {
-            return characters.map((item) => ({
+            return JSON.stringify(characters.map((item) => ({
                 agent_id: item.id, 
                 model: item.model,
-                token: item.modelTokenPair[item.model]
-            }))
+                token: item.modelTokenPair[item.model],
+                data: findModelDataByName(item.model)
+            })))
         })
         window.location.href = '/room/' + conversationId
     }
@@ -167,7 +168,7 @@
         <h1>
             Your character is {userAgentNames[0]}
         </h1>
-        <Button on:click={handleCreateButton} bind:disabled={createDisabled}>
+        <Button on:click={handleCreateButton}>
             Create
         </Button>
     </div>
