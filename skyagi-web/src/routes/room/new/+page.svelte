@@ -236,7 +236,7 @@
 		</Label>
 
 		<Button size="xl"><Chevron>Characters</Chevron></Button>
-		<Dropdown class="overflow-y-auto py-1 h-64">
+		<Dropdown class="overflow-y-auto py-1 h-48 mt-12">
 			<div slot="header" class="p-3">
 				<Search id="searchBar" placeholder="Search..." bind:value={$searchStore.search} />
 			</div>
@@ -251,7 +251,7 @@
 		</Dropdown>
 	</div>
 
-	<div class="scroller">
+	<div class="scroller mt-10">
 		{#each checkedCharacterGroup as character, i}
 			<div class="characterInfoSet">
 				<Character
@@ -264,12 +264,11 @@
 		{/each}
 	</div>
 
-	<div>
-		<h1>
-			Select Model for {lastClickedCharacterName}
-		</h1>
-		<Label>
-			Select an option
+	<div class="mt-12">
+		<Label class="mb-8 w-1/2 text-white normal-case">
+			<div class="text-2xl">Select Model for {lastClickedCharacterName}</div>
+		</Label>
+		<Label class="mb-8">
 			<Select
 				class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
 				items={models}
@@ -280,7 +279,9 @@
 			/>
 		</Label>
 
-		<h1>Model Token</h1>
+		<Label class="mb-8 w-1/2 text-white normal-case">
+			<div class="text-2xl">Model Token</div>
+		</Label>
 		<input
 			id="tokenField"
 			placeholder="Input key"
@@ -288,8 +289,7 @@
 			bind:value={selectedToken}
 		/>
 
-		<Label class="mb-10 w-1/2"
-			>Select an option
+		<Label class="mb-10 w-1/2">
 			<Select
 				id="playerDropDown"
 				class="mt-5"
