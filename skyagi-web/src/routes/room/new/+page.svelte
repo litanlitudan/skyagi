@@ -268,12 +268,12 @@
 		<Label class="mb-8 w-1/2 text-white normal-case">
 			<div class="text-2xl mb-8">Select Model for {lastClickedCharacterName}</div>
 			<Select
-				class="front-semibold bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-				items={models}
-				bind:value={selectedModel}
 				id="modelSelect"
-				on:change={handleModelChange}
+				class="font-semibold bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+				items={models}
 				placeholder="Select LLM"
+				bind:value={selectedModel}
+				on:change={handleModelChange}
 			/>
 		</Label>
 
