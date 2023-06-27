@@ -39,7 +39,7 @@
 		}
 	}
 
-	let models = modelData;
+	let models = modelData.map(model => ({ value: model.value, name: model.value }));
 	let chatName = '';
 
 	let characters = characterData.map(function (characterDataPoint) {
@@ -96,8 +96,8 @@
 		}
 	}
 
-	let selectedModel = models[0].name;
-	let selectedToken = modelTokenPair[models[0].name];
+	let selectedModel;
+	let selectedToken;
 	let checkedCharacterGroup = [];
 	let playerCharacterId = '';
 	function charactersToItems(inputCharacters) {
@@ -270,11 +270,14 @@
 			<Select
 				id="modelSelect"
 				class="font-semibold bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-				items={models}
-				placeholder="Select LLM"
+				placeholder="Select Model"
 				bind:value={selectedModel}
 				on:change={handleModelChange}
-			/>
+			>
+				{#each models as { value, name }}
+					<option {value} class="text-black font-semibold">{name}</option>
+				{/each}
+			</Select>
 		</Label>
 
 		<Label class="mb-8 w-1/2 text-white normal-case">
