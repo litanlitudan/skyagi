@@ -266,11 +266,9 @@
 
 	<div class="mt-12">
 		<Label class="mb-8 w-1/2 text-white normal-case">
-			<div class="text-2xl">Select Model for {lastClickedCharacterName}</div>
-		</Label>
-		<Label class="mb-8">
+			<div class="text-2xl mb-8">Select Model for {lastClickedCharacterName}</div>
 			<Select
-				class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+				class="front-semibold bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
 				items={models}
 				bind:value={selectedModel}
 				id="modelSelect"
@@ -282,11 +280,13 @@
 		<Label class="mb-8 w-1/2 text-white normal-case">
 			<div class="text-2xl">Model Token</div>
 		</Label>
-		<input
+		<Input
 			id="tokenField"
-			placeholder="Input key"
+			class="font-semibold"
+			placeholder="Type in the model token"
 			on:focusout={handleTokenInput}
 			bind:value={selectedToken}
+			size="lg"
 		/>
 
 		<Label class="mb-10 w-1/2">
