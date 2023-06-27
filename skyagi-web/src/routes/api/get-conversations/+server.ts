@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { checkValidity } from '$lib/utils';
+import { TransactionStatus } from '$lib/types';
 
 // TODO
 // add conversation summary
@@ -19,7 +20,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
     const { data: conversations } = await locals.supabase
         .from('conversation')
         .select('id, name, agents, user_agents')
-        .eq('user_id', user_id);
+        .eq('user_id', user_id)
+        .or(`status.eq.${TransactionStatus.SUCCESS},status.is.null`);
         
     if (checkValidity(conversations) === false) {
         return new Response(JSON.stringify({ 'success': 1, 'conversations': [] }), { status: 200 });

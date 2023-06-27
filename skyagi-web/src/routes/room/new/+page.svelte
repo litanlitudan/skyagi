@@ -39,6 +39,7 @@
 		}
 	}
 
+<<<<<<< HEAD
 	let selectedModelData;
 	modelTokenDataStore.subscribe(data => {
 		selectedModelData = data;
@@ -63,6 +64,24 @@
 			avatarStyle: 'rounded-lg border-none border-4 hover:border-solid border-indigo-600'
 		};
 	});
+=======
+    let models = modelData
+    let chatName = ""
+    
+    let characters = characterData.map(function(characterDataPoint) {
+        let imagePath = "/assets/Avatar1.png"
+		if (characterDataPoint.avatar!=null && globalAvatarImageList.includes(characterDataPoint.avatar.local_path)){
+			imagePath = characterDataPoint.avatar.local_path
+		};
+        return {
+        ...characterDataPoint,
+        image: imagePath,
+        model: models[0].name,
+        modelTokenPair: {...modelTokenPair},
+        selected:false,
+        avatarStyle: "rounded-lg border-none border-4 hover:border-solid border-indigo-600"
+    }})
+>>>>>>> main
 
 	const searchStore = createSearchStore(characters);
 
@@ -100,6 +119,7 @@
 		}
 	}
 
+<<<<<<< HEAD
 	let selectedModel = models[0].value;
 	let selectedToken = modelTokenPair[models[0].value];
 	let checkedCharacterGroup = [];
@@ -112,12 +132,40 @@
 		return rst;
 	}
 	$: characterItems = charactersToItems(checkedCharacterGroup);
+=======
+    let lastClickedCharacterName = characters[0].name
+    let lastClickedCharacter = characters[0]
+    characters[0].avatarStyle = "rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
+    let showedModelValue = models[0].name
+    let showedTokenValue = modelTokenPair[models[0].name]
+    function handleOnClickImageMessage(event) {
+        lastClickedCharacterName = event.detail.character.name;
+        lastClickedCharacter = event.detail.character;
+        showedModelValue = event.detail.character.model;
+        showedTokenValue = event.detail.character.modelTokenPair[showedModelValue];
+        for (let i=0; i<characters.length; i++){
+            if (characters[i].name==lastClickedCharacterName){
+                characters[i].avatarStyle="rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600"
+            }
+            else{
+                characters[i].avatarStyle="rounded-lg border-none border-4 hover:border-solid border-indigo-600"
+            }
+        }
+        if (browser) {
+            let modelSelect = document.getElementById("modelSelect")
+            let tokenField = document.getElementById("tokenField")
+            modelSelect.value = showedModelValue;
+            tokenField.value = showedTokenValue;
+        }
+    }
+>>>>>>> main
 
 	function handleModelChange() {
 		lastClickedCharacter.model = selectedModel;
 		selectedToken = lastClickedCharacter.modelTokenPair[selectedModel];
 	}
 
+<<<<<<< HEAD
 	function handleTokenInput() {
 		lastClickedCharacter.modelTokenPair[selectedModel] = selectedToken;
 	}
@@ -219,6 +267,118 @@
 	// function testHandle(){
 	//     notifications.danger("abc", 1000)
 	// }
+=======
+    let selectedModel=models[0].name;
+    let selectedToken=modelTokenPair[models[0].name];
+    let checkedCharacterGroup = [];
+    let playerCharacterId="";
+    function charactersToItems(inputCharacters){
+        let rst = []
+        for (let i=0; i<inputCharacters.length; i++){
+            rst.push({name: inputCharacters[i].name, value: inputCharacters[i].id})
+        }
+        return rst
+    }
+    $: characterItems= charactersToItems(checkedCharacterGroup);
+
+    function handleModelChange() {
+        lastClickedCharacter.model = selectedModel
+        selectedToken = lastClickedCharacter.modelTokenPair[selectedModel]
+    }
+
+    function handleTokenInput() {
+        lastClickedCharacter.modelTokenPair[selectedModel] = selectedToken
+    }
+    function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
+        let selectedCount = 0;
+        for (let i=0; i<inputCharacters.length; i++){
+                selectedCount++
+                if (inputCharacters[i].model=="" || inputCharacters[i].modelTokenPair[inputCharacters[i].model]==""){
+                    return -1
+                }
+        }
+        if (selectedCount < 2){
+            return -2
+        }
+        if (selectedCount > 4){
+            return -3
+        }
+        if (inputChatName==""){
+            return -4
+        }
+        if (inputPlayerCharacter==""){
+            return -5
+        }
+        return 1
+    }
+
+    function findModelDataByName (modelName){
+        let dataPoint = modelData.find((item)=>(item.name==modelName))
+        return dataPoint.data
+    }
+    const handleCreateButton = async () => {
+        let createStatus = checkCreateButtonDisabled(checkedCharacterGroup, chatName, playerCharacterId)
+        if (createStatus == -1){
+            notifications.danger("One or more characters' model or token is not specified", 2000)
+            return null
+        }
+        if (createStatus == -2){
+            notifications.danger("Need to choose 2 or more characters", 2000)
+            return null
+        }
+        if (createStatus == -3){
+            notifications.danger("Need to choose 4 or less characters", 2000)
+            return null
+        }
+        if (createStatus == -4){
+            notifications.danger("Chat name is not specified", 2000)
+            return null
+        }
+        if (createStatus == -5){
+            notifications.danger("Player character is not specified", 2000)
+            return null
+        }
+        let inputAgents = checkedCharacterGroup.map((item) => (
+            {id: item.id, 
+            embedding_model_settings: {
+                type: "OpenAIEmbeddings",
+                provider: "OpenAI",
+                name: item.model,
+                args:{
+                    modelName: "text-embedding-ada-002",
+                    openAIApiKey: item.modelTokenPair[item.model]
+                },
+                embeddingSize: 1536
+            }}))
+        const conversationResponse = await fetch("/api/create-conversation", {
+            method: 'PUT',
+            headers: {
+                "Content-Type" : 'application/json'
+            },
+            body: JSON.stringify({
+                name: chatName,
+                user_id: userId,
+                agents: inputAgents,
+                user_agent_ids: [playerCharacterId]
+            })
+        })
+        let conversation_id = await conversationResponse.json()
+        modelTokenDataStore.update((currentData) => {
+            return JSON.stringify(checkedCharacterGroup.map((item) => ({
+                agent_id: item.id, 
+                model: item.model,
+                token: item.modelTokenPair[item.model],
+                data: findModelDataByName(item.model)
+            })))
+        })
+        if (conversation_id.success){
+            window.location.href = '/room/' + conversation_id.conversation_id
+        }
+        else{
+            console.log(conversation_id.error)
+        }
+    }
+>>>>>>> main
 </script>
 
 <Label class="mb-8 w-1/2 text-white normal-case">

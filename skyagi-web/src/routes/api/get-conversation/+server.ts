@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { checkValidity } from '$lib/utils';
+import { TransactionStatus } from '$lib/types';
 
 
 // Can switch to the edge func if serverless is not necessary
@@ -17,7 +18,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 	const { data: conversation } = await locals.supabase
 		.from('conversation')
 		.select('name, agents, user_agents')
-		.eq('id', conversation_id);
+		.eq('id', conversation_id)
+        .or(`status.eq.${TransactionStatus.SUCCESS},status.is.null`);
 
 	if (checkValidity(conversation) === false) {
 		return new Response(JSON.stringify({ 'success': 0, 'error': 'conversation not found' }), { status: 200 });

@@ -3,7 +3,8 @@ import { ChatOpenAI } from "langchain/chat_models/openai";
 import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 
 export enum ModelProvider {
-    OpenAI = 'OpenAI'
+    OpenAI = 'OpenAI',
+    ModelZ = 'ModelZ'
 }
 
 export enum LLMType {
@@ -20,7 +21,6 @@ export interface LLMSettings {
     provider: ModelProvider;
     name: string;
     args: { [k: string]: unknown };
-    credentials: { [k: string]: unknown };
 }
 
 export interface EmbeddingSettings {
@@ -28,15 +28,16 @@ export interface EmbeddingSettings {
     provider: ModelProvider;
     name: string;
     args: { [k: string]: unknown };
-    credentials: { [k: string]: unknown };
     embeddingSize: number;
 }
 
 export interface ProviderTemplate {
+    // whether expose to user to select or not
+    enabled: boolean;
     provider: ModelProvider;
     models: {
-        llms: LLMSettings[];
-        embeddings: EmbeddingSettings[];
+        llms?: LLMSettings[];
+        embeddings?: EmbeddingSettings[];
     };
 }
 
@@ -57,6 +58,7 @@ export const providerTemplates: {
     [provider: string]: ProviderTemplate
 } = {
     [ModelProvider.OpenAI]: {
+        enabled: true,
         provider: ModelProvider.OpenAI,
         models: {
             llms: [
@@ -64,12 +66,11 @@ export const providerTemplates: {
                     type: LLMType.ChatOpenAI,
                     provider: ModelProvider.OpenAI,
                     name: 'openai-gpt-3.5-turbo',
-                    credentials: {
-                        openAIApiKey: undefined
-                    },
                     args: {
                         modelName: 'gpt-3.5-turbo',
-                        maxTokens: 1500
+                        maxTokens: 1500,
+                        // NOTE: This should be given by user
+                        openAIApiKey: ""
                     }
                 },
                 {
@@ -77,24 +78,22 @@ export const providerTemplates: {
                     type: LLMType.ChatOpenAI,
                     provider: ModelProvider.OpenAI,
                     name: 'openai-gpt-4',
-                    credentials: {
-                        openAIApiKey: undefined
-                    },
                     args: {
                         modelName: 'gpt-4',
-                        maxTokens: 1500
+                        maxTokens: 1500,
+                        // NOTE: This should be given by user
+                        openAIApiKey: ""
                     }
                 },
                 {
                     type: LLMType.OpenAI,
                     provider: ModelProvider.OpenAI,
                     name: 'openai-text-davinci-003',
-                    credentials: {
-                        openAIApiKey: undefined
-                    },
                     args: {
                         modelName: 'text-davinci-003',
-                        maxTokens: 1500
+                        maxTokens: 1500,
+                        // NOTE: This should be given by user
+                        openAIApiKey: ""
                     }
                 }
             ],
@@ -103,13 +102,36 @@ export const providerTemplates: {
                     type: EmbeddingType.OpenAIEmbeddings,
                     provider: ModelProvider.OpenAI,
                     name: 'openai-text-embedding-ada-002',
-                    credentials: {
-                        openAIApiKey: undefined
-                    },
                     args: {
-                        modelName: 'text-embedding-ada-002'
+                        modelName: 'text-embedding-ada-002',
+                        // NOTE: This should be given by user
+                        openAIApiKey: ""
                     },
                     embeddingSize: 1536
+                }
+            ]
+        }
+    },
+    [ModelProvider.ModelZ]: {
+        // toggle on when front end able to handle required fields
+        enabled: false,
+        provider: ModelProvider.ModelZ,
+        models: {
+            llms: [
+                {
+                    // https://docs.modelz.ai/frameworks/other/openai
+                    type: LLMType.ChatOpenAI,
+                    provider: ModelProvider.ModelZ,
+                    name: 'modelz-host-model',
+                    args: {
+                        maxTokens: 1500,
+                        // NOTE: This should be given by user
+                        openAIApiKey: "",
+                        configuration: {
+                            // NOTE: This should be given by user
+                            basePath: ""
+                        }
+                    }
                 }
             ]
         }
@@ -140,44 +162,29 @@ export function load_embedding_from_config(config: EmbeddingSettings) {
 export function get_all_llms(): string[] {
     const all_llms: string[] = [];
     for (const [provider, template] of Object.entries(providerTemplates)) {
-        for (const llm of template.models.llms) {
+        for (const llm of (template.models.llms || [])) {
             all_llms.push(llm.name);
         }
     }
     return all_llms;
 }
 
+export function get_all_llms_data() {
+    const all_llms = [];
+    for (const [provider, template] of Object.entries(providerTemplates)) {
+        for (const llm of template.models.llms) {
+            all_llms.push(llm);
+        }
+    }
+    return all_llms;
+}
 // Get all supported Embeddings
 export function get_all_embeddings(): string[] {
     const all_embeddings: string[] = [];
     for (const [provider, template] of Object.entries(providerTemplates)) {
-        for (const embedding of template.models.embeddings) {
+        for (const embedding of (template.models.embeddings || [])) {
             all_embeddings.push(embedding.name);
         }
     }
     return all_embeddings;
-}
-
-// Get corresponding LLM's credentials fields
-export function get_llm_credentials_fields(modelName: string): string[] {
-    for (const [provider, template] of Object.entries(providerTemplates)) {
-        for (const llm of template.models.llms) {
-            if (modelName === llm.name) {
-                return Object.keys(llm.credentials);
-            }
-        }
-    }
-    return [];
-}
-
-// Get corresponding Embedding's credentials fields
-export function get_embedding_credentials_fields(modelName: string): string[] {
-    for (const [provider, template] of Object.entries(providerTemplates)) {
-        for (const embedding of template.models.embeddings) {
-            if (modelName === embedding.name) {
-                return Object.keys(embedding.credentials);
-            }
-        }
-    }
-    return [];
 }
