@@ -1,7 +1,19 @@
 <script lang="ts">
 	import { createSearchStore, searchHandler } from '$lib/room/stores/search';
 	import Character from '$lib/room-new-character.svelte';
-	import { Select, Label, Button, Dropdown, DropdownItem, Chevron, Checkbox, Search, Alert, Avatar, Input } from 'flowbite-svelte';
+	import {
+		Select,
+		Label,
+		Button,
+		Dropdown,
+		DropdownItem,
+		Chevron,
+		Checkbox,
+		Search,
+		Alert,
+		Avatar,
+		Input
+	} from 'flowbite-svelte';
 	import { onDestroy } from 'svelte';
 	export let data;
 	import { browser } from '$app/environment';
@@ -56,7 +68,7 @@
 		unsubscribe();
 	});
 
-	let lastClickedCharacterName;
+	let lastClickedCharacterName = characters[0].name;
 	let lastClickedCharacter = characters[0];
 	characters[0].avatarStyle =
 		'rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600';
@@ -264,7 +276,7 @@
 					class="font-semibold bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
 					placeholder="Select Model"
 					bind:value={selectedModel}
-					on:change={handleModelChange()}
+					on:change={handleModelChange}
 				>
 					{#each models as { value, name }}
 						<option {value} class="text-black font-semibold">{name}</option>
