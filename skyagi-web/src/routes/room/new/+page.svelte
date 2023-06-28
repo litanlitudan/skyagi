@@ -264,49 +264,51 @@
 		{/each}
 	</div>
 
-	<div class="mt-12">
-		<Label class="mb-8 w-1/2 text-white normal-case">
-			<div class="text-4xl mb-8">Agent: {lastClickedCharacterName}</div>
-		</Label>
-		<Label class="mb-8 w-1/2 text-white normal-case">
-			<div class="text-2xl mb-8">Select an LLM Model</div>
-			<Select
-				id="modelSelect"
-				class="font-semibold bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-				placeholder="Select Model"
-				bind:value={selectedModel}
-				on:change={handleModelChange}
-			>
-				{#each models as { value, name }}
-					<option {value} class="text-black font-semibold">{name}</option>
-				{/each}
-			</Select>
-		</Label>
+	{#if lastClickedCharacterName}
+		<div class="mt-12">
+			<Label class="mb-8 w-1/2 text-white normal-case">
+				<div class="text-4xl mb-8">Agent: {lastClickedCharacterName}</div>
+			</Label>
+			<Label class="mb-8 w-1/2 text-white normal-case">
+				<div class="text-2xl mb-8">Select an LLM Model</div>
+				<Select
+					id="modelSelect"
+					class="font-semibold bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+					placeholder="Select Model"
+					bind:value={selectedModel}
+					on:change={handleModelChange()}
+				>
+					{#each models as { value, name }}
+						<option {value} class="text-black font-semibold">{name}</option>
+					{/each}
+				</Select>
+			</Label>
 
-		<Label class="mb-8 w-1/2 text-white normal-case">
-			<div class="text-2xl">Model Token</div>
-		</Label>
-		<Input
-			id="tokenField"
-			class="font-semibold"
-			placeholder="Type in the model token"
-			on:focusout={handleTokenInput}
-			bind:value={selectedToken}
-			size="lg"
-		/>
-
-		<Label class="mb-10 w-1/2">
-			<Select
-				id="playerDropDown"
-				class="mt-5"
+			<Label class="mb-8 w-1/2 text-white normal-case">
+				<div class="text-2xl">Model Token</div>
+			</Label>
+			<Input
+				id="tokenField"
+				class="font-semibold"
+				placeholder="Type in the model token"
+				on:focusout={handleTokenInput}
+				bind:value={selectedToken}
 				size="lg"
-				items={characterItems}
-				bind:value={playerCharacterId}
-				placeholder="Select your character"
 			/>
-		</Label>
-		<Button on:click={handleCreateButton}>Create</Button>
-	</div>
+
+			<Label class="mb-10 w-1/2">
+				<Select
+					id="playerDropDown"
+					class="mt-5"
+					size="lg"
+					items={characterItems}
+					bind:value={playerCharacterId}
+					placeholder="Select your character"
+				/>
+			</Label>
+			<Button on:click={handleCreateButton}>Create</Button>
+		</div>
+	{/if}
 </div>
 <Toast />
 
