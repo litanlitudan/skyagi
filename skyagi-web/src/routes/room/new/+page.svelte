@@ -97,17 +97,10 @@
 				let savedTokenValue = event.detail.character.modelTokenPair[showedModelValue];
 				if (savedTokenValue && savedTokenValue !== '') {
 					tokenField.value = savedTokenValue;
-					console.log(
-						'token is defined',
-						showedModelValue,
-						event.detail.character.modelTokenPair[showedModelValue]
-					);
 				} else {
 					tokenField.value = '';
 					selectedToken = '';
-					console.log('token is NOT defined');
 				}
-				console.log('handleOnClickImageMessage', event.detail.character);
 			} else {
 				if (modelSelect && 'value' in modelSelect) {
 					modelSelect.value = '';
@@ -135,12 +128,10 @@
 	function handleModelChange() {
 		lastClickedCharacter.model = selectedModel;
 		selectedToken = lastClickedCharacter.modelTokenPair[selectedModel];
-		console.log('handleModelChange', lastClickedCharacter);
 	}
 
 	function handleTokenInput() {
 		lastClickedCharacter.modelTokenPair[selectedModel] = selectedToken;
-		console.log('handleTokenInput', lastClickedCharacter);
 	}
 	function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
 		let selectedCount = 0;
@@ -256,7 +247,7 @@
 
 <div id="globalGrid">
 	<div>
-		<Label class="mb-4 w-1/2 text-white normal-case">
+		<Label class="mb-8 w-1/2 text-white normal-case">
 			<div class="text-2xl">Pick the characters (up to 4)</div>
 		</Label>
 
@@ -276,16 +267,24 @@
 		</Dropdown>
 	</div>
 
-	<div class="scroller mt-10">
-		{#each checkedCharacterGroup as character, i}
-			<div class="characterInfoSet">
-				<Character
-					bind:character
-					on:message={handleOnClickImageMessage}
-					bind:avatarStyle={characters[i].avatarStyle}
-				/>
-			</div>
-		{/each}
+	<div class="mt-20 flex flex-col">
+		{#if checkedCharacterGroup.length > 0}
+			<Label class="mb-4 w-1/2 text-white normal-case">
+				<div class="text-2xl">Click an icon to configure an agent</div>
+			</Label>
+		{/if}
+
+		<div class="scroller flex flex-row">
+			{#each checkedCharacterGroup as character, i}
+				<div class="characterInfoSet">
+					<Character
+						bind:character
+						on:message={handleOnClickImageMessage}
+						bind:avatarStyle={characters[i].avatarStyle}
+					/>
+				</div>
+			{/each}
+		</div>
 	</div>
 
 	{#if lastClickedCharacterName}
@@ -364,7 +363,7 @@
 
 	#globalGrid {
 		display: grid;
-		grid-template-rows: repeat(2, 50px);
+		grid-template-rows: 50px 500px;
 		grid-auto-flow: column;
 		gap: 10px;
 		/* grid-auto-columns: 400px 400px; */
