@@ -68,15 +68,15 @@
 		unsubscribe();
 	});
 
-	let lastClickedCharacterName = characters[0].name;
 	let lastClickedCharacter = characters[0];
+	let lastClickedCharacterName;
 	characters[0].avatarStyle =
 		'rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600';
 	let showedModelValue = models[0].name;
 	let showedTokenValue = modelTokenPair[models[0].name];
 	function handleOnClickImageMessage(event) {
-		lastClickedCharacterName = event.detail.character.name;
 		lastClickedCharacter = event.detail.character;
+		lastClickedCharacterName = event.detail.character.name;
 		showedModelValue = event.detail.character.model;
 		showedTokenValue = event.detail.character.modelTokenPair[showedModelValue];
 		for (let i = 0; i < characters.length; i++) {
@@ -115,7 +115,7 @@
 	}
 
 	function handleTokenInput() {
-		lastClickedCharacter.modelTokenPair[selectedModel] = selectedToken;
+		lastClickedCharacter.modelTokenPair[lastClickedCharacter.model] = selectedToken;
 	}
 	function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
 		let selectedCount = 0;
