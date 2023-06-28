@@ -281,7 +281,6 @@
 			<div class="characterInfoSet">
 				<Character
 					bind:character
-					bind:characters
 					on:message={handleOnClickImageMessage}
 					bind:avatarStyle={characters[i].avatarStyle}
 				/>
