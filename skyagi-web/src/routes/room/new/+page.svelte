@@ -76,8 +76,6 @@
 	let selectedModel = '';
 	let selectedToken = '';
 	function handleOnClickImageMessage(event) {
-		console.log('handleOnClickImageMessage');
-		console.log(event.detail.character);
 		lastClickedCharacter = event.detail.character;
 		lastClickedCharacterName = event.detail.character.name;
 		showedModelValue = event.detail.character.model;
@@ -95,9 +93,21 @@
 			let tokenField = document.getElementById('tokenField');
 			if (showedModelValue !== '') {
 				modelSelect.value = showedModelValue;
-				if (event.detail.character.modelTokenPair[showedModelValue] !== '') {
-					tokenField.value = event.detail.character.modelTokenPair[showedModelValue];
+				selectedModel = showedModelValue;
+				let savedTokenValue = event.detail.character.modelTokenPair[showedModelValue];
+				if (savedTokenValue && savedTokenValue !== '') {
+					tokenField.value = savedTokenValue;
+					console.log(
+						'token is defined',
+						showedModelValue,
+						event.detail.character.modelTokenPair[showedModelValue]
+					);
+				} else {
+					tokenField.value = '';
+					selectedToken = '';
+					console.log('token is NOT defined');
 				}
+				console.log('handleOnClickImageMessage', event.detail.character);
 			} else {
 				if (modelSelect && 'value' in modelSelect) {
 					modelSelect.value = '';
@@ -125,14 +135,12 @@
 	function handleModelChange() {
 		lastClickedCharacter.model = selectedModel;
 		selectedToken = lastClickedCharacter.modelTokenPair[selectedModel];
-		console.log('handleModelChange');
-		console.log(lastClickedCharacter);
+		console.log('handleModelChange', lastClickedCharacter);
 	}
 
 	function handleTokenInput() {
 		lastClickedCharacter.modelTokenPair[selectedModel] = selectedToken;
-		console.log('handleTokenInput');
-		console.log(lastClickedCharacter);
+		console.log('handleTokenInput', lastClickedCharacter);
 	}
 	function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
 		let selectedCount = 0;
