@@ -73,6 +73,8 @@
 	let showedModelValue;
 	characters[0].avatarStyle =
 		'rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600';
+	let selectedModel = '';
+	let selectedToken = '';
 	function handleOnClickImageMessage(event) {
 		console.log('handleOnClickImageMessage');
 		console.log(event.detail.character);
@@ -93,20 +95,22 @@
 			let tokenField = document.getElementById('tokenField');
 			if (showedModelValue !== '') {
 				modelSelect.value = showedModelValue;
-				tokenField.value = event.detail.character.modelTokenPair[showedModelValue];
+				if (event.detail.character.modelTokenPair[showedModelValue] !== '') {
+					tokenField.value = event.detail.character.modelTokenPair[showedModelValue];
+				}
 			} else {
 				if (modelSelect && 'value' in modelSelect) {
 					modelSelect.value = '';
+					selectedModel = '';
 				}
 				if (tokenField && 'value' in tokenField) {
 					tokenField.value = '';
+					selectedToken = '';
 				}
 			}
 		}
 	}
 
-	let selectedModel = '';
-	let selectedToken = '';
 	let checkedCharacterGroup = [];
 	let playerCharacterId = '';
 	function charactersToItems(inputCharacters) {
@@ -304,6 +308,7 @@
 				id="tokenField"
 				class="font-semibold"
 				placeholder="Type in the model token"
+				disabled={!selectedModel}
 				on:change={handleTokenInput}
 				bind:value={selectedToken}
 				size="lg"
