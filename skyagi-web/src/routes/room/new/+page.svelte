@@ -71,8 +71,6 @@
 	let lastClickedCharacter;
 	let lastClickedCharacterName;
 	let showedModelValue;
-	characters[0].avatarStyle =
-		'rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600';
 	let selectedModel = '';
 	let selectedToken = '';
 	function handleOnClickImageMessage(event) {
