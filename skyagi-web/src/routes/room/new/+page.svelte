@@ -1,18 +1,7 @@
 <script lang="ts">
 	import { createSearchStore, searchHandler } from '$lib/room/stores/search';
 	import Character from '$lib/room-new-character.svelte';
-	import {
-		Select,
-		Label,
-		Button,
-		Dropdown,
-		DropdownItem,
-		Chevron,
-		Checkbox,
-		Search,
-		Alert,
-		Avatar,
-		Input
+	import { Select, Label, Button, Dropdown, DropdownItem, Chevron, Checkbox, Search, Alert, Avatar, Input
 	} from 'flowbite-svelte';
 	import { onDestroy } from 'svelte';
 	export let data;
