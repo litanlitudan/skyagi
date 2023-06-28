@@ -68,7 +68,7 @@
 		unsubscribe();
 	});
 
-	let lastClickedCharacter = characters[0];
+	let lastClickedCharacter;
 	let lastClickedCharacterName;
 	let showedModelValue;
 	characters[0].avatarStyle =
