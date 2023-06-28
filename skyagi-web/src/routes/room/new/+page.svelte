@@ -33,7 +33,7 @@
 	let preSavedModelTokenData = $preSavedModelTokenDataStore;
 	if ((preSavedModelTokenDataIsEmpty || preSavedModelTokenDataStore == null) !== true) {
 		let tempModelTokenData = JSON.parse(preSavedModelTokenData);
-		modelTokenPair = {};
+		/*modelTokenPair = {};*/
 		for (let i = 0; i < tempModelTokenData.length; i++) {
 			modelTokenPair[tempModelTokenData[i].model] = tempModelTokenData[i].token;
 		}
@@ -43,7 +43,7 @@
 	let chatName = '';
 
 	let characters = characterData.map(function (characterDataPoint) {
-		let imagePath = '/assets/Avatar1.png';
+		let imagePath = '';
 		if (
 			characterDataPoint.avatar != null &&
 			globalAvatarImageList.includes(characterDataPoint.avatar.local_path)
@@ -53,7 +53,7 @@
 		return {
 			...characterDataPoint,
 			image: imagePath,
-			model: models[0].name,
+			model: '',
 			modelTokenPair: { ...modelTokenPair },
 			selected: false,
 			avatarStyle: 'rounded-lg border-none border-4 hover:border-solid border-indigo-600'
@@ -70,15 +70,15 @@
 
 	let lastClickedCharacter = characters[0];
 	let lastClickedCharacterName;
+	let showedModelValue;
 	characters[0].avatarStyle =
 		'rounded-lg border-solid border-4 hover:border-solid hover:border-indigo-600 border-indigo-600';
-	let showedModelValue = models[0].name;
-	let showedTokenValue = modelTokenPair[models[0].name];
 	function handleOnClickImageMessage(event) {
+		console.log('handleOnClickImageMessage');
+		console.log(event.detail.character);
 		lastClickedCharacter = event.detail.character;
 		lastClickedCharacterName = event.detail.character.name;
 		showedModelValue = event.detail.character.model;
-		showedTokenValue = event.detail.character.modelTokenPair[showedModelValue];
 		for (let i = 0; i < characters.length; i++) {
 			if (characters[i].name == lastClickedCharacterName) {
 				characters[i].avatarStyle =
@@ -91,13 +91,22 @@
 		if (browser) {
 			let modelSelect = document.getElementById('modelSelect');
 			let tokenField = document.getElementById('tokenField');
-			modelSelect.value = showedModelValue;
-			tokenField.value = showedTokenValue;
+			if (showedModelValue !== '') {
+				modelSelect.value = showedModelValue;
+				tokenField.value = event.detail.character.modelTokenPair[showedModelValue];
+			} else {
+				if (modelSelect && 'value' in modelSelect) {
+					modelSelect.value = '';
+				}
+				if (tokenField && 'value' in tokenField) {
+					tokenField.value = '';
+				}
+			}
 		}
 	}
 
-	let selectedModel;
-	let selectedToken;
+	let selectedModel = '';
+	let selectedToken = '';
 	let checkedCharacterGroup = [];
 	let playerCharacterId = '';
 	function charactersToItems(inputCharacters) {
@@ -112,10 +121,14 @@
 	function handleModelChange() {
 		lastClickedCharacter.model = selectedModel;
 		selectedToken = lastClickedCharacter.modelTokenPair[selectedModel];
+		console.log('handleModelChange');
+		console.log(lastClickedCharacter);
 	}
 
 	function handleTokenInput() {
-		lastClickedCharacter.modelTokenPair[lastClickedCharacter.model] = selectedToken;
+		lastClickedCharacter.modelTokenPair[selectedModel] = selectedToken;
+		console.log('handleTokenInput');
+		console.log(lastClickedCharacter);
 	}
 	function checkCreateButtonDisabled(inputCharacters, inputChatName, inputPlayerCharacter) {
 		let selectedCount = 0;
@@ -291,7 +304,7 @@
 				id="tokenField"
 				class="font-semibold"
 				placeholder="Type in the model token"
-				on:focusout={handleTokenInput}
+				on:change={handleTokenInput}
 				bind:value={selectedToken}
 				size="lg"
 			/>
