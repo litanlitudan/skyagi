@@ -18,7 +18,7 @@ export async function getResponseStream(metadata: object, respMsg: string) {
             for (const [key, value] of Object.entries(metadata)) {
                 const metaDataMsg = JSON.stringify({[key]: value});
                 controller.enqueue(JSON.stringify(metaDataMsg));
-                sleep(1000); // Sleep for 1 second
+                sleep(100); // Sleep for 0.1 second
             }
 
             let totalLen = respMsg.length;
@@ -32,7 +32,7 @@ export async function getResponseStream(metadata: object, respMsg: string) {
                     clearInterval(interval);
                     controller.close();
                 }
-            }, 1000);
+            }, 100);
         },
     });
 

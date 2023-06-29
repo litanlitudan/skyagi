@@ -1,6 +1,5 @@
-import type { VectorStoreRetriever } from "langchain/vectorstores";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { SupabaseVectorStore } from "langchain/vectorstores/supabase";
+import { TimeWeightedVectorStoreRetriever } from "langchain/retrievers/time_weighted";
+import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { PromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
 import { Document } from "langchain/document";
@@ -10,8 +9,6 @@ import { load_llm_from_config, type LLMSettings, type EmbeddingSettings, load_em
 import { TransactionStatus } from "./types";
 
 // Future improvements:
-// [Func] support embeddings from different LLM models
-// [Func] config llm based on the user's request
 // [Performance] cache summary in supabase memory table
 // [Accuracy] prompt management
 
@@ -21,18 +18,20 @@ function parseList(text: string): string[] {
 }
 
 interface MemoryMetadata {
-  conversation_id: string;
-  agent_id: string;
-  create_time: string;
-  last_access_time: string;
-  cur_status: string;
-  importance: number;
+	conversation_id: string;
+    agent_id: string;
+    create_time: string;
+    last_access_time: string;
+    cur_status: string;
+    importance: number;
 }
 
 interface Memory {
     id: string;
+	embedding: number[];
     content: string;
     metadata: MemoryMetadata;
+	updated: boolean;
 }
 
 export class GenerativeAgent {
@@ -45,7 +44,8 @@ export class GenerativeAgent {
 	status: string;
     memories: Memory[];
 	llm: BaseLanguageModel;
-    memoryRetriever: VectorStoreRetriever;
+	embeddings: any;
+    memoryRetriever: TimeWeightedVectorStoreRetriever;
     storage: any;
 
 	maxTokensLimit: number = 1200;
@@ -68,63 +68,72 @@ export class GenerativeAgent {
         this.conv_id = conversationId;
         this.llm = load_llm_from_config(recipient_agent_model_settings.llm);
 
+        await this.getAgentMemories(conversationId, agentId);
+
         // create retriever
-        const embeddings = load_embedding_from_config(recipient_agent_model_settings.embedding);
+        this.embeddings = load_embedding_from_config(recipient_agent_model_settings.embedding);
         // TODO: (kejiez) pass down embeddingSize to SQL query
         // TODO: (kejiez) support more embedding size
-        const vectorStore = new SupabaseVectorStore(
-            embeddings,
-            {
-                client: this.storage,
-                tableName: "memory",
-                queryName: "match_memories"
-            }
+        const vectorStore = new MemoryVectorStore(
+            this.embeddings
         );
-        this.memoryRetriever =  vectorStore.asRetriever(3, {conversation_id: conversationId, agent_id: agentId});
 
-        // get memories
-        await this.getAgentMemories(conversationId, agentId);
+		let documents =	this.memories.map((mem, i) => new Document({
+				pageContent: mem.content,
+				// This is the hack to create a ephemeral TWretriever with time history 
+				metadata: {
+					...mem.metadata,
+					created_at: mem.metadata.create_time,
+					last_accessed_at: mem.metadata.last_access_time,
+					buffer_idx: i
+				}
+			}));
+
+		await vectorStore.addVectors(this.memories.map(m => m.embedding), documents);
+
+		this.memoryRetriever = new TimeWeightedVectorStoreRetriever({
+			vectorStore,
+			searchKwargs: 15,
+			k: 1,
+			decayRate: 1,
+			memoryStream: documents,
+			otherScoreKeys: ["importance"]
+		});
     }
 
     async getAgentMemories(conversationId: string, agentId: string): Promise<void> {
 
         const { data: allMemories } = await this.storage
             .from('memory')
-		    .select('id, content, metadata')
+		    .select('id, content, embedding, metadata')
             .or(`status.eq.${TransactionStatus.SUCCESS},status.is.null`)
 		    .contains('metadata',{"conversation_id": conversationId})
 		    .contains('metadata',{"agent_id": agentId})
             .order('metadata->create_time', { ascending: true });
         this.memories = allMemories;
-        this.status = this.memories[this.memories.length - 1].metadata.cur_status;
+		for (const m of this.memories) {
+			m.updated = false;
+		}
+		if (this.memories.length !== 0) {
+			this.status = this.memories[this.memories.length - 1].metadata.cur_status;
+		} else {
+			this.status = "";	
+		}
     }
 
     private async updateMemoryAccessTime(mem: Document): Promise<void> {
         // get all metadata
         const content = mem.pageContent;
-        const agent_id = mem.metadata.agent_id;
-        const conv_id = mem.metadata.conversation_id;
         const create_time = mem.metadata.create_time;
-        const importance = mem.metadata.importance;
-        const cur_status = mem.metadata.cur_status;
-
+		
         // update last_access_time
-        const { error } = await this.storage
-		    .from('memory')
-            .update({metadata: {
-                agent_id: agent_id,
-                cur_status: cur_status,
-                importance: importance,
-                create_time: create_time, 
-                conversation_id: conv_id,
-                last_access_time: new Date().toISOString()
-              }
-            })
-            .or(`status.eq.${TransactionStatus.SUCCESS},status.is.null`)
-		    .contains('metadata', {'agent_id': agent_id})
-		    .contains('metadata', {'conversation_id': conv_id})
-		    .contains('metadata', {'create_time': create_time})
-            .eq('content', content);
+		for (const mem of this.memories) {
+			if (mem.content === content && mem.metadata.create_time === create_time) {
+				mem.metadata.last_access_time = new Date().toISOString();	
+				mem.updated = true;
+				break;
+			}
+		}
     }
 
     private async fetchMemories(observation: string): Promise<Document[]> {
@@ -143,8 +152,10 @@ export class GenerativeAgent {
 				`Do not embellish.` +
 				`\n\nSummary: `
 		);
+
 		const relevantMemories = await this.fetchMemories(`${this.name}'s core characteristics`);
 		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
+
 		const chain = new LLMChain({llm: this.llm, prompt});
 		const res = await chain.run({ name: this.name, relatedMemories: relevantMemoriesStr });
         return res.trim();
@@ -297,13 +308,37 @@ export class GenerativeAgent {
 		return parseList(result);
 	}
 
+    private async addNewMemLocal(content: string): Promise<void> {
+        const importanceScore = await this.scoreMemoryImportance(content);
+		this.memoryImportance += importanceScore;
+        const nowTime = new Date().toISOString();
+        const embedding = await this.embeddings.embedQuery(content);
+
+        const new_mem: Memory = {
+			id: "",
+            content: content,
+			embedding: embedding,
+            metadata: {
+                conversation_id: this.conv_id,
+                agent_id: this.id,
+                create_time: nowTime,
+                last_access_time: nowTime,
+                cur_status: this.status,
+                importance: importanceScore
+            },
+			updated: true
+        }
+		
+        this.memories.push(new_mem);
+    }
+
     private async pauseToReflect(): Promise<string[]> {
 		const newInsights: string[] = [];
 		const topics = await this.getTopicsOfReflection();
 		for (const topic of topics) {
 			const insights = await this.getInsightsOnTopic(topic);
 			for (const insight of insights) {
-				this.addMemory(insight);
+				this.addNewMemLocal(insight);
 			}
 			newInsights.push(...insights);
 		}
@@ -325,7 +360,6 @@ export class GenerativeAgent {
 
 		const agentSummaryDescription = await this.getSummary();
 		const relevantMemoriesStr = await this.summarizeRelatedMemories(observation);
-
 		const currentTimeStr = new Date().toLocaleString('en-US', {
 			month: 'long',
 			day: 'numeric',
@@ -352,38 +386,13 @@ export class GenerativeAgent {
 
 		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
 		const result = await actionPredictionChain.call(kwargs);
+
         return result.text.trim();
 	}
 
     async addMemory(content: string): Promise<void> {
-        const importanceScore = await this.scoreMemoryImportance(content);
-		this.memoryImportance += importanceScore;
-        const nowTime = new Date().toISOString();
-		const document = new Document({
-			pageContent: content,
-			metadata: { 
-                conversation_id: this.conv_id,
-                agent_id: this.id,
-                create_time: nowTime, 
-                last_access_time: nowTime,
-                cur_status: this.status,
-                importance: importanceScore
-            }
-		});
-		await this.memoryRetriever.addDocuments([document]);
-        const new_mem: Memory = {
-            id: "",
-            content: content,
-            metadata: {
-                conversation_id: this.conv_id,
-                agent_id: this.id,
-                create_time: nowTime,
-                last_access_time: nowTime,
-                cur_status: this.status,
-                importance: importanceScore
-            }
-        }
-        this.memories.push(new_mem);
+		this.addNewMemLocal(content);
+		
 		if (
 			this.memoryImportance > this.reflectionThreshold &&
 			this.status !== 'Reflecting'
@@ -393,6 +402,30 @@ export class GenerativeAgent {
 			await this.pauseToReflect();
 			this.memoryImportance = 0.0;
 			this.status = oldStatus;
+		}
+
+		// sync with storage
+		for (const mem of this.memories) {
+			if (mem.id === "") {
+			    // new memory
+				const mem_to_add = {
+					content: mem.content,
+			        embedding: mem.embedding,
+					metadata: mem.metadata
+				}
+				const { data: new_mem_id, error } = await this.storage
+				    .from('memory')
+			        .insert(mem_to_add)
+			        .select('id');
+			} else if (mem.updated === true) {
+				// update existing memory
+				const { error } = await this.storage
+				    .from('memory')
+					.update({
+						metadata: mem.metadata
+					})
+					.eq('id', mem.id);
+			}
 		}
     }
 
