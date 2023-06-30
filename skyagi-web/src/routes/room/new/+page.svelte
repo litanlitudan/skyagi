@@ -246,10 +246,10 @@
 <div id="globalGrid">
 	<div>
 		<Label class="mb-8 w-1/2 text-white normal-case">
-			<div class="text-2xl">Pick the characters (up to 4)</div>
+			<div class="text-2xl">Pick up to 4 agents for the conversation</div>
 		</Label>
 
-		<Button size="xl"><Chevron>Characters</Chevron></Button>
+		<Button size="xl"><Chevron>Agents</Chevron></Button>
 		<Dropdown class="overflow-y-auto py-1 h-48 mt-12">
 			<div slot="header" class="p-3">
 				<Search id="searchBar" placeholder="Search..." bind:value={$searchStore.search} />
@@ -272,16 +272,41 @@
 			</Label>
 		{/if}
 
-		<div class="scroller flex flex-row">
-			{#each checkedCharacterGroup as character, i}
-				<div class="characterInfoSet">
-					<Character
-						bind:character
-						on:message={handleOnClickImageMessage}
-						bind:avatarStyle={characters[i].avatarStyle}
-					/>
+		<div class="mb-4">
+			<div class="scroller flex flex-row">
+				{#each checkedCharacterGroup as character, i}
+					<div class="characterInfoSet">
+						<Character
+							bind:character
+							on:message={handleOnClickImageMessage}
+							bind:avatarStyle={characters[i].avatarStyle}
+						/>
+					</div>
+				{/each}
+			</div>
+		</div>
+
+		<div>
+			{#if checkedCharacterGroup.length > 0}
+				<div>
+					<Label class="mb-10 w-1/2">
+						<Select
+							id="playerDropDown"
+							class="mt-5 w-1/3 p-2.5"
+							size="lg"
+							bind:value={playerCharacterId}
+							placeholder="Select an agent to play"
+						>
+							{#each characterItems as { value, name }}
+								<option {value} class="text-black font-semibold">{name}</option>
+							{/each}
+						</Select>
+					</Label>
 				</div>
-			{/each}
+				<div class="mt-4">
+					<Button size="xl" on:click={handleCreateButton}>Start the conversation</Button>
+				</div>
+			{/if}
 		</div>
 	</div>
 
@@ -321,18 +346,6 @@
 				bind:value={selectedToken}
 				size="lg"
 			/>
-
-			<Label class="mb-10 w-1/2">
-				<Select
-					id="playerDropDown"
-					class="mt-5"
-					size="lg"
-					items={characterItems}
-					bind:value={playerCharacterId}
-					placeholder="Select your character"
-				/>
-			</Label>
-			<Button on:click={handleCreateButton}>Create</Button>
 		</div>
 	{/if}
 </div>
