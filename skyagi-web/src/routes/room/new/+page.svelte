@@ -60,6 +60,10 @@
 		};
 	});
 
+	const size = 10; // Specify the desired size of the array
+
+	let isAgentSelectable: boolean[] = Array(characters.length).fill(true);
+
 	const searchStore = createSearchStore(characters);
 
 	const unsubscribe = searchStore.subscribe(model => searchHandler(model));
@@ -122,6 +126,16 @@
 		return rst;
 	}
 	$: characterItems = charactersToItems(checkedCharacterGroup);
+
+	function updateAgentSelectable() {
+		if (checkedCharacterGroup.length >= 4) {
+			isAgentSelectable = characters.map(character =>
+				checkedCharacterGroup.some(checkedCharacter => checkedCharacter.id === character.id)
+			);
+		} else {
+			isAgentSelectable = isAgentSelectable.map(() => true);
+		}
+	}
 
 	function handleModelChange() {
 		lastClickedCharacter.model = selectedModel;
@@ -256,7 +270,12 @@
 			</div>
 			{#each $searchStore.filtered as character, i}
 				<li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600">
-					<Checkbox bind:group={checkedCharacterGroup} value={character}>
+					<Checkbox
+						disabled={!isAgentSelectable[i]}
+						bind:group={checkedCharacterGroup}
+						value={character}
+						on:change={updateAgentSelectable}
+					>
 						<Avatar src={character.image} size="md" />
 						<div class="ml-4 text-green-950 text-lg">{character.name}</div>
 					</Checkbox>
