@@ -93,7 +93,7 @@ const set = async (query: string) => {
       }
 
       // match json string and extract it from the chunk
-      const match = chunkValue.match(/\{(.*?)\}/);
+      const match = chunkValue.match(/{(?:[^{}]*|(?R))*}/);
       if (match) {
         console.log('match', match);
         tempValue = chunkValue.replace(match[0], '');
