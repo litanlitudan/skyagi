@@ -79,6 +79,7 @@ const set = async (query: string) => {
 
     while (!done) {
       const { value, done: doneReading } = await reader.read();
+      console.log('!!! value', value);
       console.log('doneReading', doneReading);
       done = doneReading;
       let chunkValue = decoder.decode(value);
