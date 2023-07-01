@@ -9,7 +9,7 @@ export const config: Config = {
 	runtime: 'nodejs18.x'
 };
 
-export const POST = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
+export const PUT = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
 	console.log('inside of send-conversation-message');
 	const {
 		conversation_id,
