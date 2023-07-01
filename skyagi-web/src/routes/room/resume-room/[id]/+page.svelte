@@ -68,17 +68,40 @@
 				characters[i].avatarStyle =
 					'rounded-lg border-none border-4 hover:border-solid border-indigo-600';
 			}
-		}
-		if (browser) {
-			let modelSelect = document.getElementById('modelSelect');
-			let tokenField = document.getElementById('tokenField');
-			modelSelect.value = showedModelValue;
-			tokenField.value = showedTokenValue;
+			if (browser) {
+				let modelSelect = document.getElementById('modelSelect');
+				let tokenField = document.getElementById('tokenField');
+				if (showedModelValue !== '') {
+					modelSelect.value = showedModelValue;
+					selectedModel = showedModelValue;
+					let savedTokenValue = event.detail.character.modelTokenPair[showedModelValue];
+					if (savedTokenValue && savedTokenValue !== '') {
+						tokenField.value = savedTokenValue;
+					} else {
+						tokenField.value = '';
+						selectedToken = '';
+					}
+				} else {
+					if (modelSelect && 'value' in modelSelect) {
+						modelSelect.value = '';
+						selectedModel = '';
+					}
+					if (tokenField && 'value' in tokenField) {
+						tokenField.value = '';
+						selectedToken = '';
+					}
+				}
+			}
 		}
 	}
 
 	let selectedModel = models[0].value;
-	let selectedToken = modelTokenPair[models[0].value];
+	let savedTokenValue = modelTokenPair[models[0].value];
+	let selectedToken = '';
+	if (savedTokenValue && savedTokenValue !== '') {
+		selectedToken = savedTokenValue;
+	}
+
 	let playerCharacterId = '';
 	function charactersToItems(inputCharacters) {
 		let rst = [];
@@ -132,7 +155,9 @@
 </script>
 
 <Label class="mb-8 w-1/2 text-white normal-case">
-	<div class="text-2xl">{chatName}</div>
+	<div class="text-2xl">
+		Conversation name: <span class="text-blue-500 underline underline-offset-4">{chatName}</span>
+	</div>
 </Label>
 
 <div id="globalGrid">
