@@ -46,19 +46,63 @@ const set = async (query: string) => {
 
   console.log('request', request);
 
-  const eventSource = new SSE('/api/send-conversation-message', {
+  // const eventSource = new SSE('/api/send-conversation-message', {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'text/event-stream',
+  //     'Cache-Control': 'no-cache',
+  //     Connection: 'keep-alive',
+  //   },
+  //   payload: JSON.stringify(request)
+  // });
+
+  // eventSource.addEventListener('error', handleError);
+  // eventSource.addEventListener('message', streamMessage);
+  // eventSource.stream();
+
+  const response = await fetch('/api/send-conversation-message', {
     method: 'POST',
     headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      Connection: 'keep-alive',
+      'Content-Type': 'application/json',
     },
-    payload: JSON.stringify(request)
   });
 
-  eventSource.addEventListener('error', handleError);
-  eventSource.addEventListener('message', streamMessage);
-  eventSource.stream();
+  const data = response.body;
+  console.log('@@@data!!!', data);
+
+  if (data) {
+    const reader = data.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+    let tempValue = ''; // temporary value to store incomplete json strings
+
+    while (!done) {
+      const { value, done: doneReading } = await reader.read();
+      done = doneReading;
+      let chunkValue = decoder.decode(value);
+
+      // if there is a temp value, prepend it to the incoming chunk
+      if (tempValue) {
+        chunkValue = tempValue + chunkValue;
+        tempValue = '';
+      }
+
+      // match json string and extract it from the chunk
+      const match = chunkValue.match(/\{(.*?)\}/);
+      if (match) {
+        tempValue = chunkValue.replace(match[0], '');
+        chunkValue = match[0];
+      }
+
+      try {
+        const data = JSON.parse(chunkValue);
+        /* do something with the data */
+      } catch (e) {
+        // store the incomplete json string in the temporary value
+        tempValue = chunkValue;
+      }
+    }
+  }
 };
 
 const replace = (messages: ChatTranscript) => {
