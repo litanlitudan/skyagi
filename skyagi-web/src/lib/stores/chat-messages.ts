@@ -50,7 +50,6 @@ const set = async (query: string) => {
     headers: {
       'Content-Type': 'application/json'
     },
-    method: 'PUT',
     payload: JSON.stringify(request)
   });
 
