@@ -83,6 +83,8 @@ const set = async (query: string) => {
       done = doneReading;
       let chunkValue = decoder.decode(value);
       console.log('chunkValue', chunkValue);
+      const chunkObj = JSON.parse(chunkValue);
+      console.log('chunkObj', chunkObj);
 
       // if there is a temp value, prepend it to the incoming chunk
       if (tempValue) {
