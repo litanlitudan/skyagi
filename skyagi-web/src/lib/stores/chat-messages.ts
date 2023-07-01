@@ -61,7 +61,7 @@ const set = async (query: string) => {
   // eventSource.stream();
 
   const response = await fetch('/api/send-conversation-message', {
-    method: 'PUT',
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
