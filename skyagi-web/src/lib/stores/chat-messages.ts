@@ -93,7 +93,10 @@ const set = async (query: string) => {
       }
 
       // match json string and extract it from the chunk
-      const match = chunkValue.match(/\"\{.+?\}\"/g);
+      // eg. els"{\"success\":1}""{\"if_continue\":true}"e 
+      const start = `"{\"`;
+      const end = `}"`;
+      const match = chunkValue.match(new RegExp(start + "(.*)" + end));
       if (match) {
         console.log('match', match)
         tempValue = chunkValue.replace(match[0], '');
