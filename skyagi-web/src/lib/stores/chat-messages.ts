@@ -46,17 +46,17 @@ const set = async (query: string) => {
 
   console.log('request', request);
 
-  const eventSource = new SSE('/api/send-conversation-message', {
+  const eventSource = await fetch('/api/send-conversation-message', {
     headers: {
       'Content-Type': 'application/json'
     },
     method: "POST",
-    payload: JSON.stringify(request)
+    body: JSON.stringify(request)
   });
 
-  eventSource.addEventListener('error', handleError);
-  eventSource.addEventListener('message', streamMessage);
-  eventSource.stream();
+  // eventSource.addEventListener('error', handleError);
+  // eventSource.addEventListener('message', streamMessage);
+  // eventSource.stream();
 };
 
 const replace = (messages: ChatTranscript) => {
