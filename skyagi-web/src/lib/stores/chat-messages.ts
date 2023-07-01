@@ -79,8 +79,11 @@ const set = async (query: string) => {
 
     while (!done) {
       const { value, done: doneReading } = await reader.read();
+      console.log('value', value);
+      console.log('doneReading', doneReading);
       done = doneReading;
       let chunkValue = decoder.decode(value);
+      console.log('chunkValue', chunkValue);
 
       // if there is a temp value, prepend it to the incoming chunk
       if (tempValue) {
@@ -96,8 +99,9 @@ const set = async (query: string) => {
       }
 
       try {
+        console.log('chunkValue in try', chunkValue);
         const data = JSON.parse(chunkValue);
-        /* do something with the data */
+        console.log('!!!parsed data', data);
       } catch (e) {
         // store the incomplete json string in the temporary value
         tempValue = chunkValue;
