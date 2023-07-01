@@ -99,6 +99,8 @@ const set = async (query: string) => {
 
       try {
         console.log('chunkValue in try', chunkValue);
+        const data = JSON.parse(chunkValue);
+        console.log('data in try', data)
         if (get(answer) === '...') answer.set('');
         if (chunkValue) {
           answer.update((_a) => _a + chunkValue);

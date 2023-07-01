@@ -57,13 +57,13 @@ export const POST = (async ({ request, locals }: { request: Request; locals: App
 	// update the message history
 	await agent.addMessage(message, respMsg);
 
-	const stream = await getResponseStream(respMsg);
-
 	// return
-	const respData = {
+	const respMetaData = {
 		'success': 1,
-		'if_continue': ifContinue,
-		'content': stream,
+		'if_continue': ifContinue
 	}
-	return new Response(JSON.stringify(respData), { status: 200 });
+
+	const stream = await getResponseStream(respMetaData, respMsg);
+	console.log('look!!!!', new Response(stream));
+	return new Response(stream);
 }) satisfies RequestHandler;
