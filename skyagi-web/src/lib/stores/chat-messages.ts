@@ -97,7 +97,7 @@ const set = async (query: string) => {
       if (matchMetadataResults) {
         console.log('matchMetadataResults', matchMetadataResults)
         matchMetadataResults.forEach((match, index) => {
-          chunkValue = chunkValue.replace(match[index].replace(/([^:]\/)\/+/g, "$1"), '');
+          chunkValue = chunkValue.replace(match[index].replace(/([^:]\/)\/+/g, ""), '');
         })
       }
 
