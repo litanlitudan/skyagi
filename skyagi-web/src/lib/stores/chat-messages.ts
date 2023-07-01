@@ -93,19 +93,14 @@ const set = async (query: string) => {
       }
 
       // match json string and extract it from the chunk
-      const matchSuccess = chunkValue.match(/(?<=\"success\":\")[^\"]*/);
-      const matchIfContinue = chunkValue.match(/(?<=\"if_continue\":\")[^\"]*/);
-      if (matchSuccess) {
-        console.log('matchSuccess', matchSuccess);
-        tempValue = chunkValue.replace(matchSuccess[0], '');
-      }
-      if (matchIfContinue) {
-        console.log('matchIfContinue', matchIfContinue);
-        tempValue = chunkValue.replace(matchIfContinue[0], '');
+      const match = chunkValue.match(/\[{(.*)}]/);
+      if (match) {
+        console.log('match', match)
+        tempValue = chunkValue.replace(match[0], '');
+        chunkValue = match[0];
       }
 
       try {
-        console.log('tempValue', tempValue);
         console.log('chunkValue in try', chunkValue);
         const data = JSON.parse(chunkValue);
         console.log('data in try', data)
