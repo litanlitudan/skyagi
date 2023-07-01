@@ -93,20 +93,16 @@ const set = async (query: string) => {
       }
 
       // match json string and extract it from the chunk
-      // eg. els"{\"success\":1}""{\"if_continue\":true}"e 
-      const start = `"{`;
-      const end = `}"`;
-      const match = chunkValue.match(new RegExp(start + "(.*)" + end));
-      if (match) {
-        console.log('match', match)
-        tempValue = chunkValue.replace(match[0], '');
-        chunkValue = match[0];
+      const matchMetadataResults = chunkValue.match(/\"\{(.*?)\}\"/g);
+      if (matchMetadataResults) {
+        console.log('matchMetadataResults', matchMetadataResults)
+        matchMetadataResults.forEach((match, index) => {
+          chunkValue = chunkValue.replace(match[index], '');
+        })
       }
 
       try {
         console.log('chunkValue in try', chunkValue);
-        const data = JSON.parse(chunkValue);
-        console.log('data in try', data)
         if (get(answer) === '...') answer.set('');
         if (chunkValue) {
           answer.update((_a) => _a + chunkValue);
