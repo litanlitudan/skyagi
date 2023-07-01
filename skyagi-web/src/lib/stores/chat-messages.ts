@@ -50,7 +50,7 @@ const set = async (query: string) => {
     headers: {
       'Content-Type': 'application/json'
     },
-    method: "POST",
+    method: "PUT",
     body: JSON.stringify(request)
   });
 
