@@ -47,10 +47,12 @@ const set = async (query: string) => {
   console.log('request', request);
 
   const eventSource = new SSE('/api/send-conversation-message', {
-    headers: {
-      'Content-Type': 'application/json'
-    },
     method: 'PUT',
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+    },
     payload: JSON.stringify(request)
   });
 
