@@ -46,12 +46,12 @@ const set = async (query: string) => {
 
   console.log('request', request);
 
-  const eventSource = await fetch('/api/send-conversation-message', {
+  const resp = await fetch('/api/get-agent', {
     headers: {
       'Content-Type': 'application/json'
     },
-    method: "PUT",
-    body: JSON.stringify(request)
+    method: 'PUT',
+    body: JSON.stringify({ agent_id: 'a', user_id: 'b' })
   });
 
   // eventSource.addEventListener('error', handleError);
