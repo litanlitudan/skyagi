@@ -84,8 +84,7 @@ const set = async (query: string) => {
       done = doneReading;
       let chunkValue = decoder.decode(value);
       console.log('chunkValue', chunkValue);
-      const chunkObj = JSON.parse(chunkValue);
-      console.log('chunkObj', chunkObj);
+
 
       // if there is a temp value, prepend it to the incoming chunk
       if (tempValue) {
@@ -96,6 +95,7 @@ const set = async (query: string) => {
       // match json string and extract it from the chunk
       const match = chunkValue.match(/\{(.*?)\}/);
       if (match) {
+        console.log('match', match);
         tempValue = chunkValue.replace(match[0], '');
         chunkValue = match[0];
       }
