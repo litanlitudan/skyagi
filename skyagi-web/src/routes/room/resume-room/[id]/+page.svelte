@@ -156,7 +156,7 @@
 
 <Label class="mb-8 w-1/2 text-white normal-case">
 	<div class="text-2xl">
-		Conversation name: <span class="text-blue-500 underline underline-offset-4">{chatName}</span>
+		Conversation name: <span class="text-blue-500">{chatName}</span>
 	</div>
 </Label>
 
@@ -191,9 +191,7 @@
 	<div>
 		<Label class="mb-8 w-1/2 text-white normal-case">
 			<div class="text-3xl mb-8">
-				Agent: <span class="text-blue-500 underline underline-offset-4"
-					>{lastClickedCharacterName}</span
-				>
+				Agent: <span class="text-blue-500">{lastClickedCharacterName}</span>
 			</div>
 		</Label>
 		<Label class="mb-8 w-1/2 text-white normal-case">
