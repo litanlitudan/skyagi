@@ -34,12 +34,12 @@
 		return () => data.subscription.unsubscribe();
 	});
 
-	function handleHomeButton(){
-		window.location.href = '/dashboard'
+	function handleHomeButton() {
+		window.location.href = '/dashboard';
 	}
 
-	function handleSettingsButton(){
-		window.location.href = '/settings/account'
+	function handleSettingsButton() {
+		window.location.href = '/settings/account';
 	}
 </script>
 
@@ -48,12 +48,8 @@
 </svelte:head>
 
 <div id="header">
-	<Button on:click={handleSettingsButton}>
-		Settings
-	</Button>
-	<Button on:click={handleHomeButton}>
-		Home
-	</Button>
+	<Button size="xl" on:click={handleSettingsButton}>Settings</Button>
+	<Button size="xl" on:click={handleHomeButton}>Home</Button>
 </div>
 <div class="container" style="padding: 50px 0 100px 0">
 	<slot />
@@ -63,6 +59,6 @@
 	#header {
 		text-align: right;
 		margin-top: 20px;
-		margin-right: 20px;
+		margin-right: 400px;
 	}
 </style>

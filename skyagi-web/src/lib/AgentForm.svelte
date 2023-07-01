@@ -1,7 +1,16 @@
 <script lang="ts">
 	import { isAgentFormEditing } from './stores';
 	import type { AgentDataType } from './types';
-	import { Label, Input, Button, Helper, Chevron, Dropdown, Avatar, DropdownItem } from 'flowbite-svelte';
+	import {
+		Label,
+		Input,
+		Button,
+		Helper,
+		Chevron,
+		Dropdown,
+		Avatar,
+		DropdownItem
+	} from 'flowbite-svelte';
 	import { goto } from '$app/navigation';
 	import type { User } from '@supabase/supabase-js';
 	import { globalAvatarImageList } from '$lib/stores.js';
@@ -50,7 +59,7 @@
 							status: agentData.socialStatus,
 							memory: agentData.memories.join('\n'),
 							avatar: {
-								cloud_path: "",
+								cloud_path: '',
 								local_path: agentData.avatarPath
 							}
 						}
@@ -78,7 +87,7 @@
 							status: agentData.socialStatus,
 							memory: agentData.memories.join('\n'),
 							avatar: {
-								cloud_path: "",
+								cloud_path: '',
 								local_path: agentData.avatarPath
 							}
 						}
@@ -112,49 +121,53 @@
 	}
 
 	function handleAvatarClick(inputPath: string) {
-		agentData.avatarPath = inputPath
+		agentData.avatarPath = inputPath;
 	}
 </script>
 
 <main>
 	<form on:submit|preventDefault={handleSubmit}>
+		<Label for="avatar-path" class="mb-8 w-1/4 text-white">
+			<div class="text-lg mb-2">Profile Picture:</div>
+			<div>
+				<Button id="avatar-path">
+					<Avatar src={agentData.avatarPath} size="lg" rounded />
+				</Button>
+				<Dropdown class="w-48 overflow-y-auto py-1 h-48">
+					{#each globalAvatarImageList as avatarImage, i}
+						<DropdownItem
+							class="flex items-center text-base font-semibold gap-2"
+							on:click={() => handleAvatarClick(avatarImage)}
+						>
+							<Avatar src={avatarImage} size="lg" rounded />
+						</DropdownItem>
+					{/each}
+				</Dropdown>
+			</div>
+		</Label>
+
 		<Label class="mb-8 w-1/4 text-white">
-			Name:
+			<div class="text-lg">Name:</div>
 			<Input id="name" type="text" class="mt-5" bind:value={agentData.name} />
 		</Label>
 
 		<Label for="age" class="mb-8 w-1/4 text-white">
-			Age:
+			<div class="text-lg">Age:</div>
 			<Input id="age" type="number" class="mt-5" bind:value={agentData.age} />
 		</Label>
 
 		<Label for="personalities" class="mb-8 w-1/4 text-white">
-			Personalities:
+			<div class="text-lg">Personalities:</div>
 			<Input id="personalities" type="text" class="mt-5" bind:value={agentData.personalities} />
 		</Label>
 
 		<Label for="social-status" class="mb-8 w-1/4 text-white">
-			Social status:
+			<div class="text-lg">Social status:</div>
 			<Input id="social-status" type="text" class="mt-5" bind:value={agentData.socialStatus} />
 		</Label>
 
-		<Label for="avatar-path" class="mb-8 w-1/4 text-white">
-		Profile Picture:
-		<Button id="avatar-path">
-			<Avatar src={agentData.avatarPath} size="lg" rounded/>
-		</Button>
-		<Dropdown class="w-48 overflow-y-auto py-1 h-48">
-		{#each globalAvatarImageList as avatarImage, i}
-			<DropdownItem class="flex items-center text-base font-semibold gap-2" on:click={()=>handleAvatarClick(avatarImage)}>
-				<Avatar src={avatarImage} size="lg" rounded/>
-			</DropdownItem>
-		{/each}
-		</Dropdown>
-		</Label>
-
 		<Label for="memories" class="mb-10 w-1/2 text-white">
-			Memories:
-
+			<div class="text-lg">Memories:</div>
 			{#each agentData.memories as memory, index}
 				<div class="mb-5 mt-5 flex">
 					<Input
@@ -177,7 +190,7 @@
 				</div>
 			{/each}
 
-			<Button type="button" on:click={addMemory}>+</Button>
+			<Button type="button" size="xl" on:click={addMemory}>+</Button>
 		</Label>
 
 		{#if $isAgentFormEditing}
@@ -185,6 +198,6 @@
 				>Cancel</Button
 			>
 		{/if}
-		<Button type="submit" class="">Submit</Button>
+		<Button type="submit" size="xl">Submit</Button>
 	</form>
 </main>
