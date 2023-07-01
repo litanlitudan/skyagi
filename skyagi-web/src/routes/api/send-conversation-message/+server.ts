@@ -10,6 +10,7 @@ export const config: Config = {
 };
 
 export const POST = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
+	console.log('inside of send-conversation-message');
 	const {
 		conversation_id,
 		initiate_agent_id,
