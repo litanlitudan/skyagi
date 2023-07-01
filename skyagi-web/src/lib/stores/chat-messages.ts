@@ -46,8 +46,8 @@ const set = async (query: string) => {
 
   console.log('request', request);
 
-  const eventSource = new SSE('/api/chat', {
-    method: 'PUT',
+  const eventSource = new SSE('/api/send-conversation-message', {
+    method: 'POST',
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
