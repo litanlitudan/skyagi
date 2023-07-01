@@ -79,7 +79,6 @@ const set = async (query: string) => {
 
     while (!done) {
       const { value, done: doneReading } = await reader.read();
-      console.log('value', value);
       console.log('doneReading', doneReading);
       done = doneReading;
       let chunkValue = decoder.decode(value);
@@ -100,13 +99,17 @@ const set = async (query: string) => {
 
       try {
         console.log('chunkValue in try', chunkValue);
-        const data = JSON.parse(chunkValue);
-        console.log('!!!parsed data', data);
+        if (get(answer) === '...') answer.set('');
+        if (chunkValue) {
+          answer.update((_a) => _a + chunkValue);
+        }
       } catch (e) {
         // store the incomplete json string in the temporary value
         tempValue = chunkValue;
       }
     }
+    updateMessages(get(answer), StoreMessageRole.AGENT, get(currentAgentName), 'idle');
+    answer.set('');
   }
 };
 
