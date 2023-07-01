@@ -93,13 +93,14 @@ const set = async (query: string) => {
       }
 
       // match json string and extract it from the chunk
-      const matchMetadataResults = chunkValue.match(/\"\{(.*?)\}\"/g);
-      if (matchMetadataResults) {
-        console.log('matchMetadataResults', matchMetadataResults)
-        matchMetadataResults.forEach((match, index) => {
-          chunkValue = chunkValue.replace(match[index].replace(/([^:]\/)\/+/g, ""), '');
-        })
-      }
+      // const matchMetadataResults = chunkValue.match(/\"\{(.*?)\}\"/g);
+      // if (matchMetadataResults) {
+      //   console.log('matchMetadataResults', matchMetadataResults)
+      //   matchMetadataResults.forEach((match, index) => {
+      //     chunkValue = chunkValue.replace(match[index].replace(/([^:]\/)\/+/g, ""), '');
+      //   })
+      // }
+      chunkValue = chunkValue.replace(/"{.*}"/, '');
 
       try {
         console.log('chunkValue in try', chunkValue);
