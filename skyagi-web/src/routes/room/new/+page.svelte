@@ -333,9 +333,7 @@
 		<div class="mt-12">
 			<Label class="mb-8 w-1/2 text-white normal-case">
 				<div class="text-3xl mb-8">
-					Agent: <span class="text-blue-500 underline underline-offset-4"
-						>{lastClickedCharacterName}</span
-					>
+					Agent: <span class="text-blue-500">{lastClickedCharacterName}</span>
 				</div>
 			</Label>
 			<Label class="mb-8 w-1/2 text-white normal-case">
