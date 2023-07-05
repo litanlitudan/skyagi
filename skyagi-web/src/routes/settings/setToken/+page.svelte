@@ -33,12 +33,12 @@
 
 <div id="globalGrid">
     <Sidebar>
-        <SidebarWrapper>
+        <SidebarWrapper class="bg-gray-800">
         <SidebarGroup>
-            <SidebarItem label="Account Settings" href='/settings/account'>
+            <SidebarItem label="Account Settings" href='/settings/account' class='hover:bg-gray-400'>
             </SidebarItem>
             
-            <SidebarItem label="Model Tokens" href='/settings/setToken' >
+            <SidebarItem label="Model Tokens" href='/settings/setToken' class='hover:bg-gray-400 bg-gray-600'>
             </SidebarItem>
         </SidebarGroup>
         </SidebarWrapper>
