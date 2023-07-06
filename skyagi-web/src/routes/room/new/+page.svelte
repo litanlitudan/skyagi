@@ -253,6 +253,7 @@
 		size="lg"
 		class="mt-5 bg-stone-950 text-white font-sans"
 		placeholder="Type in your conversation name"
+		bind:value={chatName}
 		required
 	/>
 </Label>
