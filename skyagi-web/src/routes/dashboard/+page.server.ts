@@ -3,7 +3,6 @@ import type { PageServerLoad } from './$types';
 
 
 export const load = (async ({ fetch, locals }) => {
-    let start = performance.now();
     const session = await locals.getSession();
     if (!session) {
         throw redirect(303, '/');
@@ -13,27 +12,31 @@ export const load = (async ({ fetch, locals }) => {
     const snapShotToText = async (conversation) => {
         let rstText = ""
         let snapShot = conversation.snapshot
-        if (snapShot == null){
+        if (snapShot == null) {
             return rstText
         }
-        for (let i=0; i < snapShot.length; i++){
-            let message = snapShot[snapShot.length-i-1]
+        for (let i = 0; i < snapShot.length; i++) {
+            let message = snapShot[snapShot.length - i - 1]
             let agentResponse = await fetch("/api/get-agent", {
-                method: 'PUT', 
+                method: 'PUT',
                 headers: {
-                    "Content-Type" : 'application/json'
+                    "Content-Type": 'application/json'
                 },
-                body: JSON.stringify({agent_id: message.initiate_agent_id,
-                                      user_id: user_id})
+                body: JSON.stringify({
+                    agent_id: message.initiate_agent_id,
+                    user_id: user_id
+                })
             })
-            
+
             let agentData = await agentResponse.json()
             let agentName = agentData.agent.name
             rstText += agentName + " " + message.content + "\n"
         }
-        return {name: conversation.name, 
-                text: rstText,
-                conversationId: conversation.id}
+        return {
+            name: conversation.name,
+            text: rstText,
+            conversationId: conversation.id
+        }
     }
 
     const getAgents = async (user_id: string) => {
@@ -45,11 +48,10 @@ export const load = (async ({ fetch, locals }) => {
             body: JSON.stringify({ user_id })
         })
         const agentsData = await charactersResponse.json();
-    
+
         let agents = [];
         if (agentsData.success) {
             // filter the archived agents
-    
             agents = agentsData.agents.filter((agent: { archived: boolean; }) => !agent.archived);
         }
 
@@ -68,18 +70,15 @@ export const load = (async ({ fetch, locals }) => {
         let conversations = [];
         if (conversationsData.success) {
             conversations = conversationsData.conversations;
-            
+
         }
         else {
             console.log("error")
         }
 
-        return Promise.all(conversations.map((item)=>(snapShotToText(item))));
+        return Promise.all(conversations.map((item) => (snapShotToText(item))));
     }
 
-    // let rstLs = Promise.all(conversations.map((item)=>(snapShotToText(item))));
-    let end = performance.now();
-    console.log(`Get rstLs Execution time: ${end - start} ms`);
     return {
         streamed: {
             agents: getAgents(user_id),
