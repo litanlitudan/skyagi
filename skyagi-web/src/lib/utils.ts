@@ -25,7 +25,9 @@ export async function getResponseStream(metadata: object, respMsg: string) {
             let chunkSize = 1, start = 0, end = chunkSize;
             const interval = setInterval(() => {
                 const encodedData = encoder.encode(respMsg.slice(start, end));
-                controller.enqueue(`data: ${encodedData}\n\n`);
+                //controller.enqueue(`data: ${encodedData}\n\n`);
+                // Send raw data
+                controller.enqueue(`data: ${respMsg.slice(start, end)}\n\n`);
                 start = end;
                 end = end + chunkSize >= totalLen ? totalLen : end + chunkSize;
                 if (start >= end) {
