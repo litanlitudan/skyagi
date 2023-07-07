@@ -14,7 +14,7 @@ export function sleep(ms: number): void {
 export async function getResponseStream(metadata: object, respMsg: string) {
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
-        start(controller) {
+        async start(controller) {
             for (const [key, value] of Object.entries(metadata)) {
                 const metaDataMsg = JSON.stringify({[key]: value});
                 controller.enqueue(JSON.stringify(metaDataMsg));
@@ -22,7 +22,7 @@ export async function getResponseStream(metadata: object, respMsg: string) {
             }
 
             let totalLen = respMsg.length;
-            let chunkSize = 5, start = 0, end = chunkSize;
+            let chunkSize = 1, start = 0, end = chunkSize;
             const interval = setInterval(() => {
                 const encodedData = encoder.encode(respMsg.slice(start, end));
                 controller.enqueue(encodedData);
