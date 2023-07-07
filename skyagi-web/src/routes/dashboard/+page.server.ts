@@ -3,6 +3,7 @@ import type { PageServerLoad } from './$types';
 
 
 export const load = (async ({ fetch, locals }) => {
+    let start = performance.now();
     const session = await locals.getSession();
     if (!session) {
         throw redirect(303, '/');
@@ -35,42 +36,54 @@ export const load = (async ({ fetch, locals }) => {
                 conversationId: conversation.id}
     }
 
-    const charactersResponse = await fetch("/api/get-agents", {
-        method: 'PUT',
-        headers: {
-            "Content-Type": 'application/json'
-        },
-        body: JSON.stringify({ user_id })
-    })
-    const agentsData = await charactersResponse.json();
+    const getAgents = async (user_id: string) => {
+        const charactersResponse = await fetch("/api/get-agents", {
+            method: 'PUT',
+            headers: {
+                "Content-Type": 'application/json'
+            },
+            body: JSON.stringify({ user_id })
+        })
+        const agentsData = await charactersResponse.json();
+    
+        let agents = [];
+        if (agentsData.success) {
+            // filter the archived agents
+    
+            agents = agentsData.agents.filter((agent: { archived: boolean; }) => !agent.archived);
+        }
 
-    let agents = [];
-    if (agentsData.success) {
-        // filter the archived agents
-
-        agents = agentsData.agents.filter((agent: { archived: boolean; }) => !agent.archived);
+        return agents;
     }
 
-    const conversationsResponse = await fetch("/api/get-conversations", {
-        method: 'PUT',
-        headers: {
-            "Content-Type": 'application/json'
-        },
-        body: JSON.stringify({ user_id })
-    })
-    const conversationsData = await conversationsResponse.json();
-    let conversations = [];
-    if (conversationsData.success) {
-        conversations = conversationsData.conversations;
-        
+    const getConversationHistory = async (user_id: string) => {
+        const conversationsResponse = await fetch("/api/get-conversations", {
+            method: 'PUT',
+            headers: {
+                "Content-Type": 'application/json'
+            },
+            body: JSON.stringify({ user_id })
+        })
+        const conversationsData = await conversationsResponse.json();
+        let conversations = [];
+        if (conversationsData.success) {
+            conversations = conversationsData.conversations;
+            
+        }
+        else {
+            console.log("error")
+        }
+
+        return Promise.all(conversations.map((item)=>(snapShotToText(item))));
     }
-    else {
-        console.log("error")
-    }
-    conversations = conversationsData.conversations;
-    let rstLs = Promise.all(conversations.map((item)=>(snapShotToText(item))))
+
+    // let rstLs = Promise.all(conversations.map((item)=>(snapShotToText(item))));
+    let end = performance.now();
+    console.log(`Get rstLs Execution time: ${end - start} ms`);
     return {
-        agents: agents,
-        conversations: rstLs
+        streamed: {
+            agents: getAgents(user_id),
+            conversations: getConversationHistory(user_id)
+        }
     }
 }) satisfies PageServerLoad;

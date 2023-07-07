@@ -4,30 +4,36 @@
 	import Conversation from '$lib/dashboard-conversation.svelte';
 	import { globalAvatarImageList } from '$lib/stores.js';
 	export let data;
-	const characterData = data.agents;
-	const conversationData = data.conversations;
 	export let activeId = '';
-	if (conversationData.length != 0) {
-		conversationData[0].conversationId;
-	}
-
-	const characters = characterData.map(function (characterDataPoint) {
-		let imagePath = '/assets/Avatar1.png';
-		if (
-			characterDataPoint.avatar != null &&
-			globalAvatarImageList.includes(characterDataPoint.avatar.local_path)
-		) {
-			imagePath = characterDataPoint.avatar.local_path;
-		}
-		return {
-			...characterDataPoint,
-			image: imagePath
-		};
-	});
-
-	export const conversations = conversationData;
-	let conversationOpenLs = conversations.map(item => false);
-	conversationOpenLs[0] = true;
+    
+    const getCharacters = data.streamed.agents.then(value => {
+        return value.map((characterDataPoint: any) => {
+            let imagePath = '/assets/Avatar1.png';
+            if (
+            characterDataPoint.avatar != null &&
+            globalAvatarImageList.includes(characterDataPoint.avatar.local_path)
+            ) {
+            imagePath = characterDataPoint.avatar.local_path;
+            }
+            return {
+            ...characterDataPoint,
+            image: imagePath
+            };
+        });
+    });
+	// const characters = characterData.map(function (characterDataPoint) {
+	// 	let imagePath = '/assets/Avatar1.png';
+	// 	if (
+	// 		characterDataPoint.avatar != null &&
+	// 		globalAvatarImageList.includes(characterDataPoint.avatar.local_path)
+	// 	) {
+	// 		imagePath = characterDataPoint.avatar.local_path;
+	// 	}
+	// 	return {
+	// 		...characterDataPoint,
+	// 		image: imagePath
+	// 	};
+	// });
 
 	function handleResumeRoomClick() {
 		window.location.href = '/room/resume-room/' + activeId;
@@ -44,22 +50,36 @@
 
 <div id="globalGrid">
 	<div>
-		<div class="conversationscroller">
+		<!-- <div class="conversationscroller">
 			<Accordion
 				id="conversationBoard"
 				activeClasses="bg-gray-800 text-white focus:ring-4 focus:ring-blue-800 text-2xl"
 				inactiveClasses="text-gray-400 hover:bg-gray-800 text-2xl"
-			>
-				{#each conversations as conversation, i}
-					<Conversation
-						conversationIndex={i + 1}
-						conversationSummary={conversation}
-						conversationId={conversation.conversationId}
-						bind:activeId
-					/>
-				{/each}
-			</Accordion>
-		</div>
+			> -->
+                {#await data.streamed.conversations}
+                    Loading...
+                {:then value}
+                <div class="conversationscroller">
+                    <Accordion
+                        id="conversationBoard"
+                        activeClasses="bg-gray-800 text-white focus:ring-4 focus:ring-blue-800 text-2xl"
+                        inactiveClasses="text-gray-400 hover:bg-gray-800 text-2xl"
+                    >
+                        {#each value as conversation, i}
+                            <Conversation
+                                conversationIndex={i + 1}
+                                conversationSummary={conversation}
+                                conversationId={conversation.conversationId}
+                                bind:activeId
+                            />
+                        {/each}
+                    </Accordion>
+                </div>
+                {:catch error}
+                    {error.message}
+                {/await}
+			<!-- </Accordion>
+		</div> -->
 		<div id="buttonGrid">
 			<Button size="xl" on:click={handleResumeRoomClick}>Resume to the selected conversation</Button
 			>
@@ -68,7 +88,22 @@
 		</div>
 	</div>
 
-	<div class="scroller">
+    {#await getCharacters}
+        Loading...
+    {:then value}
+        <div class="scroller">
+            {#each value as character, i}
+                <a href="agent/{character.id}">
+                    <div class="characterInfoSet">
+                        <Character {character} imageUrl={character.image} />
+                    </div>
+                </a>
+            {/each}
+        </div>
+    {:catch error}
+        {error.message}
+    {/await}
+	<!-- <div class="scroller">
 		{#each characters as character, i}
 			<a href="agent/{character.id}">
 				<div class="characterInfoSet">
@@ -76,7 +111,7 @@
 				</div>
 			</a>
 		{/each}
-	</div>
+	</div> -->
 </div>
 
 <style>
