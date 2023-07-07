@@ -3,6 +3,7 @@
 	import { Accordion, Button, Spinner } from 'flowbite-svelte';
 	import Conversation from '$lib/dashboard-conversation.svelte';
 	import { globalAvatarImageList } from '$lib/stores.js';
+	import Error from '$lib/Error.svelte';
 	export let data;
 	export let activeId = '';
 
@@ -55,7 +56,7 @@
 						/>
 					{/each}
 				{:catch error}
-					{error.message}
+					<Error errorCode={500} errorName={error.name || ''} errorMsg={error.message} />
 				{/await}
 			</Accordion>
 		</div>
@@ -79,7 +80,7 @@
 				</a>
 			{/each}
 		{:catch error}
-			{error.message}
+			<Error errorCode={500} errorName={error.name || ''} errorMsg={error.message} />
 		{/await}
 	</div>
 </div>
