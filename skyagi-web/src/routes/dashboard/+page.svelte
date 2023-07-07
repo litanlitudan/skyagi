@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Character from '$lib/dashboard-character.svelte';
-	import { Accordion, Button } from 'flowbite-svelte';
+	import { Accordion, Button, Spinner } from 'flowbite-svelte';
 	import Conversation from '$lib/dashboard-conversation.svelte';
 	import { globalAvatarImageList } from '$lib/stores.js';
 	export let data;
@@ -44,7 +44,7 @@
 				inactiveClasses="text-gray-400 hover:bg-gray-800 text-2xl"
 			>
 				{#await data.streamed.conversations}
-					Loading...
+					<div class="text-center"><Spinner /></div>
 				{:then value}
 					{#each value as conversation, i}
 						<Conversation
@@ -69,7 +69,7 @@
 
 	<div class="scroller">
 		{#await getCharacters}
-			Loading...
+			<div class="text-center"><Spinner /></div>
 		{:then value}
 			{#each value as character, i}
 				<a href="agent/{character.id}">
