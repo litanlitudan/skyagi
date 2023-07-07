@@ -253,6 +253,7 @@
 		size="lg"
 		class="mt-5 bg-stone-950 text-white font-sans"
 		placeholder="Type in your conversation name"
+		bind:value={chatName}
 		required
 	/>
 </Label>
@@ -269,7 +270,7 @@
 				<Search id="searchBar" placeholder="Search..." bind:value={$searchStore.search} />
 			</div>
 			{#each $searchStore.filtered as character, i}
-				<li class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600">
+				<li class="rounded p-2 hover:bg-gray-300">
 					<Checkbox
 						disabled={!isAgentSelectable[i]}
 						bind:group={checkedCharacterGroup}
