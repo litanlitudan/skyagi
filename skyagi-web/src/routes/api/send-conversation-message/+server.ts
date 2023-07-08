@@ -67,10 +67,6 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive'
     };
-    /*
-    let respMetaData = {};
-    let respMsg = "Hello world";
-    */
     const stream = await getResponseStream(respMetaData, respMsg);
     return new Response(stream, {headers});
 }) satisfies RequestHandler;

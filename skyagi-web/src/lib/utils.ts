@@ -25,8 +25,6 @@ export async function getResponseStream(metadata: object, respMsg: string) {
             let chunkSize = 1, start = 0, end = chunkSize;
             const interval = setInterval(() => {
                 const encodedData = encoder.encode(respMsg.slice(start, end));
-                //controller.enqueue(`data: ${encodedData}\n\n`);
-                // Send raw data
                 controller.enqueue(`data: ${respMsg.slice(start, end)}\n\n`);
                 start = end;
                 end = end + chunkSize >= totalLen ? totalLen : end + chunkSize;
@@ -39,24 +37,4 @@ export async function getResponseStream(metadata: object, respMsg: string) {
     });
 
     return stream;
-
-    /*
-    // Create a new ReadableStream
-    return new ReadableStream({
-        async start(controller) {
-            const encoder = new TextEncoder();
-            const chunkSize = 1; // Adjust the chunk size as per your requirements
-            // Split the string into chunks
-            for (let i = 0; i < respMsg.length; i += chunkSize) {
-                const chunk = respMsg.slice(i, i + chunkSize);
-                //controller.enqueue(`data: ${encoder.encode(chunk)}\n\n`);
-                controller.enqueue(`data: ${chunk}\n\n`);
-                sleep(1000)
-            }
-
-          // Close the stream when finished
-          controller.close();
-        },
-    });
-    */
 }
