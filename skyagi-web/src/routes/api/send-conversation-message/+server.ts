@@ -8,7 +8,7 @@ export const config: Config = {
 	runtime: 'nodejs18.x'
 };
 
-export const PUT = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
+export const POST = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
 	const {
 		conversation_id,
 		initiate_agent_id,
