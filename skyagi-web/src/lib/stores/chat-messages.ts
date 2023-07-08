@@ -53,9 +53,9 @@ const set = async (query: string) => {
     payload: JSON.stringify(request)
   });
 
-  // eventSource.addEventListener('error', handleError);
-  // eventSource.addEventListener('message', streamMessage);
-  // eventSource.stream();
+  eventSource.addEventListener('error', handleError);
+  eventSource.addEventListener('message', streamMessage);
+  eventSource.stream();
 
   // const response = await fetch('/api/send-conversation-message', {
   //   method: 'POST',
