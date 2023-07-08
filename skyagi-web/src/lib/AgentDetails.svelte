@@ -101,7 +101,7 @@
 
 	#globalGrid {
 		display: grid;
-		grid-template-columns: 12% 80%;
+		grid-template-columns: 12% 70%;
 		grid-auto-flow: row;
 		/* grid-auto-columns: 400px 400px; */
 	}
