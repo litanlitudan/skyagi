@@ -143,11 +143,11 @@ const streamMessage = (e: MessageEvent) => {
 
     if (get(answer) === '...') answer.set('');
 
-    const completionResponse = JSON.parse(e.data);
-    const [{ delta }] = completionResponse.choices;
-
-    if (delta.content) {
-      answer.update((_a) => _a + delta.content);
+    try {
+      const metaData = JSON.parse(e.data);
+      // handle metadata
+    } catch (err) { // not JSON meaning it's pure conversation content not JSON
+      answer.update((_a) => _a + e.data);
     }
   } catch (err) {
     handleError(err);
