@@ -62,6 +62,11 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         'if_continue': ifContinue
     }
 
+    const headers = {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
+    };
     const stream = await getResponseStream(respMetaData, respMsg);
-    return new Response(stream);
+    return new Response(stream, {headers});
 }) satisfies RequestHandler;

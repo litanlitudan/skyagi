@@ -121,7 +121,12 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
         'is_valid': true 
     }
 
+    const headers = {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive'
+    };
     const stream = await getResponseStream(respMetaData, msgResp);
-    return new Response(stream);
+    return new Response(stream, {headers});
 
 }) satisfies RequestHandler;
