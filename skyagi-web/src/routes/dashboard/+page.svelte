@@ -1,33 +1,27 @@
 <script lang="ts">
 	import Character from '$lib/dashboard-character.svelte';
-	import { AccordionItem, Accordion, Button } from 'flowbite-svelte';
+	import { Accordion, Button, Spinner } from 'flowbite-svelte';
 	import Conversation from '$lib/dashboard-conversation.svelte';
 	import { globalAvatarImageList } from '$lib/stores.js';
+	import Error from '$lib/Error.svelte';
 	export let data;
-	const characterData = data.agents;
-	const conversationData = data.conversations;
 	export let activeId = '';
-	if (conversationData.length != 0) {
-		conversationData[0].conversationId;
-	}
 
-	const characters = characterData.map(function (characterDataPoint) {
-		let imagePath = '/assets/Avatar1.png';
-		if (
-			characterDataPoint.avatar != null &&
-			globalAvatarImageList.includes(characterDataPoint.avatar.local_path)
-		) {
-			imagePath = characterDataPoint.avatar.local_path;
-		}
-		return {
-			...characterDataPoint,
-			image: imagePath
-		};
+	const getCharacters = data.streamed.agents.then(value => {
+		return value.map((characterDataPoint: any) => {
+			let imagePath = '/assets/Avatar1.png';
+			if (
+				characterDataPoint.avatar != null &&
+				globalAvatarImageList.includes(characterDataPoint.avatar.local_path)
+			) {
+				imagePath = characterDataPoint.avatar.local_path;
+			}
+			return {
+				...characterDataPoint,
+				image: imagePath
+			};
+		});
 	});
-
-	export const conversations = conversationData;
-	let conversationOpenLs = conversations.map(item => false);
-	conversationOpenLs[0] = true;
 
 	function handleResumeRoomClick() {
 		window.location.href = '/room/resume-room/' + activeId;
@@ -50,14 +44,20 @@
 				activeClasses="bg-gray-800 text-white focus:ring-4 focus:ring-blue-800 text-2xl"
 				inactiveClasses="text-gray-400 hover:bg-gray-800 text-2xl"
 			>
-				{#each conversations as conversation, i}
-					<Conversation
-						conversationIndex={i + 1}
-						conversationSummary={conversation}
-						conversationId={conversation.conversationId}
-						bind:activeId
-					/>
-				{/each}
+				{#await data.streamed.conversations}
+					<div class="text-center"><Spinner /></div>
+				{:then value}
+					{#each value as conversation, i}
+						<Conversation
+							conversationIndex={i + 1}
+							conversationSummary={conversation}
+							conversationId={conversation.conversationId}
+							bind:activeId
+						/>
+					{/each}
+				{:catch error}
+					<Error errorCode={500} errorName={error.name || ''} errorMsg={error.message} />
+				{/await}
 			</Accordion>
 		</div>
 		<div id="buttonGrid">
@@ -69,13 +69,19 @@
 	</div>
 
 	<div class="scroller">
-		{#each characters as character, i}
-			<a href="agent/{character.id}">
-				<div class="characterInfoSet">
-					<Character {character} imageUrl={character.image} />
-				</div>
-			</a>
-		{/each}
+		{#await getCharacters}
+			<div class="text-center"><Spinner /></div>
+		{:then value}
+			{#each value as character, i}
+				<a href="agent/{character.id}">
+					<div class="characterInfoSet">
+						<Character {character} imageUrl={character.image} />
+					</div>
+				</a>
+			{/each}
+		{:catch error}
+			<Error errorCode={500} errorName={error.name || ''} errorMsg={error.message} />
+		{/await}
 	</div>
 </div>
 
