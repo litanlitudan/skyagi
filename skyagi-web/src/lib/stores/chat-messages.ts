@@ -46,76 +46,73 @@ const set = async (query: string) => {
 
   console.log('request', request);
 
-  // const eventSource = new SSE('/api/send-conversation-message', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'text/event-stream',
-  //     'Cache-Control': 'no-cache',
-  //     Connection: 'keep-alive',
-  //   },
-  //   payload: JSON.stringify(request)
-  // });
+  const eventSource = new SSE('/api/send-conversation-message', {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    payload: JSON.stringify(request)
+  });
 
   // eventSource.addEventListener('error', handleError);
   // eventSource.addEventListener('message', streamMessage);
   // eventSource.stream();
 
-  const response = await fetch('/api/send-conversation-message', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(request)
-  });
+  // const response = await fetch('/api/send-conversation-message', {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: JSON.stringify(request)
+  // });
 
-  const data = response.body;
-  console.log('@@@data!!!', data);
+  // const data = response.body;
+  // console.log('@@@data!!!', data);
 
-  if (data) {
-    const reader = data.getReader();
-    const decoder = new TextDecoder();
-    let done = false;
-    let tempValue = ''; // temporary value to store incomplete json strings
+  // if (data) {
+  //   const reader = data.getReader();
+  //   const decoder = new TextDecoder();
+  //   let done = false;
+  //   let tempValue = ''; // temporary value to store incomplete json strings
 
-    while (!done) {
-      const { value, done: doneReading } = await reader.read();
-      console.log('!!! value', value);
-      console.log('doneReading', doneReading);
-      done = doneReading;
-      let chunkValue = decoder.decode(value);
-      console.log('chunkValue', chunkValue);
+  //   while (!done) {
+  //     const { value, done: doneReading } = await reader.read();
+  //     console.log('!!! value', value);
+  //     console.log('doneReading', doneReading);
+  //     done = doneReading;
+  //     let chunkValue = decoder.decode(value);
+  //     console.log('chunkValue', chunkValue);
 
 
-      // if there is a temp value, prepend it to the incoming chunk
-      if (tempValue) {
-        chunkValue = tempValue + chunkValue;
-        tempValue = '';
-      }
+  //     // if there is a temp value, prepend it to the incoming chunk
+  //     if (tempValue) {
+  //       chunkValue = tempValue + chunkValue;
+  //       tempValue = '';
+  //     }
 
-      // match json string and extract it from the chunk
-      // const matchMetadataResults = chunkValue.match(/\"\{(.*?)\}\"/g);
-      // if (matchMetadataResults) {
-      //   console.log('matchMetadataResults', matchMetadataResults)
-      //   matchMetadataResults.forEach((match, index) => {
-      //     chunkValue = chunkValue.replace(match[index].replace(/([^:]\/)\/+/g, ""), '');
-      //   })
-      // }
-      chunkValue = chunkValue.replace(/"{.*}"/, '');
+  //     // match json string and extract it from the chunk
+  //     // const matchMetadataResults = chunkValue.match(/\"\{(.*?)\}\"/g);
+  //     // if (matchMetadataResults) {
+  //     //   console.log('matchMetadataResults', matchMetadataResults)
+  //     //   matchMetadataResults.forEach((match, index) => {
+  //     //     chunkValue = chunkValue.replace(match[index].replace(/([^:]\/)\/+/g, ""), '');
+  //     //   })
+  //     // }
+  //     chunkValue = chunkValue.replace(/"{.*}"/, '');
 
-      try {
-        console.log('chunkValue in try', chunkValue);
-        if (get(answer) === '...') answer.set('');
-        if (chunkValue) {
-          answer.update((_a) => _a + chunkValue);
-        }
-      } catch (e) {
-        // store the incomplete json string in the temporary value
-        tempValue = chunkValue;
-      }
-    }
-    updateMessages(get(answer), StoreMessageRole.AGENT, get(currentAgentName), 'idle');
-    answer.set('');
-  }
+  //     try {
+  //       console.log('chunkValue in try', chunkValue);
+  //       if (get(answer) === '...') answer.set('');
+  //       if (chunkValue) {
+  //         answer.update((_a) => _a + chunkValue);
+  //       }
+  //     } catch (e) {
+  //       // store the incomplete json string in the temporary value
+  //       tempValue = chunkValue;
+  //     }
+  //   }
+  //   updateMessages(get(answer), StoreMessageRole.AGENT, get(currentAgentName), 'idle');
+  //   answer.set('');
+  // }
 };
 
 const replace = (messages: ChatTranscript) => {

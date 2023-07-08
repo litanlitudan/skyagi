@@ -2,15 +2,13 @@ import type { RequestHandler } from './$types';
 import type { Config } from '@sveltejs/adapter-vercel';
 import { GenerativeAgent } from '$lib/agent';
 import { getResponseStream } from '$lib/utils';
-import { OPENAI_API_KEY } from '$env/static/private';
 
 // Can switch to the edge func if serverless is not necessary
 export const config: Config = {
 	runtime: 'nodejs18.x'
 };
 
-export const POST = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
-	console.log('inside of send-conversation-message');
+export const PUT = (async ({ request, locals }: { request: Request; locals: App.Locals }) => {
 	const {
 		conversation_id,
 		initiate_agent_id,
@@ -29,8 +27,6 @@ export const POST = (async ({ request, locals }: { request: Request; locals: App
 	// create recipient agent
 	const agent = new GenerativeAgent();
 
-	recipient_agent_model_settings.llm.args.openAIApiKey = OPENAI_API_KEY;
-	recipient_agent_model_settings.embedding.args.openAIApiKey = OPENAI_API_KEY;
 	await agent.setup(locals.supabase, conversation_id, recipient_agent_id, recipient_agent_model_settings, initiate_agent_id);
 
 	// get reaction
@@ -57,13 +53,20 @@ export const POST = (async ({ request, locals }: { request: Request; locals: App
 	// update the message history
 	await agent.addMessage(message, respMsg);
 
+	// update recipient agent memory
+	await agent.addMemory(`${agent.name} observed ${newMessage} and said ${respMsg}`);
+
 	// return
 	const respMetaData = {
 		'success': 1,
 		'if_continue': ifContinue
 	}
 
+	const headers = {
+		'Content-Type': 'text/event-stream',
+		'Cache-Control': 'no-cache',
+		'Connection': 'keep-alive'
+	};
 	const stream = await getResponseStream(respMetaData, respMsg);
-	console.log('look!!!!', new Response(stream));
-	return new Response(stream);
+	return new Response(stream, { headers });
 }) satisfies RequestHandler;
