@@ -5,7 +5,7 @@
 	export let errorName: string;
 	export let errorMsg: string;
 
-	let popUpError = true;
+	export let popUpError = true;
 </script>
 
 <Modal title="Error" bind:open={popUpError} autoclose outsideclose>
