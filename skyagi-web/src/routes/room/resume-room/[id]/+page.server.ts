@@ -19,7 +19,12 @@ export const load = (async ({ params, fetch, locals }) => {
     const data = await resp.json();
     if (!data.success) {
         return {
-            body: {}
+            body: {},
+            error: {
+                'errorCode': data.status,
+                'errorMsg': data.error,
+                'errorName': 'Resume Error'
+            }
         }
     }
 
@@ -39,16 +44,16 @@ export const load = (async ({ params, fetch, locals }) => {
         let agentData = await agentResponse.json()
         return agentData.agent
     }
-    let rstLs = await Promise.all(agentIds.map((item)=>(agentIdToAgentData(item))))
+    let rstLs = await Promise.all(agentIds.map((item) => (agentIdToAgentData(item))))
     let userAgentNames = []
-    for (let i=0; i<userAgentIds.length; i++){
-        for (let j=0; j<agentIds.length; j++){
-            if (userAgentIds[i] == agentIds[j]){
+    for (let i = 0; i < userAgentIds.length; i++) {
+        for (let j = 0; j < agentIds.length; j++) {
+            if (userAgentIds[i] == agentIds[j]) {
                 userAgentNames.push(rstLs[j].name)
                 continue
             }
         }
-        
+
     }
 
     const models = get_all_llms_data().map((model) => ({ name: model.name, value: model.name, data: model }));
