@@ -147,7 +147,13 @@ const streamMessage = (e: MessageEvent) => {
       const metaData = JSON.parse(e.data);
       console.log('metaData', metaData);
     } else { // not JSON meaning it's pure conversation content not JSON
-      answer.update((_a) => _a + e.data);
+      console.log('3.data', e.data);
+      answer.update((_a) => {
+        console.log('_a', _a);
+        console.log('e.data in update', e.data);
+        console.log('_a + e.data', _a + e.data);
+        return _a + e.data;
+      });
     }
   } catch (err) {
     handleError(err);
