@@ -143,10 +143,10 @@ const streamMessage = (e: MessageEvent) => {
 
     if (get(answer) === '...') answer.set('');
 
-    try {
+    if (e.data.match(/\"\{(.*?)\}\"/g)) {  // handle metadata
       const metaData = JSON.parse(e.data);
-      // handle metadata
-    } catch (err) { // not JSON meaning it's pure conversation content not JSON
+      console.log('metaData', metaData);
+    } else { // not JSON meaning it's pure conversation content not JSON
       answer.update((_a) => _a + e.data);
     }
   } catch (err) {
