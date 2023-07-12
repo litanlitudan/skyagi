@@ -34,7 +34,7 @@ const set = async (query: string) => {
         provider: modelDataForCurrentAgent.data.provider,
         name: modelDataForCurrentAgent.data.name,
         args: {
-          modelName: modelDataForCurrentAgent.model,
+          modelName: "gpt-3.5-turbo",
           maxTokens: modelDataForCurrentAgent.data.args.maxTokens,
           openAIApiKey: modelDataForCurrentAgent.token,
         }
