@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AgentDetails from '$lib/AgentDetails.svelte';
+	import AgentDetailsNew from '$lib/AgentDetailsNew.svelte';
 	import AgentForm from '$lib/AgentForm.svelte';
 	import type { AgentDataType } from '$lib/types';
 	import type { PageData } from './$types';
@@ -15,5 +15,5 @@
 {#if $isAgentFormEditing}
 	<AgentForm {agentData} {user} />
 {:else}
-	<AgentDetails {agentData} {user} />
+	<AgentDetailsNew {agentData} {user} />
 {/if}
