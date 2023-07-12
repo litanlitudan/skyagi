@@ -39,14 +39,14 @@ const set = async (query: string) => {
           openAIApiKey: modelDataForCurrentAgent.token,
         }
       },
-      embedding: {
-        type: "OpenAIEmbeddings",
-        provider: "OpenAI",
-        name: "openai-text-embedding-ada-002",
-        args: {
-          modelName: "text-embedding-ada-002",
-        }
-      }
+      // embedding: {
+      //   type: "OpenAIEmbeddings",
+      //   provider: "OpenAI",
+      //   name: "openai-text-embedding-ada-002",
+      //   args: {
+      //     modelName: "text-embedding-ada-002",
+      //   }
+      // }
     },
     message: query,
   }
