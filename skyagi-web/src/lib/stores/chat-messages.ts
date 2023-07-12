@@ -21,7 +21,8 @@ const set = async (query: string) => {
   console.log('modelTokenData', modelTokenData);
 
   const recipient_agent_id = get(currentAgentId);
-  const modelDataForCurrentAgent: any = modelTokenData.filter(data => data.agent_id === recipient_agent_id)
+  const modelDataForCurrentAgent: any = modelTokenData.filter(data => data.agent_id === recipient_agent_id);
+  console.log('modelDataForCurrentAgent', modelDataForCurrentAgent);
 
   const request = {
     conversation_id: get(conversationId),
