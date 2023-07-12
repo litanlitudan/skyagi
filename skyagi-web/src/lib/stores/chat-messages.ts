@@ -46,6 +46,8 @@ const set = async (query: string) => {
     message: query,
   }
 
+  console.log('request', request);
+
   const eventSource = new SSE('/api/send-conversation-message', {
     headers: {
       'Content-Type': 'application/json'
