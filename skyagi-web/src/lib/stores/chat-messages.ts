@@ -1,6 +1,7 @@
 import { StoreMessageRole, type StoreMessageType } from '$lib/types';
 import { SSE } from 'sse.js';
 import { get, writable } from 'svelte/store';
+import modelTokenDataStore from '$lib/room-store.js';
 
 export interface ChatTranscript {
   messages: StoreMessageType[];
@@ -15,6 +16,9 @@ const { subscribe, update, ...store } = writable<ChatTranscript>({
 // put a new user input message to store
 const set = async (query: string) => {
   updateMessages(query, StoreMessageRole.USER_AGENT, 'Me', 'loading');
+
+  let modelTokenData = JSON.parse(get(modelTokenDataStore));
+  console.log('modelTokenData', modelTokenData);
 
   const request = {
     conversation_id: get(conversationId),
