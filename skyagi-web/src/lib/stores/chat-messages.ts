@@ -15,8 +15,6 @@ const { subscribe, update, ...store } = writable<ChatTranscript>({
 // put a new user input message to store
 const set = async (query: string) => {
   updateMessages(query, StoreMessageRole.USER_AGENT, 'Me', 'loading');
-  console.log('query', query);
-  console.log('chatM', chatMessages);
 
   const request = {
     conversation_id: get(conversationId),
@@ -44,8 +42,6 @@ const set = async (query: string) => {
     message: query,
   }
 
-  console.log('request', request);
-
   const eventSource = new SSE('/api/send-conversation-message', {
     headers: {
       'Content-Type': 'application/json'
@@ -56,63 +52,6 @@ const set = async (query: string) => {
   eventSource.addEventListener('error', handleError);
   eventSource.addEventListener('message', streamMessage);
   eventSource.stream();
-
-  // const response = await fetch('/api/send-conversation-message', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify(request)
-  // });
-
-  // const data = response.body;
-  // console.log('@@@data!!!', data);
-
-  // if (data) {
-  //   const reader = data.getReader();
-  //   const decoder = new TextDecoder();
-  //   let done = false;
-  //   let tempValue = ''; // temporary value to store incomplete json strings
-
-  //   while (!done) {
-  //     const { value, done: doneReading } = await reader.read();
-  //     console.log('!!! value', value);
-  //     console.log('doneReading', doneReading);
-  //     done = doneReading;
-  //     let chunkValue = decoder.decode(value);
-  //     console.log('chunkValue', chunkValue);
-
-
-  //     // if there is a temp value, prepend it to the incoming chunk
-  //     if (tempValue) {
-  //       chunkValue = tempValue + chunkValue;
-  //       tempValue = '';
-  //     }
-
-  //     // match json string and extract it from the chunk
-  //     // const matchMetadataResults = chunkValue.match(/\"\{(.*?)\}\"/g);
-  //     // if (matchMetadataResults) {
-  //     //   console.log('matchMetadataResults', matchMetadataResults)
-  //     //   matchMetadataResults.forEach((match, index) => {
-  //     //     chunkValue = chunkValue.replace(match[index].replace(/([^:]\/)\/+/g, ""), '');
-  //     //   })
-  //     // }
-  //     chunkValue = chunkValue.replace(/"{.*}"/, '');
-
-  //     try {
-  //       console.log('chunkValue in try', chunkValue);
-  //       if (get(answer) === '...') answer.set('');
-  //       if (chunkValue) {
-  //         answer.update((_a) => _a + chunkValue);
-  //       }
-  //     } catch (e) {
-  //       // store the incomplete json string in the temporary value
-  //       tempValue = chunkValue;
-  //     }
-  //   }
-  //   updateMessages(get(answer), StoreMessageRole.AGENT, get(currentAgentName), 'idle');
-  //   answer.set('');
-  // }
 };
 
 const replace = (messages: ChatTranscript) => {
@@ -132,8 +71,6 @@ const handleError = <T>(err: T) => {
 
 // put a new AI generated answer to store
 const streamMessage = (e: MessageEvent) => {
-  console.log('e', e);
-  console.log('streamMessage', e.data);
 
   try {
     if (e.data === '[DONE]') {
@@ -146,7 +83,7 @@ const streamMessage = (e: MessageEvent) => {
     if (e.data.match(/\"\{(.*?)\}\"/g)) {  // TODO: handle metadata
       const metaData = JSON.parse(e.data);
       console.log('metaData', metaData);
-    } else { // not JSON meaning it's pure conversation content not JSON
+    } else { // not matching JSON regex meaning it's pure conversation content not JSON
       answer.update((_a) => _a + (e.data ? e.data : " "));
     }
   } catch (err) {
