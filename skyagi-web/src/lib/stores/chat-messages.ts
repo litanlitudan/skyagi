@@ -17,31 +17,35 @@ const { subscribe, update, ...store } = writable<ChatTranscript>({
 const set = async (query: string) => {
   updateMessages(query, StoreMessageRole.USER_AGENT, 'Me', 'loading');
 
-  let modelTokenData = JSON.parse(get(modelTokenDataStore));
+  let modelTokenData: any[] = JSON.parse(get(modelTokenDataStore));
   console.log('modelTokenData', modelTokenData);
+
+  const recipient_agent_id = get(currentAgentId);
+  const modelDataForCurrentAgent: any = modelTokenData.filter(data => data.agent_id === recipient_agent_id)
 
   const request = {
     conversation_id: get(conversationId),
     initiate_agent_id: get(userAgentId),
-    recipient_agent_id: get(currentAgentId),
+    recipient_agent_id: recipient_agent_id,
     recipient_agent_model_settings: {
       llm: {
-        type: "ChatOpenAI",
-        provider: "OpenAI",
-        name: "openai-gpt-3.5-turbo",
+        type: modelDataForCurrentAgent.data.type,
+        provider: modelDataForCurrentAgent.data.provider,
+        name: modelDataForCurrentAgent.data.name,
         args: {
-          modelName: "gpt-3.5-turbo",
-          maxTokens: 1500,
+          modelName: modelDataForCurrentAgent.model,
+          maxTokens: modelDataForCurrentAgent.data.args.maxTokens,
+          openAIApiKey: modelDataForCurrentAgent.token,
         }
       },
-      embedding: {
-        type: "OpenAIEmbeddings",
-        provider: "OpenAI",
-        name: "openai-text-embedding-ada-002",
-        args: {
-          modelName: "text-embedding-ada-002",
-        }
-      }
+      // embedding: {
+      //   type: "OpenAIEmbeddings",
+      //   provider: "OpenAI",
+      //   name: "openai-text-embedding-ada-002",
+      //   args: {
+      //     modelName: "text-embedding-ada-002",
+      //   }
+      // }
     },
     message: query,
   }
