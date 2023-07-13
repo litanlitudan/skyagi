@@ -43,55 +43,55 @@
 
 <main>
 	{#if agentData && Object.keys(agentData).length !== 0 && !agentData.archived}
-		<Table color="black">
-			<TableBody class="divide-y">
-				<TableBodyRow>
-					<div>
-						<Avatar src={agentData.avatarPath} size="lg" /> Profile picture
-					</div>
-				</TableBodyRow>
-				<TableBodyRow>
-					<div>Name</div>
-					<div>{agentData.name}</div>
-				</TableBodyRow>
-				<TableBodyRow>
-					<div>Age</div>
-					<div>{agentData.age}</div>
-				</TableBodyRow>
-				<TableBodyRow>
-					<div>Personalities:</div>
-					<div class="text-sky-500">{agentData.personalities}</div>
-				</TableBodyRow>
-				<TableBodyRow>
-					<div>Social status:</div>
-					<div class="text-sky-500">{agentData.socialStatus}</div>
-				</TableBodyRow>
-				<TableBodyRow>
-					{#if agentData.memories}
-						<h2 class="text-3xl">Memories</h2>
-						<div class="my-4 indent-14">
-							<ul>
-								{#each agentData.memories as memory}
-									<li class="list-disc list-inside text-sky-500 my-2">{memory}</li>
-								{/each}
-							</ul>
-						</div>
-					{/if}
-				</TableBodyRow>
-			</TableBody>
-		</Table>
-		<h1 class="mb-8 text-5xl">Agent Profile</h1>
-		<!-- Display the form data -->
 		<div id="globalGrid">
-			<div>
-				<Avatar src={agentData.avatarPath} size="lg" />
-			</div>
-			<div>
-				<h2 class="text-3xl">Basically information</h2>
-				<div id="textGrid" class="my-4" />
-				<Button type="button" size="xl" on:click={handleEdit}>Edit</Button>
-				<!-- <Button type="button" color="red" on:click={() => (popupDeleteModal = true)}>Delete</Button> -->
-			</div>
+			<Table color="gray">
+				<TableBody>
+					<TableBodyRow>
+						<div class="text-zinc-400 text-xl font-extrabold my-2 font-mono">Profile picture</div>
+						<div class="mb-4"><Avatar src={agentData.avatarPath} size="lg" /></div>
+					</TableBodyRow>
+					<TableBodyRow>
+						<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Name</div>
+						<div class="text-white text-xl font-extrabold mb-2 font-mono">{agentData.name}</div>
+					</TableBodyRow>
+					<TableBodyRow>
+						<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Age</div>
+						<div class="text-white text-xl font-extrabold mb-2 font-mono">{agentData.age}</div>
+					</TableBodyRow>
+					<TableBodyRow>
+						<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Personality</div>
+						<div class="text-white text-xl font-extrabold mb-2 font-mono">
+							{agentData.personalities}
+						</div>
+					</TableBodyRow>
+					<TableBodyRow>
+						<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Social status</div>
+						<div class="text-white text-xl font-extrabold mb-2 font-mono">
+							{agentData.socialStatus}
+						</div>
+					</TableBodyRow>
+					<TableBodyRow>
+						{#if agentData.memories}
+							<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Memory</div>
+
+							<div class="my-4">
+								<ul>
+									{#each agentData.memories as memory}
+										<li class="list-disc list-inside text-xl text-white text-left font-mono my-4">
+											{memory}
+										</li>
+									{/each}
+								</ul>
+							</div>
+						{/if}
+					</TableBodyRow>
+					<TableBodyRow>
+						<div class="my-2">
+							<Button type="button" color="dark" size="xl" on:click={handleEdit}>Edit Agent</Button>
+						</div>
+					</TableBodyRow>
+				</TableBody>
+			</Table>
 		</div>
 	{:else}
 		<p>Agent not found</p>
@@ -129,16 +129,8 @@
 
 	#globalGrid {
 		display: grid;
-		grid-template-columns: 12% 70%;
+		grid-template-columns: 70%;
 		grid-auto-flow: row;
 		/* grid-auto-columns: 400px 400px; */
-	}
-
-	#textGrid {
-		display: grid;
-		text-indent: 56px;
-		grid-template-columns: 20% 50%;
-		grid-auto-flow: row;
-		gap: 10px;
 	}
 </style>
