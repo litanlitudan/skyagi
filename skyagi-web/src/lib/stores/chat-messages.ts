@@ -90,6 +90,17 @@ const streamMessage = (e: MessageEvent) => {
     if (e.data.match(/\"\{(.*?)\}\"/g)) {  // TODO: handle metadata
       let metaData = JSON.parse(e.data);
       console.log('metaData', metaData);
+      for (let key in metaData) {
+        console.log('key', key);
+        if (key === 'if_continue') {
+          console.log('value', metaData[key]);
+          break;
+        }
+        if (key === 'success') {
+          console.log('value', metaData[key]);
+          break;
+        }
+      }
       console.log('metaData.success', metaData.success);
       console.log('metaData["success"]', metaData["success"]);
       if (metaData.success) {
