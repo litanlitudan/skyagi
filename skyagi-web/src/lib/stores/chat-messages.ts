@@ -92,6 +92,7 @@ const streamMessage = (e: MessageEvent) => {
       console.log('metaData', metaData);
       for (let key in metaData) {
         console.log('key', key);
+        console.log('value', metaData[key])
         if (key === 'if_continue') {
           console.log('value', metaData[key]);
           break;
