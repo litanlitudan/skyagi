@@ -91,6 +91,7 @@ const streamMessage = (e: MessageEvent) => {
       const metaData = JSON.parse(e.data);
       console.log('metaData', metaData);
       console.log('metaData.if_continue', metaData.if_continue);
+      console.log('metaData["if_continue"]', metaData["if_continue"]);
       if (metaData.if_continue) {
         console.log('metaData.if_continue', metaData.if_continue);
       }
