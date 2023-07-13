@@ -89,6 +89,7 @@ const streamMessage = (e: MessageEvent) => {
 
     if (e.data.match(/\"\{(.*?)\}\"/g)) {  // TODO: handle metadata
       let metaData = JSON.parse(e.data);
+      console.log('type', typeof metaData);
       console.log('metaData', metaData);
       for (let key in metaData) {
         console.log('key', key);
