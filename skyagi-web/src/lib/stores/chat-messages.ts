@@ -88,16 +88,17 @@ const streamMessage = (e: MessageEvent) => {
     if (get(answer) === '...') answer.set('');
 
     if (e.data.match(/\"\{(.*?)\}\"/g)) {  // TODO: handle metadata
-      const metaData = JSON.parse(e.data.replace(/\//g, ""));
+      let metaData = JSON.parse(e.data);
       console.log('metaData', metaData);
-      const metaDataStr = JSON.stringify(metaData);
-      console.log('metaDataStr', metaDataStr);
-      const metaDataObj = JSON.parse(metaDataStr);
-      console.log('metaDataObj', metaDataObj);
-      console.log('metaDataObj.if_continue', metaDataObj.if_continue);
-      console.log('metaDataObj["if_continue"]', metaDataObj["if_continue"]);
-      if (metaDataObj.if_continue) {
-        console.log('metaDataObj.if_continue', metaDataObj.if_continue);
+      console.log('metaData.success', metaData.success);
+      console.log('metaData["success"]', metaData["success"]);
+      if (metaData.success) {
+        console.log('!!!metaData.success', metaData.success);
+      }
+      console.log('metaData.if_continue', metaData.if_continue);
+      console.log('metaData["if_continue"]', metaData["if_continue"]);
+      if (metaData.if_continue) {
+        console.log('!!!metaData.if_continue', metaData.if_continue);
       }
     } else { // not matching JSON regex meaning it's pure conversation content not JSON
       answer.update((_a) => _a + (e.data ? e.data : " "));
