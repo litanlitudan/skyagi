@@ -90,7 +90,7 @@ const streamMessage = (e: MessageEvent) => {
     if (e.data.match(/\"\{(.*?)\}\"/g)) {  // TODO: handle metadata
       const metaData = JSON.parse(e.data);
       console.log('metaData', metaData);
-      if (metaData.if_continue) {
+      if (metaData["if_continue"]) {
         console.log('metaData.if_continue', metaData.if_continue);
       }
     } else { // not matching JSON regex meaning it's pure conversation content not JSON
