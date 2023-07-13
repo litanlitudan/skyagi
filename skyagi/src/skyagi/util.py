@@ -7,7 +7,7 @@ from skyagi.model import load_embedding_from_config, load_llm_from_config
 from skyagi.settings import Settings
 
 
-def verify_openai_token(token: str) -> str:
+def verify_openai_(token: str) -> str:
     import openai
 
     openai.api_key = token

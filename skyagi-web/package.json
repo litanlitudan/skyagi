@@ -49,8 +49,14 @@
 		"@supabase/auth-ui-svelte": "^0.1.5",
 		"@supabase/supabase-js": "^2.21.0",
 		"@sveltejs/adapter-vercel": "^2.4.3",
+		"@types/marked": "^4.0.8",
 		"@vercel/analytics": "^1.0.0",
 		"langchain": "^0.0.96",
+		"gpt3-tokenizer": "^1.1.5",
+		"isomorphic-dompurify": "^1.5.0",
+		"marked": "^4.2.12",
+		"openai": "^3.2.1",
+		"sse.js": "^0.6.1",
 		"web-vitals": "^3.3.1"
 	}
 }
