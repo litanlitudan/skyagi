@@ -22,7 +22,12 @@ export const load = (async ({ params, fetch, locals }) => {
 
     if (!data.success) {
         return {
-            body: {}
+            body: {},
+            error: {
+                'errorCode': data.status,
+                'errorMsg': data.error,
+                'errorName': 'Agent Error'
+            }
         }
     }
 

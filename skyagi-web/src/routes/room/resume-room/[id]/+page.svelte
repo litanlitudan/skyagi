@@ -3,6 +3,7 @@
 	import { Input, Select, Label, Button } from 'flowbite-svelte';
 	export let data;
 	import { browser } from '$app/environment';
+	import Error from '$lib/Error.svelte';
 	export const conversationId = data.conversation_id;
 	export const user = data.user;
 	export const userId = data.userId;
@@ -13,6 +14,7 @@
 	export const modelData = data.models;
 	export const chatName = data.chatName;
 	export const messages = data.messages;
+	let error = data.error;
 
 	import modelTokenDataStore from '$lib/room-store.js';
 	import { globalAvatarImageList } from '$lib/stores.js';
@@ -223,6 +225,9 @@
 		/>
 	</div>
 </div>
+{#if error}
+	<Error errorCode={error.errorCode} errorName={error.errorName} errorMsg={error.errorMsg} />
+{/if}
 
 <style>
 	.scroller {
