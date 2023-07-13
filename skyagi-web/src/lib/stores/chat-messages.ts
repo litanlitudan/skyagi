@@ -1,6 +1,7 @@
 import { StoreMessageRole, type StoreMessageType } from '$lib/types';
 import { SSE } from 'sse.js';
 import { get, writable } from 'svelte/store';
+import modelTokenDataStore from '$lib/room-store.js';
 
 export interface ChatTranscript {
   messages: StoreMessageType[];
@@ -16,18 +17,26 @@ const { subscribe, update, ...store } = writable<ChatTranscript>({
 const set = async (query: string) => {
   updateMessages(query, StoreMessageRole.USER_AGENT, 'Me', 'loading');
 
+  let modelTokenData: any[] = JSON.parse(get(modelTokenDataStore));
+  console.log('modelTokenData', modelTokenData);
+
+  const recipient_agent_id = get(currentAgentId);
+  const modelDataForCurrentAgent: any = modelTokenData.filter(data => data.agent_id === recipient_agent_id)[0];
+  console.log('modelDataForCurrentAgent', modelDataForCurrentAgent);
+
   const request = {
     conversation_id: get(conversationId),
     initiate_agent_id: get(userAgentId),
-    recipient_agent_id: get(currentAgentId),
+    recipient_agent_id: recipient_agent_id,
     recipient_agent_model_settings: {
       llm: {
-        type: "ChatOpenAI",
-        provider: "OpenAI",
-        name: "openai-gpt-3.5-turbo",
+        type: modelDataForCurrentAgent.data.type,
+        provider: modelDataForCurrentAgent.data.provider,
+        name: modelDataForCurrentAgent.data.name,
         args: {
           modelName: "gpt-3.5-turbo",
-          maxTokens: 1500,
+          maxTokens: modelDataForCurrentAgent.data.args.maxTokens,
+          openAIApiKey: modelDataForCurrentAgent.token,
         }
       },
       embedding: {
@@ -41,6 +50,8 @@ const set = async (query: string) => {
     },
     message: query,
   }
+
+  console.log('request', request);
 
   const eventSource = new SSE('/api/send-conversation-message', {
     headers: {
