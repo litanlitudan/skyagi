@@ -86,7 +86,7 @@ const streamMessage = (e: MessageEvent) => {
     }
 
     if (get(answer) === '...') answer.set('');
-
+    console.log('e.data', e.data);
     if (e.data.match(/\"\{(.*?)\}\"/g)) {  // TODO: handle metadata
       const metaData = JSON.parse(e.data);
       console.log('metaData', metaData);
