@@ -16,8 +16,8 @@ export const load = (async ({ params, fetch, locals }) => {
         method: 'PUT',
         body: JSON.stringify({ conversation_id })
     });
-    const data = await resp.json();
-    if (!data.success) {
+    const {data: data, success} = await resp.json();
+    if (!success) {
         return {
             body: {}
         }
