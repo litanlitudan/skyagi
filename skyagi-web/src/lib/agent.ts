@@ -78,7 +78,7 @@ export class GenerativeAgent {
             this.embeddings
         );
 
-		let documents =	this.memories.map((mem, i) => new Document({
+		const documents =	this.memories.map((mem, i) => new Document({
 				pageContent: mem.content,
 				// This is the hack to create a ephemeral TWretriever with time history 
 				metadata: {
@@ -145,39 +145,39 @@ export class GenerativeAgent {
 	}
 
 	private async computeAgentSummary(): Promise<string> {
-		const prompt = PromptTemplate.fromTemplate(
-			`How would you summarize ${this.name}'s core characteristics given the` +
-				` following statements:\n` +
-				`{related_memories}` +
-				`Do not embellish.` +
-				`\n\nSummary: `
-		);
+        const prompt = PromptTemplate.fromTemplate(
+            "How would you summarize {name}'s core characteristics given the following statements:\n" +
+              "{relevantMemories}" +
+              "Do not embellish." +
+              "\n\nSummary: "
+          );
 
 		const relevantMemories = await this.fetchMemories(`${this.name}'s core characteristics`);
 		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
 
-		const chain = new LLMChain({llm: this.llm, prompt});
-		const res = await chain.run({ name: this.name, relatedMemories: relevantMemoriesStr });
-        return res.trim();
+		const chain = new LLMChain({llm: this.llm, prompt, verbose: true});
+		const res = await chain.call({ name: this.name, relevantMemories: relevantMemoriesStr });
+        return res.text.trim();
 	}
 
     private async getEntityFromObservation(observation: string): Promise<string> {
 		const prompt = PromptTemplate.fromTemplate(
-			`What is the observed entity in the following observation? ${observation}` + `\nEntity=`
+            "What is the observed entity in the following observation? {observation}" +
+            "\nEntity="
 		);
-		const chain = new LLMChain({llm: this.llm, prompt});
-		const res = await chain.run({ observation: observation });
-        return res.trim();
+		const chain = new LLMChain({llm: this.llm, prompt, verbose: true});
+		const res = await chain.call({ observation });
+        return res.text.trim();
 	}
 
     private async getEntityAction(observation: string, entityName: string): Promise<string> {
-		const prompt = PromptTemplate.fromTemplate(
-			`What is the {entity} doing in the following observation? ${observation}` +
-				`\nThe {entity} is`
-		);
-		const chain = new LLMChain({llm: this.llm, prompt});
-		const res = await chain.run({ entity: entityName, observation: observation });
-        return res.trim();
+        const prompt = PromptTemplate.fromTemplate(
+            "What is the {entity} doing in the following observation? {observation}" +
+              "\nThe {entity} is"
+          );
+		const chain = new LLMChain({llm: this.llm, prompt, verbose: true});
+		const res = await chain.call({ entity: entityName, observation });
+        return res.text.trim();
 	}
 
     private formatMemoriesToSummarize(relevantMemories: Document[]): string {
@@ -206,8 +206,8 @@ export class GenerativeAgent {
 		return content.join('\n');
 	}
 
-	private async getSummary(forceRefresh: boolean = false): Promise<string> {
-		let summary = await this.computeAgentSummary();
+	private async getSummary(forceRefresh = false): Promise<string> {
+		const summary = await this.computeAgentSummary();
 
 		return (
 			`Name: ${this.name} (age: ${this.age})` +
@@ -220,19 +220,19 @@ export class GenerativeAgent {
 		const entityName = await this.getEntityFromObservation(observation);
 		const entityAction = await this.getEntityAction(observation, entityName);
 		const q1 = `What is the relationship between ${this.name} and ${entityName}`;
-		let relevantMemories = await this.fetchMemories(q1);
+		const relevantMemories = await this.fetchMemories(q1);
 		const q2 = `${entityName} is ${entityAction}`;
-        let relevantMemories2 = await this.fetchMemories(q2);
+        const relevantMemories2 = await this.fetchMemories(q2);
 		relevantMemories.concat(relevantMemories2);
 
 		const contextStr = this.formatMemoriesToSummarize(relevantMemories);
 		const prompt = PromptTemplate.fromTemplate(
-			`${q1}?\nContext from memory:\n${contextStr}\nRelevant context: `
+			`{q1}?\nContext from memory:\n{contextStr}\nRelevant context: `
 		);
 
-		const chain = new LLMChain({llm: this.llm, prompt});
-        const res = await chain.run({ q1: q1, contextStr: contextStr.trim() });
-        return res.trim();
+		const chain = new LLMChain({llm: this.llm, prompt, verbose: true});
+        const res = await chain.call({ q1: q1, contextStr: contextStr.trim() });
+        return res.text.trim();
 	}
 
     private async getMemoriesUntilLimit(consumedTokens: number): Promise<string> {
@@ -254,7 +254,7 @@ export class GenerativeAgent {
 		return result.reverse().join('; ');
 	}
 
-    private async scoreMemoryImportance(memoryContent: string, weight: number = 0.15): Promise<number> {
+    private async scoreMemoryImportance(memoryContent: string, weight = 0.15): Promise<number> {
 		const prompt = PromptTemplate.fromTemplate(
 			`On the scale of 1 to 10, where 1 is purely mundane` +
 				` (e.g., brushing teeth, making bed) and 10 is` +
@@ -264,9 +264,9 @@ export class GenerativeAgent {
 				`\nMemory: {memoryContent}` +
 				`\nRating: `
 		);
-		const chain = new LLMChain({llm : this.llm, prompt});
-        const res = await chain.run({ memoryContent: memoryContent }); 
-		const score = res.trim();
+		const chain = new LLMChain({llm : this.llm, prompt, verbose: true});
+        const res = await chain.call({ memoryContent: memoryContent }); 
+		const score = res.text.trim();
 		const match = score.match(/^\D*(\d+)/);
 		if (match) {
 			return (parseFloat(match[1]) / 10) * weight;
@@ -275,24 +275,24 @@ export class GenerativeAgent {
 		}
 	}
 
-    private async getTopicsOfReflection(lastK: number = 50): Promise<[string, string, string]> {
+    private async getTopicsOfReflection(lastK = 50): Promise<[string, string, string]> {
 		const prompt = PromptTemplate.fromTemplate(
 			`{observations}\n\n` +
 				`Given only the information above, what are the 3 most salient` +
 				` high-level questions we can answer about the subjects in the statements?` +
 				` Provide each question on a new line.\n\n`
 		);
-		const reflectionChain = new LLMChain({llm : this.llm, prompt});
+		const reflectionChain = new LLMChain({llm : this.llm, prompt, verbose: true});
 		const observations = this.memories.slice(-lastK);
 		const observationStr = observations.map(o => o.content).join('\n');
-		const result = await reflectionChain.run({ observations: observationStr });
-        const ress = parseList(result);
+		const result = await reflectionChain.call({ observations: observationStr });
+        const ress = parseList(result.text);
         return [ress[0], ress[1], ress[2]];
 	}
 
     private async getInsightsOnTopic(topic: string): Promise<string[]> {
 		const prompt = PromptTemplate.fromTemplate(
-			`Statements about ${topic}\n` +
+			`Statements about {topic}\n` +
 				`{relatedStatements}\n\n` +
 				`What 5 high-level insights can you infer from the above statements?` +
 				` (example format: insight (because of 1, 5, 3))`
@@ -302,10 +302,10 @@ export class GenerativeAgent {
 			.map((memory, i) => `${i + 1}. ${memory.pageContent}`)
 			.join('\n');
 		const reflectionChain = new LLMChain(
-			{llm : this.llm, prompt}
+			{llm : this.llm, prompt, verbose: true}
 		);
-		const result = await reflectionChain.run({ topic: topic, relatedStatements: relatedStatements });
-		return parseList(result);
+		const result = await reflectionChain.call({ topic, relatedStatements });
+		return parseList(result.text);
 	}
 
     private async addNewMemLocal(content: string): Promise<void> {
@@ -352,7 +352,7 @@ export class GenerativeAgent {
 				"\n{agentName}'s status: {agentStatus}" +
 				"\nSummary of relevant context from {agentName}'s memory:" +
 				'\n{relevantMemories}' +
-				'\nMost recent observations: {recentObservations}' +
+				'\nMost recent observations: {mostRecentMemories}' +
 				'\nObservation: {observation}' +
 				'\n\n' +
 				suffix
@@ -369,22 +369,22 @@ export class GenerativeAgent {
 			hour12: true
 		});
 
-		let kwargs = {
+		const kwargs = {
 			agentSummaryDescription,
 			currentTime: currentTimeStr,
 			relevantMemories: relevantMemoriesStr,
 			agentName: this.name,
 			observation,
 			agentStatus: this.status,
-            recentObservations: ""
+            mostRecentMemories: ""
 		};
 
 		const consumedTokens = await this.llm.getNumTokens(
             await prompt.format({...kwargs })
 		);
-		kwargs.recentObservations = await this.getMemoriesUntilLimit(consumedTokens);
+		kwargs.mostRecentMemories = await this.getMemoriesUntilLimit(consumedTokens);
 
-		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt });
+		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt, verbose: true });
 		const result = await actionPredictionChain.call(kwargs);
 
         return result.text.trim();

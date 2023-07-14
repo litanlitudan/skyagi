@@ -38,8 +38,8 @@ export const POST = (async ({ request, locals }: { request: Request; locals: App
 	const fullResult = await agent.generateRspn(newMessage, callToActionTemplate);
 	const result = fullResult.trim().split('\n')[0];
 
-	var respMsg: string = "";
-	var ifContinue: boolean = false;
+	let respMsg = "";
+	let ifContinue = false;
 	if (result.includes('GOODBYE:')) {
 		respMsg = result.split('GOODBYE:').pop()!.trim();
 		ifContinue = false;
