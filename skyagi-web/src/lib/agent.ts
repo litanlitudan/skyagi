@@ -155,7 +155,7 @@ export class GenerativeAgent {
 		const relevantMemories = await this.fetchMemories(`${this.name}'s core characteristics`);
 		const relevantMemoriesStr = relevantMemories.map(mem => mem.pageContent).join('\n');
 
-		const chain = new LLMChain({llm: this.llm, prompt, verbose: true});
+		const chain = new LLMChain({llm: this.llm, prompt, verbose: import.meta.env.VITE_VERBOSE});
 		const res = await chain.call({ name: this.name, relevantMemories: relevantMemoriesStr });
         return res.text.trim();
 	}
@@ -165,7 +165,7 @@ export class GenerativeAgent {
             "What is the observed entity in the following observation? {observation}" +
             "\nEntity="
 		);
-		const chain = new LLMChain({llm: this.llm, prompt, verbose: true});
+		const chain = new LLMChain({llm: this.llm, prompt, verbose: import.meta.env.VITE_VERBOSE});
 		const res = await chain.call({ observation });
         return res.text.trim();
 	}
@@ -175,7 +175,7 @@ export class GenerativeAgent {
             "What is the {entity} doing in the following observation? {observation}" +
               "\nThe {entity} is"
           );
-		const chain = new LLMChain({llm: this.llm, prompt, verbose: true});
+		const chain = new LLMChain({llm: this.llm, prompt, verbose: import.meta.env.VITE_VERBOSE});
 		const res = await chain.call({ entity: entityName, observation });
         return res.text.trim();
 	}
@@ -230,7 +230,7 @@ export class GenerativeAgent {
 			`{q1}?\nContext from memory:\n{contextStr}\nRelevant context: `
 		);
 
-		const chain = new LLMChain({llm: this.llm, prompt, verbose: true});
+		const chain = new LLMChain({llm: this.llm, prompt, verbose: import.meta.env.VITE_VERBOSE});
         const res = await chain.call({ q1: q1, contextStr: contextStr.trim() });
         return res.text.trim();
 	}
@@ -264,7 +264,7 @@ export class GenerativeAgent {
 				`\nMemory: {memoryContent}` +
 				`\nRating: `
 		);
-		const chain = new LLMChain({llm : this.llm, prompt, verbose: true});
+		const chain = new LLMChain({llm : this.llm, prompt, verbose: import.meta.env.VITE_VERBOSE});
         const res = await chain.call({ memoryContent: memoryContent }); 
 		const score = res.text.trim();
 		const match = score.match(/^\D*(\d+)/);
@@ -282,7 +282,7 @@ export class GenerativeAgent {
 				` high-level questions we can answer about the subjects in the statements?` +
 				` Provide each question on a new line.\n\n`
 		);
-		const reflectionChain = new LLMChain({llm : this.llm, prompt, verbose: true});
+		const reflectionChain = new LLMChain({llm : this.llm, prompt, verbose: import.meta.env.VITE_VERBOSE});
 		const observations = this.memories.slice(-lastK);
 		const observationStr = observations.map(o => o.content).join('\n');
 		const result = await reflectionChain.call({ observations: observationStr });
@@ -302,7 +302,7 @@ export class GenerativeAgent {
 			.map((memory, i) => `${i + 1}. ${memory.pageContent}`)
 			.join('\n');
 		const reflectionChain = new LLMChain(
-			{llm : this.llm, prompt, verbose: true}
+			{llm : this.llm, prompt, verbose: import.meta.env.VITE_VERBOSE}
 		);
 		const result = await reflectionChain.call({ topic, relatedStatements });
 		return parseList(result.text);
@@ -384,7 +384,7 @@ export class GenerativeAgent {
 		);
 		kwargs.mostRecentMemories = await this.getMemoriesUntilLimit(consumedTokens);
 
-		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt, verbose: true });
+		const actionPredictionChain = new LLMChain({ llm: this.llm, prompt, verbose: import.meta.env.VITE_VERBOSE });
 		const result = await actionPredictionChain.call(kwargs);
 
         return result.text.trim();
