@@ -188,3 +188,12 @@ export function get_all_embeddings(): string[] {
     }
     return all_embeddings;
 }
+export function get_all_embeddings_data() {
+    const all_embeddings = [];
+    for (const [provider, template] of Object.entries(providerTemplates)) {
+        for (const embedding of (template.models.embeddings || [])) {
+            all_embeddings.push(embedding);
+        }
+    }
+    return all_embeddings;
+}

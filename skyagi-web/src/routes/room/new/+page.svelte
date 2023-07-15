@@ -19,6 +19,7 @@
 	import { browser } from '$app/environment';
 	export const characterData = data.agents;
 	export const modelData = data.models;
+	export const embeddingData = data.embeddings;
 	export const userId = data.userId;
 	import modelTokenDataStore from '$lib/room-store.js';
 	import { globalAvatarImageList } from '$lib/stores.js';
@@ -227,14 +228,24 @@
 			})
 		});
 		let conversation_id = await conversationResponse.json();
-		modelTokenDataStore.update(currentData => {
-			return JSON.stringify(
-				checkedCharacterGroup.map(item => ({
+		let modelTokenDataArray = checkedCharacterGroup.map(item => ({
 					agent_id: item.id,
 					model: item.model,
 					token: item.modelTokenPair[item.model],
 					data: findModelDataByName(item.model)
 				}))
+		let modelTokenDataDict = {}
+		for (let i=0; i<modelTokenDataArray.length; i++){
+			modelTokenDataArray[i].data.args.openAIApiKey = modelTokenDataArray[i].token
+			console.log("updated")
+			modelTokenDataDict[modelTokenDataArray[i].agent_id] = {
+				data: modelTokenDataArray[i].data,
+				embedding: embeddingData[0]
+			}
+		}
+		modelTokenDataStore.update(currentData => {
+			return JSON.stringify(
+				modelTokenDataDict
 			);
 		});
 		if (conversation_id.success) {
