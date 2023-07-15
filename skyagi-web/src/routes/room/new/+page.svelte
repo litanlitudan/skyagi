@@ -237,10 +237,11 @@
 		let modelTokenDataDict = {}
 		for (let i=0; i<modelTokenDataArray.length; i++){
 			modelTokenDataArray[i].data.args.openAIApiKey = modelTokenDataArray[i].token
-			console.log("updated")
+			let embedding = embeddingData[0]
+			embedding.args.openAIApiKey = modelTokenDataArray[i].token
 			modelTokenDataDict[modelTokenDataArray[i].agent_id] = {
 				data: modelTokenDataArray[i].data,
-				embedding: embeddingData[0]
+				embedding: embedding
 			}
 		}
 		modelTokenDataStore.update(currentData => {

@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 import { browser } from "$app/environment";
 
-const defaultValue = JSON.stringify([])
+const defaultValue = JSON.stringify({})
 const initialValue = browser ? sessionStorage.getItem('modelTokenDataStore') ?? defaultValue : defaultValue;
 
 
