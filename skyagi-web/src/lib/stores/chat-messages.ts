@@ -1,6 +1,7 @@
 import { StoreMessageRole, type StoreMessageType } from '$lib/types';
 import { SSE } from 'sse.js';
 import { get, writable } from 'svelte/store';
+import modelTokenDataStore from '$lib/room-store.js';
 
 export interface ChatTranscript {
   messages: StoreMessageType[];
@@ -16,26 +17,32 @@ const { subscribe, update, ...store } = writable<ChatTranscript>({
 const set = async (query: string) => {
   updateMessages(query, StoreMessageRole.USER_AGENT, 'Me', 'loading');
 
+  let modelTokenData: { [key: string]: any } = JSON.parse(get(modelTokenDataStore));
+  const recipient_agent_id = get(currentAgentId);
+  const modelDataForCurrentAgent = modelTokenData[recipient_agent_id];
+
   const request = {
     conversation_id: get(conversationId),
     initiate_agent_id: get(userAgentId),
-    recipient_agent_id: get(currentAgentId),
+    recipient_agent_id: recipient_agent_id,
     recipient_agent_model_settings: {
       llm: {
-        type: "ChatOpenAI",
-        provider: "OpenAI",
-        name: "openai-gpt-3.5-turbo",
+        type: modelDataForCurrentAgent.data.type,
+        provider: modelDataForCurrentAgent.data.provider,
+        name: modelDataForCurrentAgent.data.name,
         args: {
-          modelName: "gpt-3.5-turbo",
-          maxTokens: 1500,
+          modelName: modelDataForCurrentAgent.data.args.modelName,
+          maxTokens: modelDataForCurrentAgent.data.args.maxTokens,
+          openAIApiKey: modelDataForCurrentAgent.data.args.openAIApiKey,
         }
       },
       embedding: {
-        type: "OpenAIEmbeddings",
-        provider: "OpenAI",
-        name: "openai-text-embedding-ada-002",
+        type: modelDataForCurrentAgent.embedding.type,
+        provider: modelDataForCurrentAgent.embedding.provider,
+        name: modelDataForCurrentAgent.embedding.name,
         args: {
-          modelName: "text-embedding-ada-002",
+          modelName: modelDataForCurrentAgent.embedding.args.modelName,
+          openAIApiKey: modelDataForCurrentAgent.embedding.args.openAIApiKey,
         }
       }
     },
