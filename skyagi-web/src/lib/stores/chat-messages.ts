@@ -17,11 +17,11 @@ const { subscribe, update, ...store } = writable<ChatTranscript>({
 const set = async (query: string) => {
   updateMessages(query, StoreMessageRole.USER_AGENT, 'Me', 'loading');
 
-  let modelTokenData: any[] = JSON.parse(get(modelTokenDataStore));
+  let modelTokenData: { [key: string]: any } = JSON.parse(get(modelTokenDataStore));
   console.log('modelTokenData', modelTokenData);
 
   const recipient_agent_id = get(currentAgentId);
-  const modelDataForCurrentAgent: any = modelTokenData.filter(data => data.agent_id === recipient_agent_id)[0];
+  const modelDataForCurrentAgent = modelTokenData[recipient_agent_id];
   console.log('modelDataForCurrentAgent', modelDataForCurrentAgent);
 
   const request = {
@@ -34,17 +34,18 @@ const set = async (query: string) => {
         provider: modelDataForCurrentAgent.data.provider,
         name: modelDataForCurrentAgent.data.name,
         args: {
-          modelName: "gpt-3.5-turbo",
+          modelName: modelDataForCurrentAgent.data.args.modelName,
           maxTokens: modelDataForCurrentAgent.data.args.maxTokens,
-          openAIApiKey: modelDataForCurrentAgent.token,
+          openAIApiKey: modelDataForCurrentAgent.data.args.openAIApiKey,
         }
       },
       embedding: {
-        type: "OpenAIEmbeddings",
-        provider: "OpenAI",
-        name: "openai-text-embedding-ada-002",
+        type: modelDataForCurrentAgent.embedding.type,
+        provider: modelDataForCurrentAgent.embedding.provider,
+        name: modelDataForCurrentAgent.embedding.name,
         args: {
-          modelName: "text-embedding-ada-002",
+          modelName: modelDataForCurrentAgent.embedding.args.modelName,
+          openAIApiKey: modelDataForCurrentAgent.embedding.args.openAIApiKey,
         }
       }
     },
