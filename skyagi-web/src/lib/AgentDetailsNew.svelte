@@ -47,26 +47,26 @@
 			<Table color="gray">
 				<TableBody>
 					<TableBodyRow>
-						<div class="text-zinc-400 text-xl font-extrabold my-2 font-mono">Profile picture</div>
+						<div class="text-zinc-400 text-xl font-extrabold my-4 font-mono">Profile picture</div>
 						<div class="mb-4"><Avatar src={agentData.avatarPath} size="lg" /></div>
 					</TableBodyRow>
 					<TableBodyRow>
-						<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Name</div>
-						<div class="text-white text-xl font-extrabold mb-2 font-mono">{agentData.name}</div>
+						<div class="text-zinc-400 text-xl font-extrabold mt-4 font-mono">Name</div>
+						<div class="text-white text-xl font-extrabold mb-4 font-mono">{agentData.name}</div>
 					</TableBodyRow>
 					<TableBodyRow>
-						<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Age</div>
-						<div class="text-white text-xl font-extrabold mb-2 font-mono">{agentData.age}</div>
+						<div class="text-zinc-400 text-xl font-extrabold mt-4 font-mono">Age</div>
+						<div class="text-white text-xl font-extrabold mb-4 font-mono">{agentData.age}</div>
 					</TableBodyRow>
 					<TableBodyRow>
-						<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Personality</div>
-						<div class="text-white text-xl font-extrabold mb-2 font-mono">
+						<div class="text-zinc-400 text-xl font-extrabold mt-4 font-mono">Personality</div>
+						<div class="text-white text-xl font-extrabold mb-4 font-mono">
 							{agentData.personalities}
 						</div>
 					</TableBodyRow>
 					<TableBodyRow>
-						<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Social status</div>
-						<div class="text-white text-xl font-extrabold mb-2 font-mono">
+						<div class="text-zinc-400 text-xl font-extrabold mt-4 font-mono">Social status</div>
+						<div class="text-white text-xl font-extrabold mb-4 font-mono">
 							{agentData.socialStatus}
 						</div>
 					</TableBodyRow>
@@ -77,7 +77,7 @@
 							<div class="my-4">
 								<ul>
 									{#each agentData.memories as memory}
-										<li class="list-disc list-inside text-xl text-white text-left font-mono my-4">
+										<li class="text-xl text-white text-left font-mono my-6">
 											{memory}
 										</li>
 									{/each}
