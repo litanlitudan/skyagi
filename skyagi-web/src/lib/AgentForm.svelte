@@ -128,11 +128,13 @@
 <main>
 	<form on:submit|preventDefault={handleSubmit}>
 		<Label for="avatar-path" class="mb-8 w-1/4 text-white">
-			<div class="text-lg mb-2">Profile Picture:</div>
 			<div>
-				<Button id="avatar-path">
-					<Avatar src={agentData.avatarPath} size="lg" rounded />
-				</Button>
+				<div class="profileContainer">
+					<Button id="avatar-path">
+						<Avatar src={agentData.avatarPath} size="lg" rounded />
+					</Button>
+					<div class="text-lg mb-2" id="profileText">Profile Picture</div>
+				</div>
 				<Dropdown class="w-48 overflow-y-auto py-1 h-48">
 					{#each globalAvatarImageList as avatarImage, i}
 						<DropdownItem
@@ -201,3 +203,14 @@
 		<Button type="submit" size="xl">Submit</Button>
 	</form>
 </main>
+<style>
+.profileContainer {
+	display: grid;
+	align-items: center; 
+	grid-template-columns: 1.5fr 2fr;
+	column-gap: 20px;
+}
+#profileText {
+	text-transform: none;
+}
+</style>
