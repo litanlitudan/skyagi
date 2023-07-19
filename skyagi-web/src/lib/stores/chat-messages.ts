@@ -18,11 +18,8 @@ const set = async (query: string) => {
   updateMessages(query, StoreMessageRole.USER_AGENT, 'Me', 'loading');
 
   let modelTokenData: { [key: string]: any } = JSON.parse(get(modelTokenDataStore));
-  console.log('modelTokenData', modelTokenData);
-
   const recipient_agent_id = get(currentAgentId);
   const modelDataForCurrentAgent = modelTokenData[recipient_agent_id];
-  console.log('modelDataForCurrentAgent', modelDataForCurrentAgent);
 
   const request = {
     conversation_id: get(conversationId),
@@ -51,8 +48,6 @@ const set = async (query: string) => {
     },
     message: query,
   }
-
-  console.log('request', request);
 
   const eventSource = new SSE('/api/send-conversation-message', {
     headers: {
