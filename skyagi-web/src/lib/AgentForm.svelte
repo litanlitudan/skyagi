@@ -226,11 +226,9 @@
 						<Button type="button" size="sm" on:click={addMemory}>+</Button>
 					</div>
 					<div class="pt-10">
-						{#if $isAgentFormEditing}
-							<Button type="button" size="lg" class="" color="light" on:click={() => window.location.href = '/agent/'+agentData.id}
-								>Discard</Button
-							>
-						{/if}
+						<Button type="button" size="lg" class="" color="light" on:click={() => window.location.href = '/agent/'+agentData.id}
+							>Discard</Button
+						>
 						<Button type="submit" size="lg">Confirm</Button>
 					</div>
 			
