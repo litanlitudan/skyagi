@@ -26,6 +26,7 @@
 	import { goto } from '$app/navigation';
 	import type { User } from '@supabase/supabase-js';
 	import { globalAvatarImageList } from '$lib/stores.js';
+	import Error from '$lib/Error.svelte';
 
 	export let agentData: AgentDataType = {
 		id: '',
@@ -42,6 +43,10 @@
 	const minMemories = 5;
 
 	let showError = false;
+	let popUpError = false;
+	let errorCode = 1;
+	let errorMsg = '';
+	let errorName = '';
 
 	function validate(agentForm: AgentDataType) {
 		for (let index = 0; index < minMemories; index++) {
@@ -79,7 +84,10 @@
 				});
 				const data = await resp.json();
 				if (!data.success) {
-					alert(data.error);
+					popUpError = true;
+					errorCode = data.status;
+					errorName = 'Agent Error';
+					errorMsg = data.error;
 				} else {
 					isAgentFormEditing.set(false);
 				}
@@ -108,7 +116,10 @@
 
 				const data = await resp.json();
 				if (!data.success) {
-					alert(data.error);
+					popUpError = true;
+					errorCode = data.status;
+					errorName = 'Agent Error';
+					errorMsg = data.error;
 				} else {
 					goto(`/agent/${data.agent_id}`);
 				}
@@ -229,6 +240,8 @@
 		
 		</form>
 	</div>
+
+	<Error {popUpError} {errorName} {errorCode} {errorMsg} />
 </main>
 <style>
 	main {

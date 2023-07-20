@@ -19,13 +19,14 @@
 	import { browser } from '$app/environment';
 	export const characterData = data.agents;
 	export const modelData = data.models;
+	export const embeddingData = data.embeddings;
 	export const userId = data.userId;
 	import modelTokenDataStore from '$lib/room-store.js';
 	import { globalAvatarImageList } from '$lib/stores.js';
 	import Toast from '$lib/Toast.svelte';
 
 	import preSavedModelTokenDataStore from '$lib/token-store.js';
-	import { notifications } from '$lib/notifications.js';
+	import Error from '$lib/Error.svelte';
 	let preSavedModelTokenDataIsEmpty = $preSavedModelTokenDataStore.length == 0;
 	export let modelTokenPair = modelData.map(item => ({
 		[item.name]: ''
@@ -153,54 +154,54 @@
 				inputCharacters[i].model == '' ||
 				inputCharacters[i].modelTokenPair[inputCharacters[i].model] == ''
 			) {
-				return -1;
+				return 1;
 			}
 		}
 		if (selectedCount < 2) {
-			return -2;
+			return 2;
 		}
 		if (selectedCount > 4) {
-			return -3;
+			return 3;
 		}
 		if (inputChatName == '') {
-			return -4;
+			return 4;
 		}
 		if (inputPlayerCharacter == '') {
-			return -5;
+			return 5;
 		}
-		return 1;
+		return 0;
 	}
 
 	function findModelDataByName(modelName) {
 		let dataPoint = modelData.find(item => item.name == modelName);
 		return dataPoint.data;
 	}
+
+	const errorMsgs: { [index: number]: string } = {
+		1: "One or more characters' model or token is not specified",
+		2: 'Need to choose 2 or more characters',
+		3: 'Need to choose 4 or less characters',
+		4: 'Chat name is not specified',
+		5: 'Player character is not specified'
+	};
+
+	let popUpError = false;
+	let errorName = 'Conversation Error';
+	let errorMsg = '';
+
 	const handleCreateButton = async () => {
 		let createStatus = checkCreateButtonDisabled(
 			checkedCharacterGroup,
 			chatName,
 			playerCharacterId
 		);
-		if (createStatus == -1) {
-			notifications.danger("One or more characters' model or token is not specified", 2000);
+
+		if (createStatus != 0) {
+			errorMsg = errorMsgs[createStatus];
+			popUpError = true;
 			return null;
 		}
-		if (createStatus == -2) {
-			notifications.danger('Need to choose 2 or more characters', 2000);
-			return null;
-		}
-		if (createStatus == -3) {
-			notifications.danger('Need to choose 4 or less characters', 2000);
-			return null;
-		}
-		if (createStatus == -4) {
-			notifications.danger('Chat name is not specified', 2000);
-			return null;
-		}
-		if (createStatus == -5) {
-			notifications.danger('Player character is not specified', 2000);
-			return null;
-		}
+
 		let inputAgents = checkedCharacterGroup.map(item => ({
 			id: item.id,
 			embedding_model_settings: {
@@ -227,14 +228,25 @@
 			})
 		});
 		let conversation_id = await conversationResponse.json();
-		modelTokenDataStore.update(currentData => {
-			return JSON.stringify(
-				checkedCharacterGroup.map(item => ({
+		let modelTokenDataArray = checkedCharacterGroup.map(item => ({
 					agent_id: item.id,
 					model: item.model,
 					token: item.modelTokenPair[item.model],
 					data: findModelDataByName(item.model)
 				}))
+		let modelTokenDataDict = {}
+		for (let i=0; i<modelTokenDataArray.length; i++){
+			modelTokenDataArray[i].data.args.openAIApiKey = modelTokenDataArray[i].token
+			let embedding = embeddingData[0]
+			embedding.args.openAIApiKey = modelTokenDataArray[i].token
+			modelTokenDataDict[modelTokenDataArray[i].agent_id] = {
+				data: modelTokenDataArray[i].data,
+				embedding: embedding
+			}
+		}
+		modelTokenDataStore.update(currentData => {
+			return JSON.stringify(
+				modelTokenDataDict
 			);
 		});
 		if (conversation_id.success) {
@@ -366,6 +378,7 @@
 			/>
 		</div>
 	{/if}
+	<Error {errorName} {errorMsg} {popUpError} />
 </div>
 <Toast />
 

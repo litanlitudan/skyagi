@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { get_all_llms_data } from '$lib/model/model';
+import { get_all_embeddings_data, get_all_llms_data } from '$lib/model/model';
 
 export const load = (async ({ fetch, locals }) => {
     const session = await locals.getSession();
@@ -26,10 +26,11 @@ export const load = (async ({ fetch, locals }) => {
     }
 
     const models = get_all_llms_data().map((model) => ({ name: model.name, value: model.name, data:model }));
-
+    const embeddings = get_all_embeddings_data()
     return {
         agents: agents,
         models: models,
-        userId: user_id
+        userId: user_id,
+        embeddings: embeddings
     }
 }) satisfies PageServerLoad;

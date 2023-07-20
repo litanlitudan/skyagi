@@ -3,6 +3,7 @@
 	import { Input, Select, Label, Button } from 'flowbite-svelte';
 	export let data;
 	import { browser } from '$app/environment';
+	import Error from '$lib/Error.svelte';
 	export const conversationId = data.conversation_id;
 	export const user = data.user;
 	export const userId = data.userId;
@@ -11,8 +12,10 @@
 	export const userAgentIds = data.userAgentIds;
 	export const userAgentNames = data.userAgentNames;
 	export const modelData = data.models;
+	export const embeddingData = data.embeddings;
 	export const chatName = data.chatName;
 	export const messages = data.messages;
+	let error = data.error;
 
 	import modelTokenDataStore from '$lib/room-store.js';
 	import { globalAvatarImageList } from '$lib/stores.js';
@@ -140,14 +143,25 @@
 	}
 	$: createDisabled = checkCreateButtonDisabled(characters, chatName, playerCharacterId);
 	const handleCreateButton = async () => {
-		modelTokenDataStore.update(currentData => {
-			return JSON.stringify(
-				characters.map(item => ({
+		let modelTokenDataArray = characters.map(item => ({
 					agent_id: item.id,
 					model: item.model,
 					token: item.modelTokenPair[item.model],
 					data: findModelDataByName(item.model)
 				}))
+		let modelTokenDataDict = {}
+		for (let i=0; i<modelTokenDataArray.length; i++){
+			modelTokenDataArray[i].data.args.openAIApiKey = modelTokenDataArray[i].token
+			let embedding = embeddingData[0]
+			embedding.args.openAIApiKey = modelTokenDataArray[i].token
+			modelTokenDataDict[modelTokenDataArray[i].agent_id] = {
+				data: modelTokenDataArray[i].data,
+				embedding: embedding
+			}
+		}
+		modelTokenDataStore.update(currentData => {
+			return JSON.stringify(
+				modelTokenDataDict
 			);
 		});
 		window.location.href = '/room/' + conversationId;
@@ -223,6 +237,9 @@
 		/>
 	</div>
 </div>
+{#if error}
+	<Error errorCode={error.errorCode} errorName={error.errorName} errorMsg={error.errorMsg} />
+{/if}
 
 <style>
 	.scroller {

@@ -5,15 +5,19 @@
 	import type { PageData } from './$types';
 	import { isAgentFormEditing } from '$lib/stores';
 	import type { User } from '@supabase/supabase-js';
+	import Error from '$lib/Error.svelte';
 
 	export let data: PageData;
 
 	let agentData: AgentDataType = data.body;
 	let user: User = data.user;
+	let error = data.error;
 </script>
 
-<!-- {#if $isAgentFormEditing} -->
-<AgentForm {agentData} {user} />
-<!-- {:else}
-	<AgentDetailsNew {agentData} {user} />
-{/if} -->
+
+<AgentDetailsNew {agentData} {user} />
+
+
+{#if agentData == null && error}
+	<Error errorCode={error.errorCode} errorName={error.errorName} errorMsg={error.errorMsg} />
+{/if}
