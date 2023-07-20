@@ -12,8 +12,8 @@
 	let user: User = data.user;
 </script>
 
-{#if $isAgentFormEditing}
-	<AgentForm {agentData} {user} />
-{:else}
+<!-- {#if $isAgentFormEditing} -->
+<AgentForm {agentData} {user} />
+<!-- {:else}
 	<AgentDetailsNew {agentData} {user} />
-{/if}
+{/if} -->

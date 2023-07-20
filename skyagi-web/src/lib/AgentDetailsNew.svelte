@@ -44,40 +44,41 @@
 <main>
 	{#if agentData && Object.keys(agentData).length !== 0 && !agentData.archived}
 		<div id="globalGrid">
-			<Table color="gray">
+			<div id="outerColor" class="bg-gray-800 rounded-lg">
+			<Table color="custom" class="bg-gray-800 rounded-lg">
 				<TableBody>
-					<TableBodyRow>
-						<div class="text-zinc-400 text-xl font-extrabold my-2 font-mono">Profile picture</div>
-						<div class="mb-4"><Avatar src={agentData.avatarPath} size="lg" /></div>
+					<TableBodyRow class="border-gray-700">
+							<div class="text-zinc-400 text-sm font-light my-2">Profile Picture</div>
+							<div class="mb-4"><Avatar src={agentData.avatarPath} size="lg" /></div>
 					</TableBodyRow>
-					<TableBodyRow>
-						<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Name</div>
-						<div class="text-white text-xl font-extrabold mb-2 font-mono">{agentData.name}</div>
+					<TableBodyRow class="border-gray-700">
+							<div class="text-zinc-400 text-sm font-light mt-2 ">Name</div>
+							<div class="text-white text-xl font-light mb-2 ">{agentData.name}</div>
 					</TableBodyRow>
-					<TableBodyRow>
-						<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Age</div>
-						<div class="text-white text-xl font-extrabold mb-2 font-mono">{agentData.age}</div>
+					<TableBodyRow class="border-gray-700">
+							<div class="text-zinc-400 text-sm font-light mt-2 ">Age</div>
+							<div class="text-white text-xl font-light mb-2 ">{agentData.age}</div>
 					</TableBodyRow>
-					<TableBodyRow>
-						<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Personality</div>
-						<div class="text-white text-xl font-extrabold mb-2 font-mono">
-							{agentData.personalities}
-						</div>
+					<TableBodyRow class="border-gray-700">
+							<div class="text-zinc-400 text-sm font-light mt-2 ">Personality</div>
+							<div class="text-white text-xl font-light mb-2 ">
+								{agentData.personalities}
+							</div>
 					</TableBodyRow>
-					<TableBodyRow>
-						<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Social status</div>
-						<div class="text-white text-xl font-extrabold mb-2 font-mono">
-							{agentData.socialStatus}
-						</div>
+					<TableBodyRow class="border-gray-700">
+							<div class="text-zinc-400 text-sm font-light mt-2 ">Social status</div>
+							<div class="text-white text-xl font-light mb-2 ">
+								{agentData.socialStatus}
+							</div>
 					</TableBodyRow>
-					<TableBodyRow>
+					<TableBodyRow class="border-gray-700">
 						{#if agentData.memories}
-							<div class="text-zinc-400 text-xl font-extrabold mt-2 font-mono">Memory</div>
+							<div class="text-zinc-400 text-sm font-light mt-2 ">Memory</div>
 
 							<div class="my-4">
 								<ul>
 									{#each agentData.memories as memory}
-										<li class="list-disc list-inside text-xl text-white text-left font-mono my-4">
+										<li class="list-disc font-light list-inside text-xl text-white text-left  my-4">
 											{memory}
 										</li>
 									{/each}
@@ -85,13 +86,14 @@
 							</div>
 						{/if}
 					</TableBodyRow>
-					<TableBodyRow>
-						<div class="my-2">
-							<Button type="button" color="dark" size="xl" on:click={handleEdit}>Edit Agent</Button>
-						</div>
+					<TableBodyRow class="border-gray-700">
+							<div class="my-2">
+								<Button type="button" class="bg-blue-700" size="xl" on:click={handleEdit}>Edit Agent</Button>
+							</div>
 					</TableBodyRow>
 				</TableBody>
 			</Table>
+		</div>
 		</div>
 	{:else}
 		<p>Agent not found</p>
@@ -131,6 +133,14 @@
 		display: grid;
 		grid-template-columns: 70%;
 		grid-auto-flow: row;
+		justify-content: center;
+		/* grid-auto-columns: 400px 400px; */
+	}
+	#outerColor {
+		display: grid;
+		grid-template-columns: 90%;
+		grid-auto-flow: row;
+		justify-content: center;
 		/* grid-auto-columns: 400px 400px; */
 	}
 </style>
