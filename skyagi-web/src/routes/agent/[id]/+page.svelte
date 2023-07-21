@@ -1,5 +1,5 @@
 <script lang="ts">
-	import AgentDetails from '$lib/AgentDetails.svelte';
+	import AgentDetailsNew from '$lib/AgentDetailsNew.svelte';
 	import AgentForm from '$lib/AgentForm.svelte';
 	import type { AgentDataType } from '$lib/types';
 	import type { PageData } from './$types';
@@ -14,11 +14,9 @@
 	let error = data.error;
 </script>
 
-{#if $isAgentFormEditing}
-	<AgentForm {agentData} {user} />
-{:else}
-	<AgentDetails {agentData} {user} />
-{/if}
+
+<AgentDetailsNew {agentData} {user} />
+
 
 {#if agentData == null && error}
 	<Error errorCode={error.errorCode} errorName={error.errorName} errorMsg={error.errorMsg} />
