@@ -17,7 +17,7 @@ export const load = (async ({ params, fetch, locals }) => {
         method: 'PUT',
         body: JSON.stringify({ conversation_id })
     });
-    const {data: data, success} = await resp.json();
+    const { data: data, success } = await resp.json();
     if (!success) {
         return {
             body: {},
@@ -29,11 +29,10 @@ export const load = (async ({ params, fetch, locals }) => {
         }
     }
 
-    const chatName = data.data.name
-    console.log(chatName)
-    const agentIds = data.data.agent_ids
-    const userAgentIds = data.data.user_agent_ids
-    const messages = data.data.messages
+    const chatName = data.name;
+    const agentIds = data.agent_ids;
+    const userAgentIds = data.user_agent_ids;
+    const messages = data.messages;
 
     const agentIdToAgentData = async (agent_id) => {
         let agentResponse = await fetch('/api/get-agent', {
