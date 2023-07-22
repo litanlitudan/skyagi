@@ -22,8 +22,16 @@
 			};
 		});
 	});
+	let popUpError = false;
+	let errorName = 'Selection Error';
+	let errorMsg = '';
 
 	function handleResumeRoomClick() {
+		if (activeId == ""){
+			popUpError = true
+			errorMsg = 'Please select a conversation to resume'
+			return false
+		}
 		window.location.href = '/room/resume-room/' + activeId;
 	}
 
@@ -88,6 +96,7 @@
 			<Button size="xl" on:click={handleCreateAgentClick}>Create new agent</Button>
 		</div>
 	</div>
+	<Error {errorName} {errorMsg} {popUpError} />
 </div>
 
 <style>

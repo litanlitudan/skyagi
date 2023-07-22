@@ -204,7 +204,7 @@
 				</Label>
 			</div>
 			<div class="mt-4">
-				<Button size="xl" on:click={handleCreateButton}>Start the conversation</Button>
+				<Button size="xl" on:click={handleCreateButton}>Resume Conversation</Button>
 			</div>
 		</div>
 	</div>
