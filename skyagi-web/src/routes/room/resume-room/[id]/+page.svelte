@@ -169,13 +169,17 @@
 </script>
 
 <Label class="mb-8 w-1/2 text-white normal-case">
-	<div class="text-2xl">
-		Conversation name: <span class="text-blue-500">{chatName}</span>
-	</div>
+	<!-- <div class="h-4 text-zinc-500 text-xl font-light" id="profileText">
+		Conversation Name 
+	</div> -->
+	<div class="h-4 text-gray-200 text-2xl mt-3">{chatName}</div>
 </Label>
 
 <div id="globalGrid">
 	<div>
+		<div class="h-4 text-zinc-500 text-lg font-light" id="profileText">
+			Select an agent and specify his/her LLM info
+		</div>
 		<div class="scroller">
 			{#each characters as character, i}
 				<div class="characterInfoSet">
@@ -191,8 +195,11 @@
 		<div>
 			<div>
 				<Label class="mb-10 w-1/2 test-white normal-case">
-					<div class="text-2xl">
-						The agent that you play is: {userAgentNames[0]}
+					<div class="h-4 text-zinc-500 text-lg font-light">
+						You will be playing
+					</div>
+					<div class="h-4 text-gray-200 text-xl mt-3">
+						{userAgentNames[0]}
 					</div>
 				</Label>
 			</div>
@@ -204,31 +211,32 @@
 
 	<div>
 		<Label class="mb-8 w-1/2 text-white normal-case">
-			<div class="text-3xl mb-8">
-				Agent: <span class="text-blue-500">{lastClickedCharacterName}</span>
+			<div class="h-4 text-zinc-500 text-lg font-light">
+				Agent
 			</div>
+			<div class="h-4 text-gray-200 text-xl mt-3">{lastClickedCharacterName}</div>
 		</Label>
 		<Label class="mb-8 w-1/2 text-white normal-case">
-			<div class="text-2xl mb-8">Select an LLM Model</div>
+			<div class="text-zinc-500 text-lg font-light">Select an LLM Model</div>
 			<Select
 				id="modelSelect"
-				class="font-semibold bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+				defaultClass='mt-2 h-12 font-semibold text-base text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
 				placeholder="Select Model"
 				bind:value={selectedModel}
 				on:change={handleModelChange}
 			>
 				{#each models as { value, name }}
-					<option {value} class="text-black font-semibold">{name}</option>
+					<option {value} class="text-black font-semibold text-lg">{name}</option>
 				{/each}
 			</Select>
 		</Label>
 
 		<Label class="mb-8 w-1/2 text-white normal-case">
-			<div class="text-2xl">Model Token</div>
+			<div class="text-zinc-500 text-lg font-light h-1">Model Token</div>
 		</Label>
 		<Input
 			id="tokenField"
-			class="font-semibold"
+			class="font-base"
 			placeholder="Type in the model token"
 			disabled={!selectedModel}
 			on:change={handleTokenInput}
@@ -244,13 +252,13 @@
 <style>
 	.scroller {
 		width: 600px;
-		height: 500px;
+		height: 400px;
 		top: 20px;
 		position: relative;
 		overflow-x: hidden;
 		overflow-y: auto;
 		display: grid;
-		grid-template-columns: repeat(3, 200px);
+		grid-template-columns: repeat(3, 150px);
 		grid-template-rows: repeat(auto-fill, 220px);
 	}
 
@@ -259,5 +267,6 @@
 		grid-template-columns: repeat(2, 60%, 40%);
 		grid-auto-flow: column;
 		gap: 10px;
+		margin-top: 40px;
 	}
 </style>

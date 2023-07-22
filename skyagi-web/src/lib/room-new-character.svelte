@@ -22,9 +22,8 @@
 			alt=""
 			on:click={updateLastClickedCharacter}
 			class={avatarStyle}
-			width="100px"
 		/>
-		<figcaption class="text-lg mt-2">{character.name}</figcaption>
+		<figcaption class="text-base mt-2">{character.name}</figcaption>
 	</figure>
 </div>
 <Toast />

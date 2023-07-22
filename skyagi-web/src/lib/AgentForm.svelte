@@ -162,19 +162,20 @@
 									<div id="profileButton">
 										<div class="text-sm" id="profileText">Profile Picture</div>
 										<Button size="xs" class="!text-sm font-normal" id="profileButton">Change</Button>
+										<Dropdown class="w-30 overflow-y-auto py-1 h-48">
+											{#each globalAvatarImageList as avatarImage, i}
+												<DropdownItem
+													class="flex items-center text-base font-semibold gap-2"
+													on:click={() => handleAvatarClick(avatarImage)}
+												>
+													<Avatar src={avatarImage} size="lg" rounded />
+												</DropdownItem>
+											{/each}
+										</Dropdown>
 									</div>
 								</div>
 								
-								<Dropdown class="w-48 overflow-y-auto py-1 h-48">
-									{#each globalAvatarImageList as avatarImage, i}
-										<DropdownItem
-											class="flex items-center text-base font-semibold gap-2"
-											on:click={() => handleAvatarClick(avatarImage)}
-										>
-											<Avatar src={avatarImage} size="lg" rounded />
-										</DropdownItem>
-									{/each}
-								</Dropdown>
+								
 							</div>
 						</Label>
 					</div>
