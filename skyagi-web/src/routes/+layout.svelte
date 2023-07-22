@@ -46,21 +46,22 @@
 <svelte:head>
 	<title>SkyAGI</title>
 </svelte:head>
+<html class="dark" lang="en">
+	<div id="header">
+		{#if $page.url.pathname !== '/'}
+			<Button size="xl" on:click={handleSettingsButton}>Settings</Button>
+			<Button size="xl" on:click={handleHomeButton}>Home</Button>
+		{/if}
+	</div>
+	<div class="container" style="padding: 50px 0 100px 0">
+		<slot />
+	</div>
 
-<div id="header">
-	{#if $page.url.pathname !== '/'}
-		<Button size="xl" on:click={handleSettingsButton}>Settings</Button>
-		<Button size="xl" on:click={handleHomeButton}>Home</Button>
-	{/if}
-</div>
-<div class="container" style="padding: 50px 0 100px 0">
-	<slot />
-</div>
-
-<style>
-	#header {
-		text-align: right;
-		margin-top: 20px;
-		margin-right: 400px;
-	}
-</style>
+	<style>
+		#header {
+			text-align: right;
+			margin-top: 20px;
+			margin-right: 400px;
+		}
+	</style>
+</html>
