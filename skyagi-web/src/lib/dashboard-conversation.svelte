@@ -22,8 +22,8 @@
 	$: activeId = handleOpen(open, activeId);
 </script>
 
-<AccordionItem bind:open id="accordion">
-	<span slot="header">
+<AccordionItem bind:open id="accordion" class="rounded-none">
+	<span slot="header" class="text-gray-200 font-light text-lg">
 		{conversationSummary.name}
 	</span>
 	<div slot="arrowup">
@@ -56,5 +56,5 @@
 			/></svg
 		>
 	</span>
-	<p class="whitespace-pre-line mb-2 text-gray-400 text-xl">{conversationSummary.text}</p>
+	<p class="whitespace-pre-line mb-2 text-gray-400 text-base border-0 font-light">{conversationSummary.text}</p>
 </AccordionItem>

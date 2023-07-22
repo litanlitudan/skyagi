@@ -6,13 +6,16 @@
 </script>
 
 <figure>
-	<img class="rounded-lg" src={imageUrl} alt="" width="70px" />
-	<figcaption>{character.name}</figcaption>
+	<img class="rounded-lg" src={imageUrl} style="width:70px" alt=""/>
+	<figcaption class="font-light text-sm">{character.name}</figcaption>
 </figure>
 
 <style>
 	figure {
 		text-align: center;
-		width: 70px;
+		width: 100px;
+	}
+	img {
+		margin-left: 15px
 	}
 </style>
