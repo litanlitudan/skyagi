@@ -61,7 +61,7 @@
 		#header {
 			text-align: right;
 			margin-top: 20px;
-			margin-right: 400px;
+			margin-right: 80px;
 		}
 	</style>
 </html>
