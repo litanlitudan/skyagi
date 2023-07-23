@@ -162,26 +162,27 @@
 									<div id="profileButton">
 										<div class="text-sm" id="profileText">Profile Picture</div>
 										<Button size="xs" class="!text-sm font-normal" id="profileButton">Change</Button>
+										<Dropdown class="w-30 overflow-y-auto py-1 h-48">
+											{#each globalAvatarImageList as avatarImage, i}
+												<DropdownItem
+													class="flex items-center text-base font-semibold gap-2"
+													on:click={() => handleAvatarClick(avatarImage)}
+												>
+													<Avatar src={avatarImage} size="lg" rounded />
+												</DropdownItem>
+											{/each}
+										</Dropdown>
 									</div>
 								</div>
 								
-								<Dropdown class="w-48 overflow-y-auto py-1 h-48">
-									{#each globalAvatarImageList as avatarImage, i}
-										<DropdownItem
-											class="flex items-center text-base font-semibold gap-2"
-											on:click={() => handleAvatarClick(avatarImage)}
-										>
-											<Avatar src={avatarImage} size="lg" rounded />
-										</DropdownItem>
-									{/each}
-								</Dropdown>
+								
 							</div>
 						</Label>
 					</div>
 					<hr class="border-zinc-500">
 						<div>
 							<div class="h-4 text-zinc-500 text-sm" id="profileText">Name:</div>
-							<input id="name" type="text" class="text-gray-200 relative right-3 h-4 text-lg font-light bg-transparent border-0 focus:ring-0" bind:value={agentData.name} />
+							<input id="name" type="text" class="text-gray-200 relative right-3 h-6 text-lg font-light bg-transparent border-0 focus:ring-0" bind:value={agentData.name} />
 						</div>
 					<hr class="border-zinc-500">
 					<div>
@@ -193,7 +194,7 @@
 						<div class="h-4 text-zinc-500 text-sm" id="profileText">Personalities:</div>
 						<input id="personalities" type="text" class="text-gray-200 relative right-3 h-6 text-lg font-light bg-transparent border-0 focus:ring-0" bind:value={agentData.personalities} />
 					</div>
-					<hr class="border-zinc-500">
+					<hr class="border-zinc-500 border-1">
 					<div>
 						<div class="h-4 text-zinc-500 text-sm" id="profileText">Social status:</div>
 						<input id="social-status" type="text" class="text-gray-200 relative right-3 h-6 text-lg font-light bg-transparent border-0 focus:ring-0" bind:value={agentData.socialStatus} />
@@ -203,10 +204,10 @@
 						<div class="h-4 text-zinc-500 text-sm" id="profileText">Memories:</div>
 						{#each agentData.memories as memory, index}
 							<div class="mb-5 mt-5 flex">
-								<input
+								<div class="text-gray-200 text-lg font-bold relative top-2"> • </div>
+								<textarea
 									id="memories"
-									type="text"
-									class="text-gray-200 relative right-3 h-6 mr-2 text-lg font-light bg-transparent border-0 focus:ring-0"
+									class="text-gray-200 relative left-3 mr-2 text-lg font-light bg-transparent border-0 focus:ring-0"
 									placeholder="Social relationship, experience, catch phrase, ..."
 									bind:value={memory}
 									on:input={event => updateMemory(index, event)}
@@ -292,6 +293,10 @@
 		justify-content: center;
 		grid-row-gap: 12px;
 		/* grid-auto-columns: 400px 400px; */
+	}
+	#memories {
+		width: 100%;
+		resize: none
 	}
 	/* .field {
 		display: grid;

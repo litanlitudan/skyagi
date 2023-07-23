@@ -45,25 +45,33 @@
     </Sidebar>
     <div>
         {#each modelTokenData as modelTokenDataPoint, i}
-            <Label for={modelTokenDataPoint.model} class='text-8xl text-white text-opacity-100'>{modelTokenDataPoint.model}</Label>
-            <Input id={modelTokenDataPoint.model} size="lg" placeholder="Your token" bind:value={modelTokenDataPoint.token}/>
+            <Label for={modelTokenDataPoint.model} class='!text-sm text-zinc-400'>{modelTokenDataPoint.model}</Label>
+            <Input id={modelTokenDataPoint.model} class="h-10 mb-7" size="lg" placeholder="Your token" bind:value={modelTokenDataPoint.token}/>
         {/each}
-        <Button on:click={handleSubmit}>
-            Submit
-        </Button>
-        <Button on:click={handleClear}>
-            Clear
-        </Button>
+        <div id="buttonGrid" class="relative bottom-2">
+            <Button on:click={handleSubmit}>
+                Submit
+            </Button>
+            <Button on:click={handleClear}>
+                Clear
+            </Button>
+        </div>
     </div>
     
 </div>
 
 <style>
-    	#globalGrid {
+    #globalGrid {
 		display: grid;
 		grid-template-columns: repeat(2, 40%);
 		grid-auto-flow: column;
 		gap: 10px;
 		/* grid-auto-columns: 400px 400px; */
 	}
+    #buttonGrid {
+        display: grid;
+		grid-auto-flow: row;
+		gap: 14px;
+		/* grid-auto-columns: 400px 400px; */
+    }
 </style>

@@ -22,8 +22,16 @@
 			};
 		});
 	});
+	let popUpError = false;
+	let errorName = 'Selection Error';
+	let errorMsg = '';
 
 	function handleResumeRoomClick() {
+		if (activeId == ""){
+			popUpError = true
+			errorMsg = 'Please select a conversation to resume'
+			return false
+		}
 		window.location.href = '/room/resume-room/' + activeId;
 	}
 
@@ -38,11 +46,12 @@
 
 <div id="globalGrid">
 	<div>
-		<div class="conversationscroller">
+		<div id="conversationscroller" class="rounded-lg">
 			<Accordion
 				id="conversationBoard"
-				activeClasses="bg-gray-800 text-white focus:ring-4 focus:ring-blue-800 text-2xl"
-				inactiveClasses="text-gray-400 hover:bg-gray-800 text-2xl"
+				activeClasses="bg-gray-800 text-white ring-0 text-lg border-0"
+				inactiveClasses="bg-gray-700 text-gray-400 hover:bg-gray-800 text-lg border-0"
+				class="border-0 divide-y-1 !divide-gray-600 rounded-none group-first:rounded-t-xl"
 			>
 				{#await data.streamed.conversations}
 					<div class="text-center"><Spinner /></div>
@@ -64,54 +73,59 @@
 			<Button size="xl" on:click={handleResumeRoomClick}>Resume to the selected conversation</Button
 			>
 			<Button size="xl" on:click={handleCreateRoomClick}>Create new conversation</Button>
+			
+		</div>
+	</div>
+	<div>
+		<div class="scroller">
+			{#await getCharacters}
+				<div class="text-center"><Spinner /></div>
+			{:then value}
+				{#each value as character, i}
+					<a href="agent/{character.id}">
+						<div class="characterInfoSet">
+							<Character {character} imageUrl={character.image} />
+						</div>
+					</a>
+				{/each}
+			{:catch error}
+				<Error errorCode={500} errorName={error.name || ''} errorMsg={error.message} />
+			{/await}
+		</div>
+		<div id="buttonGrid">
 			<Button size="xl" on:click={handleCreateAgentClick}>Create new agent</Button>
 		</div>
 	</div>
-
-	<div class="scroller">
-		{#await getCharacters}
-			<div class="text-center"><Spinner /></div>
-		{:then value}
-			{#each value as character, i}
-				<a href="agent/{character.id}">
-					<div class="characterInfoSet">
-						<Character {character} imageUrl={character.image} />
-					</div>
-				</a>
-			{/each}
-		{:catch error}
-			<Error errorCode={500} errorName={error.name || ''} errorMsg={error.message} />
-		{/await}
-	</div>
+	<Error {errorName} {errorMsg} {popUpError} />
 </div>
 
 <style>
 	.scroller {
 		width: 600px;
-		height: 500px;
+		height: 600px;
 		top: 20px;
 		position: relative;
 		overflow-x: hidden;
 		overflow-y: auto;
 		display: grid;
-		grid-template-columns: repeat(3, 200px);
-		/*grid-template-rows: repeat(auto-fill, 220px);*/
+		grid-template-columns: repeat(3, 250px);
+		grid-template-rows: repeat(auto-fill, 150px);
 	}
 
-	.conversationscroller {
+	#conversationscroller {
 		border: none;
 		width: 600px;
-		height: 1000px;
+		height: 600px;
 		top: 20px;
 		position: relative;
 		overflow-x: hidden;
 		overflow-y: auto;
 		display: grid;
-		grid-template-rows: repeat(auto-fill, 950px);
+		/* grid-template-rows: repeat(auto-fill, 950px); */
 	}
 
 	#conversationBoard {
-		height: 2000px;
+		height: 600px;
 		white-space: pre-line;
 	}
 
@@ -126,6 +140,8 @@
 	#buttonGrid {
 		display: grid;
 		width: 600px;
-		grid-template-rows: (3, 50%);
+		padding-top:50px;
+		position:relative;
+		grid-template-rows: (2, 50%);
 	}
 </style>

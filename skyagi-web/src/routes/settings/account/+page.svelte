@@ -1,7 +1,7 @@
 <!-- src/routes/account/+page.svelte -->
 <script lang="ts">
 	import { Sidebar, SidebarBrand, SidebarCta, SidebarDropdownItem, SidebarDropdownWrapper, 
-        SidebarGroup, SidebarItem, SidebarWrapper } from 'flowbite-svelte';
+        SidebarGroup, SidebarItem, SidebarWrapper, Input, Label } from 'flowbite-svelte';
 	import { enhance, type SubmitFunction } from '$app/forms';
 	import type { ActionData, PageData } from './$types';
 
@@ -53,30 +53,31 @@
 			bind:this={profileForm}
 		>
 			<div>
-				<label for="email">Email</label>
-				<input id="email" type="text" value={session.user.email} disabled />
+				<Label for="email">Email</Label>
+				<Input id="email" type="text" value={session.user.email} disabled />
 			</div>
 
 			<div>
-				<label for="fullName">Full Name</label>
-				<input id="fullName" name="fullName" type="text" value={form?.fullName ?? fullName} />
+				<Label for="fullName">Full Name</Label>
+				<Input id="fullName" name="fullName" type="text" value={form?.fullName ?? fullName} />
 			</div>
 
 			<div>
-				<label for="username">Username</label>
-				<input id="username" name="username" type="text" value={form?.username ?? username} />
+				<Label for="username">Username</Label>
+				<Input id="username" name="username" type="text" value={form?.username ?? username} />
 			</div>
 
 			<div>
-				<label for="website">Website</label>
-				<input id="website" name="website" type="url" value={form?.website ?? website} />
+				<Label for="website">Website</Label>
+				<Input id="website" name="website" type="url" value={form?.website ?? website} />
 			</div>
 			
 
 			<div>
 				<input
 					type="submit"
-					class="button block primary"
+					id="profileText"
+					class="button block primary round-lg h-10 !border-0 !bg-blue-600 hover:!bg-blue-700"
 					value={loading ? 'Loading...' : 'Update'}
 					disabled={loading}
 				/>
@@ -85,7 +86,7 @@
 
 		<form method="post" action="?/signout" use:enhance={handleSignOut}>
 			<div>
-				<button class="button block" disabled={loading}>Sign Out</button>
+				<button id="profileText" class="button block" disabled={loading}>Sign Out</button>
 			</div>
 		</form>
 	</div>
@@ -99,4 +100,8 @@
 	gap: 10px;
 	/* grid-auto-columns: 400px 400px; */
 }
+	#profileText {
+		text-transform: none;
+		/* margin-left: 10px; */
+	}
 </style>
