@@ -51,7 +51,7 @@
 				id="conversationBoard"
 				activeClasses="bg-gray-800 text-white ring-0 text-lg border-0"
 				inactiveClasses="bg-gray-700 text-gray-400 hover:bg-gray-800 text-lg border-0"
-				class="border-0 divide-y-0 rounded-none group-first:rounded-t-xl"
+				class="border-0 divide-y-1 !divide-gray-600 rounded-none group-first:rounded-t-xl"
 			>
 				{#await data.streamed.conversations}
 					<div class="text-center"><Spinner /></div>

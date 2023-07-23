@@ -12,7 +12,9 @@
 		Search,
 		Alert,
 		Avatar,
-		Input
+		Input,
+		Hr
+
 	} from 'flowbite-svelte';
 	import { onDestroy } from 'svelte';
 	export let data;
@@ -269,6 +271,7 @@
 		required
 	/>
 </Label>
+<!-- <Hr class="mr-40"></Hr> -->
 
 <div id="globalGrid">
 	<div>
@@ -291,7 +294,7 @@
 							on:change={updateAgentSelectable}
 						>
 							<Avatar src={character.image} size="md" />
-							<div class="ml-4 text-zinc-200 text-sm">{character.name}</div>
+							<div class="ml-4 text-zinc-200 text-sm" id="agentName">{character.name}</div>
 						</Checkbox>
 					</li>
 				{/each}
@@ -325,7 +328,7 @@
 				<Label class="mb-10">
 					<Select
 						id="playerDropDown"
-						class="mt-5 w-2/3 p-2.5"
+						class="mt-5 p-2.5 !w-2/3"
 						size="md"
 						bind:value={playerCharacterId}
 						placeholder="Select an agent to play"
@@ -365,8 +368,8 @@
 				</Select>
 			</Label>
 
-			<Label class="mb-8 w-1/2 text-white normal-case">
-				<div class="h-4 text-zinc-500 text-lg font-light">Model Token</div>
+			<Label class="mb-5 w-1/2 text-white normal-case">
+				<div class="h-4 text-zinc-500 text-lg font-light w-2/3">Model Token</div>
 			</Label>
 			<Input
 				id="tokenField"
@@ -375,7 +378,7 @@
 				disabled={!selectedModel}
 				on:change={handleTokenInput}
 				bind:value={selectedToken}
-				size="md"
+				size="lg"
 			/>
 		</div>
 	{/if}
@@ -411,5 +414,8 @@
 		grid-auto-flow: column;
 		gap: 10px;
 		/* grid-auto-columns: 400px 400px; */
+	}
+	#agentName {
+		text-transform: none;
 	}
 </style>

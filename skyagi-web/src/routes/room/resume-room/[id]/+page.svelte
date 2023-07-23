@@ -261,7 +261,7 @@
 
 	#globalGrid {
 		display: grid;
-		grid-template-columns: repeat(2, 60%, 40%);
+		grid-template-columns: 1fr 1fr;
 		grid-auto-flow: column;
 		gap: 10px;
 		margin-top: 40px;
