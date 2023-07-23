@@ -258,12 +258,12 @@
 </script>
 
 <Label class="mb-8 w-1/2 text-white normal-case">
-	<div class="text-2xl">Conversation name</div>
+	<div class="h-4 text-zinc-500 text-lg font-light">Conversation Name</div>
 	<Input
 		id="name"
 		type="text"
 		size="lg"
-		class="mt-5 bg-stone-950 text-white font-sans"
+		class="mt-5 bg-stone-950 text-white !w-2/3"
 		placeholder="Type in your conversation name"
 		bind:value={chatName}
 		required
@@ -273,34 +273,36 @@
 <div id="globalGrid">
 	<div>
 		<Label class="mb-8 w-1/2 text-white normal-case">
-			<div class="text-2xl">Pick up to 4 agents for the conversation</div>
+			<div class="h-4 text-zinc-500 text-lg font-light">Pick up to 4 agents for the conversation</div>
 		</Label>
 
-		<Button size="xl"><Chevron>Agents</Chevron></Button>
-		<Dropdown class="overflow-y-auto py-1 h-48 mt-12">
+		<Button size="md"><Chevron>Agents</Chevron></Button>
+		<Dropdown class="overflow-y-auto py-1 h-48 mt-2">
 			<div slot="header" class="p-3">
-				<Search id="searchBar" placeholder="Search..." bind:value={$searchStore.search} />
+				<Search id="searchBar" size="md" placeholder="Search..." bind:value={$searchStore.search} />
 			</div>
-			{#each $searchStore.filtered as character, i}
-				<li class="rounded p-2 hover:bg-gray-300">
-					<Checkbox
-						disabled={!isAgentSelectable[i]}
-						bind:group={checkedCharacterGroup}
-						value={character}
-						on:change={updateAgentSelectable}
-					>
-						<Avatar src={character.image} size="md" />
-						<div class="ml-4 text-green-950 text-lg">{character.name}</div>
-					</Checkbox>
-				</li>
-			{/each}
+			<div>
+				{#each $searchStore.filtered as character, i}
+					<li class="rounded p-2 hover:bg-gray-500">
+						<Checkbox
+							disabled={!isAgentSelectable[i]}
+							bind:group={checkedCharacterGroup}
+							value={character}
+							on:change={updateAgentSelectable}
+						>
+							<Avatar src={character.image} size="md" />
+							<div class="ml-4 text-zinc-200 text-sm">{character.name}</div>
+						</Checkbox>
+					</li>
+				{/each}
+			</div>
 		</Dropdown>
 	</div>
 
 	<div class="mt-20 flex flex-col">
 		{#if checkedCharacterGroup.length > 0}
 			<Label class="mb-4 w-1/2 text-white normal-case">
-				<div class="text-2xl">Click an icon to configure an agent</div>
+				<div class="h-4 text-zinc-500 text-lg font-light">Click an icon to configure an agent</div>
 			</Label>
 		{/if}
 
@@ -319,41 +321,40 @@
 		</div>
 
 		<div>
-			{#if checkedCharacterGroup.length > 0}
-				<div>
-					<Label class="mb-10 w-1/2">
-						<Select
-							id="playerDropDown"
-							class="mt-5 w-1/3 p-2.5"
-							size="lg"
-							bind:value={playerCharacterId}
-							placeholder="Select an agent to play"
-						>
-							{#each characterItems as { value, name }}
-								<option {value} class="text-black font-semibold">{name}</option>
-							{/each}
-						</Select>
-					</Label>
-				</div>
-				<div class="mt-4">
-					<Button size="xl" on:click={handleCreateButton}>Start the conversation</Button>
-				</div>
-			{/if}
+			<div>
+				<Label class="mb-10">
+					<Select
+						id="playerDropDown"
+						class="mt-5 w-2/3 p-2.5"
+						size="md"
+						bind:value={playerCharacterId}
+						placeholder="Select an agent to play"
+					>
+						{#each characterItems as { value, name }}
+							<option {value} class="text-black font-semibold">{name}</option>
+						{/each}
+					</Select>
+				</Label>
+			</div>
+			<div class="mt-4">
+				<Button size="xl" disabled={checkedCharacterGroup.length < 1} on:click={handleCreateButton}>Start the conversation</Button>
+			</div>
 		</div>
 	</div>
 
 	{#if lastClickedCharacterName}
-		<div class="mt-12">
+		<div>
 			<Label class="mb-8 w-1/2 text-white normal-case">
-				<div class="text-3xl mb-8">
-					Agent: <span class="text-blue-500">{lastClickedCharacterName}</span>
+				<div class="h-4 text-zinc-500 text-lg font-light">
+					Agent 
 				</div>
+				<div class="h-4 text-gray-200 text-xl mt-3">{lastClickedCharacterName}</div>
 			</Label>
 			<Label class="mb-8 w-1/2 text-white normal-case">
-				<div class="text-2xl mb-8">Select an LLM Model</div>
+				<div class="h-4 text-zinc-500 text-lg font-light">Select an LLM Model</div>
 				<Select
 					id="modelSelect"
-					class="font-semibold bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+					defaultClass='mt-4 h-12 font-semibold text-base text-gray-900 bg-gray-50 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500'
 					placeholder="Select Model"
 					bind:value={selectedModel}
 					on:change={handleModelChange}
@@ -365,16 +366,16 @@
 			</Label>
 
 			<Label class="mb-8 w-1/2 text-white normal-case">
-				<div class="text-2xl">Model Token</div>
+				<div class="h-4 text-zinc-500 text-lg font-light">Model Token</div>
 			</Label>
 			<Input
 				id="tokenField"
-				class="font-semibold"
+				class="font-base"
 				placeholder="Type in the model token"
 				disabled={!selectedModel}
 				on:change={handleTokenInput}
 				bind:value={selectedToken}
-				size="lg"
+				size="md"
 			/>
 		</div>
 	{/if}
@@ -393,19 +394,20 @@
 
 	.scroller {
 		width: 600px;
-		height: 500px;
+		/* height: 350px; */
 		top: 20px;
 		position: relative;
 		overflow-x: hidden;
 		overflow-y: auto;
 		display: grid;
-		grid-template-columns: repeat(3, 200px);
-		grid-template-rows: repeat(auto-fill, 220px);
+		grid-template-columns: repeat(3, 160px);
+		grid-template-rows: repeat(auto-fill, 200px);
 	}
 
 	#globalGrid {
 		display: grid;
 		grid-template-rows: 50px 500px;
+		grid-template-columns: 1fr 1fr;
 		grid-auto-flow: column;
 		gap: 10px;
 		/* grid-auto-columns: 400px 400px; */

@@ -169,9 +169,6 @@
 </script>
 
 <Label class="mb-8 w-1/2 text-white normal-case">
-	<!-- <div class="h-4 text-zinc-500 text-xl font-light" id="profileText">
-		Conversation Name 
-	</div> -->
 	<div class="h-4 text-gray-200 text-2xl mt-3">{chatName}</div>
 </Label>
 
