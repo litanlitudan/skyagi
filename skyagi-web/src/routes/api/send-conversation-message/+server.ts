@@ -15,7 +15,7 @@ export const POST = (async ({ request, locals }: { request: Request; locals: App
 		initiate_agent_model,
 		recipient_agent_id,
 		recipient_agent_model_settings,
-		message
+		message,
 	} = await request.json();
 
 	// get initiate agent name
@@ -69,4 +69,5 @@ export const POST = (async ({ request, locals }: { request: Request; locals: App
 	};
 	const stream = await getResponseStream(respMetaData, respMsg);
 	return new Response(stream, { headers });
+
 }) satisfies RequestHandler;

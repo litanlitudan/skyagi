@@ -7,7 +7,8 @@
 		answer,
 		currentAgentName,
 		conversationId,
-		userAgentId
+		userAgentId,
+		agentIds
 	} from '$lib/stores/chat-messages';
 	import type { PageData } from './$types';
 	import {
@@ -54,6 +55,7 @@
 		// if the conversation has history, put the history into local storage.
 		conversationId.set(conversationData.id);
 		userAgentId.set(conversationData.userAgents[0].id);
+		agentIds.set(conversationData.agents.map(agent => agent.id));
 		console.log('conversationData', conversationData);
 		console.log('Start loading conversation history');
 		if (conversationData.messages && conversationData.messages.length > 0) {

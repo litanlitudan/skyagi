@@ -118,15 +118,8 @@ export const PUT = (async ({ request, locals }: { request: Request; locals: App.
 
     const respMetaData = {
         'success': 1,
-        'is_valid': true 
-    }
-
-    const headers = {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive'
+        'is_valid': true,
     };
-    const stream = await getResponseStream(respMetaData, msgResp);
-    return new Response(stream, {headers});
+    return new Response(JSON.stringify({ ...respMetaData, message: msgResp }), { status: 200 });
 
 }) satisfies RequestHandler;
