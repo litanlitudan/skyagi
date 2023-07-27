@@ -28,6 +28,7 @@ export async function getResponseStream(metadata: object, respMsg: string) {
                 end = end + chunkSize >= totalLen ? totalLen : end + chunkSize;
                 if (start >= end) {
                     clearInterval(interval);
+                    controller.enqueue(`data: [DONE]\n\n`);
                     controller.close();
                 }
             }, 100);
