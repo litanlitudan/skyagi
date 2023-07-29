@@ -30,19 +30,19 @@
 <div>
 	<div class="col-span-2 h-150">
 		<div class="flex flex-col gap-20">
-			<div class="w-60 h-20 mb-10">
+			<div class="w-80 h-20 mb-10">
 				<h1 class="mb-2 text-xl font-light">Me</h1>
 				<Character character={userAgent} isPlayer={true}/>
 			</div>
-			<div class="w-60">
+			<div class="w-80">
 				<h1 class="mb-2 text-xl font-light">Agents</h1>
 				{#if agents.length > 0}
-					{#each agents as agent}
+					{#each agents as agent, i}
 						<!-- svelte-ignore a11y-click-events-have-key-events -->
-						<div class="mb-2"
+						<div class=""
 							on:click={() => clickHandle(`${conversationId}+${agent.id}`, agent.name, agent.id)}
 						>
-							<Character character={agent} isPlayer={false} bind:lastClickedAgentId={lastClickedAgentId}/>
+							<Character character={agent} isPlayer={false} isStart={i==0} isEnd={i==agents.length-1} bind:lastClickedAgentId={lastClickedAgentId}/>
 						</div>
 					{/each}
 				{/if}

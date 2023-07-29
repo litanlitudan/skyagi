@@ -3,6 +3,10 @@
 	import CharacterDashboard from '$lib/Character_dashboard.svelte';
 	import Input from '$lib/Input.svelte';
 	import {
+		Button,
+
+	} from 'flowbite-svelte';
+	import {
 		chatMessages,
 		answer,
 		currentAgentName,
@@ -85,8 +89,8 @@
 	});
 </script>
 
-<section class="flex max-w-6xl w-full pt-4 justify-center">
-	<div class="flex flex-col gap-2">
+<div id="globalGrid">
+	<div>
 		<CharacterDashboard
 			conversationId={conversationData.id}
 			userAgent={conversationData.userAgents[0]}
@@ -96,37 +100,49 @@
 		/>
 	</div>
 
-	<div class="flex flex-col w-full px-8 items-center gap-2">
-		<div
-			class="h-[700px] w-full bg-black bg-opacity-20 rounded-md p-4 overflow-y-auto flex flex-col gap-4"
-		>
-			<div class="flex flex-col gap-2">
-				{#if $chatMessages.messages}
-					{#each $chatMessages.messages as message}
-						<ChatMessage type={message.role} name={message.name} message={message.content} />
-					{/each}
-				{/if}
-
-				{#if $answer}
-					<ChatMessage
-						type={StoreMessageRole.AGENT}
-						name={get(currentAgentName)}
-						message={$answer}
-					/>
-				{/if}
-			</div>
-		</div>
-		<form
-			class="flex w-full rounded-md gap-4 bg-black bg-opacity-20 p-2"
-			on:submit|preventDefault={handleSubmit}
-		>
-			<Input type="text" bind:value={query} class="w-full" />
-			<button
-				type="submit"
-				class="bg-black bg-opacity-40 hover:bg-white/5 px-8 py-1.5 border border-black/40 ml-[-0.5rem] rounded-md text-teal-300"
+	<div>
+		<div class="bg-gray-800 rounded-md !divide-y-gray-200">
+			<div
+				class="h-[700px] p-4 overflow-y-auto gap-4"
 			>
-				Send
-			</button>
-		</form>
+				<div class="gap-2">
+					{#if $chatMessages.messages}
+						{#each $chatMessages.messages as message}
+							<ChatMessage type={message.role} name={message.name} message={message.content} userAgentName={conversationData.userAgents[0].name} />
+						{/each}
+					{/if}
+
+					{#if $answer}
+						<ChatMessage
+							type={StoreMessageRole.AGENT}
+							name={get(currentAgentName)}
+							message={$answer}
+						/>
+					{/if}
+				</div>
+			</div>
+			<form
+				class="flex w-full gap-4 p-3 pt-5"
+				on:submit|preventDefault={handleSubmit}
+			>
+				<Input type="text" bind:value={query} class="w-full" />
+				<Button
+					type="submit"
+					class="hover:bg-white/5 px-8 mt-2" size="sm"
+				>
+					Send
+				</Button>
+			</form>
+		</div>
 	</div>
-</section>
+</div>
+
+<style>
+	#globalGrid {
+		display: grid;
+		grid-template-columns: 30% 70%;
+		grid-auto-flow: column;
+		/* gap: 200px; */
+		/* grid-auto-columns: 400px 400px; */
+	}
+</style>
