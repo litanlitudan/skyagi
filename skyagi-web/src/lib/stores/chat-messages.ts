@@ -189,6 +189,9 @@ const sendConversationMessage = async (conversationId: string, initiateAgentId: 
     message: query,
   };
   console.log("going to send conversation message for whisper")
+  console.log('initiateAgentId', initiateAgentId);
+  console.log('recipientAgentId', recipientAgentId);
+  console.log("conversation message for whisper content", query);
   // /api/send-conversation-message-no-stream non streaming version TBA
   const resp = await fetch('/api/send-conversation-message-no-stream', {
     headers: {
@@ -236,7 +239,7 @@ const agentsSystemMessagingProcess = async (biDirection = false) => {
           const resp = await sendConversationMessage(get(conversationId), pair[0], pair[1], conversationContent);
           // Parse result
           console.log('!!!sendConversationMessage', resp);
-          shouldContinue = false;
+          shouldContinue = resp.if_continue;
         }
       } else { //  System tells us that there's nothing to conversate between the two agents.
         console.log(`${pair[0]} has nothing to whisper to ${pair[1]}`);
