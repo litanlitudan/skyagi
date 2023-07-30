@@ -32,7 +32,7 @@
 		scrollToDiv.scrollIntoView({ behavior: 'auto', block: 'end', inline: 'end' });
 	});
 
-	const universalStyle="w-5/6 rounded-2xl p-0.25 mb-5 "
+	const universalStyle="max-w-[80%] rounded-2xl p-0.25 mb-5 "
 	const leftStyle="bg-blue-400 float-left  rounded-bl-none"
 	const rightStyle="bg-blue-700 float-left  rounded-br-none"
 </script>
