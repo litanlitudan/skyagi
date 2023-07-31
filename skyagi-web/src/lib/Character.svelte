@@ -9,7 +9,7 @@
 	export let isStart: boolean;
 	export let isEnd: boolean;
 
-	let cardStyle="!bg-blue-700 !border-blue-400 !border-1 hover:!bg-blue-800 hover:cursor-pointer rounded-none"
+	let cardStyle="!border-blue-400 !border-1 hover:!bg-blue-600 hover:cursor-pointer rounded-none"
 	if (isPlayer) {
 		cardStyle="!bg-gray-700 !border-gray-400 !border-1 cursor-default"
 	}
@@ -23,12 +23,11 @@
 		cardStyle += "rounded-t-xl rounded-b-none"
 	}
 	// console.log($lastClickedAgentId)
-	// if (lastClickedAgentId==character.id) {
-	// 		cardStyle="!bg-blue-600 !border-slate-950 hover:!bg-blue-800 hover:cursor-pointer"
-	// 	}
+
+	$: cardColor=(lastClickedAgentId==character.id) ? "background-color: rgb(37 99 235)" : "background-color: rgb(23 37 84)";
 </script>
 
-<Card bind:class={cardStyle} size="sm" >
+<Card bind:class={cardStyle} size="sm" style={cardColor}>
 	<div class="flex items-center space-x-4 !m-0">
 		<Avatar src={character.avatarPath} size="md" alt={character.avatarPath} class="flex-shrink-0 m-0" />
 		<!-- <div>{lastClickedAgentId}</div> -->
@@ -42,6 +41,3 @@
 		</div>
 	</div>
 </Card>
-
-<style>
-</style>

@@ -22,7 +22,6 @@
 	function clickHandle(inputData, agentName, agentId){
 		loadMessages(inputData, agentName, agentId)
 		lastClickedAgentId=agentId
-		console.log("triggered")
 	}
 	
 </script>
