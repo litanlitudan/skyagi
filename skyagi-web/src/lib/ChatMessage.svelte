@@ -33,7 +33,7 @@
 	});
 
 	const universalStyle="max-w-[80%] rounded-2xl p-0.25 mb-5 "
-	const leftStyle="bg-blue-400 float-left  rounded-bl-none"
+	const leftStyle="bg-gray-800 float-left !ring-blue-500 ring-2 rounded-bl-none"
 	const rightStyle="bg-blue-700 float-left  rounded-br-none"
 </script>
 
