@@ -237,11 +237,14 @@ const agentsSystemMessagingProcess = async (biDirection = false) => {
         // Send conversation messages between pair[0] and pair[1], until one of them doesn't want to continue
         let shouldContinue = true; // TODO: change to True
         let conversationContent = initialConversationMessage;
+        let arrowDirection = true; // true means pair0 -> pair1, false means pair1 -> pair0
         while (shouldContinue) {
-          const resp = await sendConversationMessage(get(conversationId), pair[0], pair[1], conversationContent);
+          let resp = await (arrowDirection ? sendConversationMessage(get(conversationId), pair[0], pair[1], conversationContent) : sendConversationMessage(get(conversationId), pair[1], pair[0], conversationContent));
           // Parse result
           console.log('!!!sendConversationMessage', resp);
           shouldContinue = resp.if_continue;
+          conversationContent = resp.message;
+          arrowDirection = !arrowDirection;
         }
       } else { //  System tells us that there's nothing to conversate between the two agents.
         console.log(`${pair[0]} has nothing to whisper to ${pair[1]}`);
