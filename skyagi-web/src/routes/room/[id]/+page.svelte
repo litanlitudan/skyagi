@@ -51,6 +51,15 @@
 		return agentIdToAgentDataMap;
 	};
 
+	const isSystemConversationMessage = (
+		initiateAgentId: string,
+		recipientAgentId: string,
+		userAgentId: string
+	) => {
+		if (initiateAgentId === userAgentId || recipientAgentId === userAgentId) return false;
+		return true;
+	};
+
 	onMount(() => {
 		// if the conversation has history, put the history into local storage.
 		conversationId.set(conversationData.id);
@@ -72,11 +81,19 @@
 					getAgentIdForChat(message, userAgentId)
 				);
 				if (!chatHistoryToLoad[localHistoryKey]) chatHistoryToLoad[localHistoryKey] = [];
-				chatHistoryToLoad[localHistoryKey].push({
-					role: getRole(message.initiateAgentId, userAgentId),
-					name: agentIdToAgentDataMap[message.initiateAgentId].name,
-					content: message.content
-				});
+				if (
+					!isSystemConversationMessage(
+						message.initiateAgentId,
+						message.recipientAgentId,
+						userAgentId
+					)
+				) {
+					chatHistoryToLoad[localHistoryKey].push({
+						role: getRole(message.initiateAgentId, userAgentId),
+						name: agentIdToAgentDataMap[message.initiateAgentId].name,
+						content: message.content
+					});
+				}
 			});
 			console.log('chatHistoryToLoad', chatHistoryToLoad);
 			loadHistoryToLocalStorage(chatHistoryToLoad);
