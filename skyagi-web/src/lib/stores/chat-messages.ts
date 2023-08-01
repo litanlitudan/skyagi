@@ -1,4 +1,4 @@
-import { StoreMessageRole, type StoreMessageType } from '$lib/types';
+import { StoreMessageRole, type StoreMessageType, type AgentDataTypeInConversation } from '$lib/types';
 import { SSE } from 'sse.js';
 import { get, writable } from 'svelte/store';
 import modelTokenDataStore from '$lib/room-store.js';
@@ -211,6 +211,8 @@ const agentsSystemMessagingProcess = async (biDirection = false) => {
   // After that we can use conversation message to let A talk to B with the content returned by system message endpoint
   // the conversation keeps going until if_continue is false
   // .... repeat above for other pairs.
+  let idToAgentInfoMapDict: { [key: string]: AgentDataTypeInConversation } = get(idToAgentInfoMap);
+  console.log('idToAgentInfoMapDict', idToAgentInfoMapDict);
   console.log("inside of agentsSystemMessagingProcess");
   console.log('get(agentIds)', get(agentIds));
   const nonUserAgentIds = get(agentIds).filter(id => id !== get(userAgentId));
@@ -225,11 +227,11 @@ const agentsSystemMessagingProcess = async (biDirection = false) => {
       console.log(`${pair[0]} to ${pair[1]} going to send system message`);
       const systemMessageResult = await getSendSystemMessageContentResult(get(conversationId), pair[0], pair[1]);
       if (!systemMessageResult.success) {
-        handleError(`${pair[0]} ${pair[1]} failed to whisper`);
+        handleError(`${idToAgentInfoMapDict[pair[0]].name} ${idToAgentInfoMapDict[pair[1]].name} failed to whisper`);
       } else if (systemMessageResult.is_valid && systemMessageResult.message) {
         console.log("has systemMessageResult");
         console.log(`${pair[0]} is whispering to ${pair[1]}`);
-        handleSystemMessage(`${pair[0]} is whispering to ${pair[1]}`);
+        handleSystemMessage(`${idToAgentInfoMapDict[pair[0]].name} is whispering to ${idToAgentInfoMapDict[pair[1]].name}`);
         const initialConversationMessage = systemMessageResult.message;
         console.log('initialConversationMessage', initialConversationMessage);
         // Send conversation messages between pair[0] and pair[1], until one of them doesn't want to continue
@@ -243,7 +245,7 @@ const agentsSystemMessagingProcess = async (biDirection = false) => {
         }
       } else { //  System tells us that there's nothing to conversate between the two agents.
         console.log(`${pair[0]} has nothing to whisper to ${pair[1]}`);
-        handleSystemMessage(`${pair[0]} has nothing to whisper to ${pair[1]}`);
+        handleSystemMessage(`${idToAgentInfoMapDict[pair[0]].name} has nothing to whisper to ${idToAgentInfoMapDict[pair[1]].name}`);
       }
       resolve();
     });
@@ -316,6 +318,7 @@ export const currentAgentId = writable<string>('');
 export const conversationId = writable<string>('');
 export const userAgentId = writable<string>('');
 export const agentIds = writable<string[]>([]);
+export const idToAgentInfoMap = writable<{}>({}); //  key is agent id, value is agent info including user name, avatar...
 
 // This is sentence level variable, will reset for each conversation response.
 export const ifContinue = writable<boolean>(true);

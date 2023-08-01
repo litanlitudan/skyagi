@@ -34,6 +34,11 @@ export enum StoreMessageRole {
     AGENT = "agent",
 };
 
+export interface AgentDataTypeInConversation {
+    name: string;
+    avatarPath: string;
+}
+
 export interface StoreMessageType {
     // Both role and name are for the side who delivers this message
     role: StoreMessageRole;
