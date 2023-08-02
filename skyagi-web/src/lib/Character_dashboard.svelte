@@ -41,7 +41,7 @@
 						<div class=""
 							on:click={() => clickHandle(`${conversationId}+${agent.id}`, agent.name, agent.id)}
 						>
-							<Character character={agent} isPlayer={false} isStart={i==0} isEnd={i==agents.length-1} bind:lastClickedAgentId={lastClickedAgentId}/>
+							<Character character={agent} isPlayer={false} bind:lastClickedAgentId={lastClickedAgentId}/>
 						</div>
 					{/each}
 				{/if}

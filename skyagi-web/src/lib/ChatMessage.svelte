@@ -44,7 +44,7 @@
 <div class="flex {classSet[type]}">
 	<div
 		use:typeEffect={message}
-		class="{name == userAgentName ? universalStyle+rightStyle : universalStyle+leftStyle} {classSet[type]} "
+		class="{type == "user_agent" ? universalStyle+rightStyle : universalStyle+leftStyle} {classSet[type]} "
 	>
 		<div class="m-2">
 			{@html DOMPurify.sanitize(marked.parse(message))}
