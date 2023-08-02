@@ -6,25 +6,13 @@
 	export let character: AgentDataType;
 	export let isPlayer: boolean;
 	export let lastClickedAgentId: string;
-	export let isStart: boolean;
-	export let isEnd: boolean;
 
-	let cardStyle="!border-1 hover:!bg-blue-600 hover:cursor-pointer hover:!border-blue-600 rounded-none"
+	let cardStyle="border-0 m-1 hover:!bg-blue-600 hover:cursor-pointer rounded-xl"
 	if (isPlayer) {
-		cardStyle="!bg-gray-700 !border-1 cursor-default"
+		cardStyle="!bg-gray-700 cursor-default rounded-xl"
 	}
-	if (isStart && isEnd) {
-		cardStyle += "rounded-xl"
-	}
-	else if (isEnd) {
-		cardStyle += "rounded-b-xl rounded-t-none"
-	}
-	else if (isStart) {
-		cardStyle += "rounded-t-xl rounded-b-none"
-	}
-	// console.log($lastClickedAgentId)
 
-	$: cardColor=(lastClickedAgentId==character.id) ? "background-color: rgb(37 99 235); border-color: rgb(37 99 235)" : "background-color: rgb(23 37 84); border-color: rgb(23 37 84)";
+	$: cardColor=(lastClickedAgentId==character.id) ? "background-color: rgb(37 99 235)" : "background-color: rgb(23 37 84)";
 </script>
 
 <Card bind:class={cardStyle} size="sm" style={cardColor}>
