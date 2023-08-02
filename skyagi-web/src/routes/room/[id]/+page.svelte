@@ -12,7 +12,8 @@
 		currentAgentName,
 		conversationId,
 		userAgentId,
-		agentIds
+		agentIds,
+		idToAgentInfoMap
 	} from '$lib/stores/chat-messages';
 	import type { PageData } from './$types';
 	import {
@@ -20,7 +21,8 @@
 		type ConversationDataType,
 		type MessageDataType,
 		type StoreMessageType,
-		type AgentDataType
+		type AgentDataType,
+		type AgentDataTypeInConversation
 	} from '$lib/types';
 	import { onMount } from 'svelte';
 	import { loadHistoryToLocalStorage, getLocalHistoryKey } from '$lib/stores/chat-history';
@@ -55,11 +57,28 @@
 		return agentIdToAgentDataMap;
 	};
 
+	const isSystemConversationMessage = (
+		initiateAgentId: string,
+		recipientAgentId: string,
+		userAgentId: string
+	) => {
+		if (initiateAgentId === userAgentId || recipientAgentId === userAgentId) return false;
+		return true;
+	};
+
 	onMount(() => {
 		// if the conversation has history, put the history into local storage.
 		conversationId.set(conversationData.id);
 		userAgentId.set(conversationData.userAgents[0].id);
 		agentIds.set(conversationData.agents.map(agent => agent.id));
+		let idToAgentInfoMapDict: { [key: string]: AgentDataTypeInConversation } = {};
+		conversationData.agents.forEach(agent => {
+			idToAgentInfoMapDict[agent.id] = {
+				name: agent.name,
+				avatarPath: agent.avatarPath
+			};
+		});
+		idToAgentInfoMap.set(idToAgentInfoMapDict);
 		console.log('conversationData', conversationData);
 		console.log('Start loading conversation history');
 		if (conversationData.messages && conversationData.messages.length > 0) {
@@ -76,11 +95,19 @@
 					getAgentIdForChat(message, userAgentId)
 				);
 				if (!chatHistoryToLoad[localHistoryKey]) chatHistoryToLoad[localHistoryKey] = [];
-				chatHistoryToLoad[localHistoryKey].push({
-					role: getRole(message.initiateAgentId, userAgentId),
-					name: agentIdToAgentDataMap[message.initiateAgentId].name,
-					content: message.content
-				});
+				if (
+					!isSystemConversationMessage(
+						message.initiateAgentId,
+						message.recipientAgentId,
+						userAgentId
+					)
+				) {
+					chatHistoryToLoad[localHistoryKey].push({
+						role: getRole(message.initiateAgentId, userAgentId),
+						name: agentIdToAgentDataMap[message.initiateAgentId].name,
+						content: message.content
+					});
+				}
 			});
 			console.log('chatHistoryToLoad', chatHistoryToLoad);
 			loadHistoryToLocalStorage(chatHistoryToLoad);
