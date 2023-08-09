@@ -83,6 +83,7 @@ export const load = (async ({ fetch, locals }) => {
         streamed: {
             agents: getAgents(user_id),
             conversations: getConversationHistory(user_id)
-        }
+        },
+        user_id: user_id
     }
 }) satisfies PageServerLoad;

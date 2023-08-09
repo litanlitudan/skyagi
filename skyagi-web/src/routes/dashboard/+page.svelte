@@ -4,8 +4,11 @@
 	import Conversation from '$lib/dashboard-conversation.svelte';
 	import { globalAvatarImageList } from '$lib/stores.js';
 	import Error from '$lib/Error.svelte';
+	import { _loadPresetConversationsAndCharacters } from './+page';
+	import { goto } from '$app/navigation';
 	export let data;
 	export let activeId = '';
+	let user_id = data.user_id;
 
 	const getCharacters = data.streamed.agents.then(value => {
 		return value.map((characterDataPoint: any) => {
@@ -27,10 +30,10 @@
 	let errorMsg = '';
 
 	function handleResumeRoomClick() {
-		if (activeId == ""){
-			popUpError = true
-			errorMsg = 'Please select a conversation to resume'
-			return false
+		if (activeId == '') {
+			popUpError = true;
+			errorMsg = 'Please select a conversation to resume';
+			return false;
 		}
 		window.location.href = '/room/resume-room/' + activeId;
 	}
@@ -41,6 +44,11 @@
 
 	function handleCreateRoomClick() {
 		window.location.href = '/room/new';
+	}
+
+	function handleLoadPresetConversations() {
+		_loadPresetConversationsAndCharacters(user_id);
+		location.reload();
 	}
 </script>
 
@@ -73,7 +81,6 @@
 			<Button size="xl" on:click={handleResumeRoomClick}>Resume to the selected conversation</Button
 			>
 			<Button size="xl" on:click={handleCreateRoomClick}>Create new conversation</Button>
-			
 		</div>
 	</div>
 	<div>
@@ -81,6 +88,13 @@
 			{#await getCharacters}
 				<div class="text-center"><Spinner /></div>
 			{:then value}
+				{#if value.length == 0}
+					<div id="buttonGrid">
+						<Button size="xl" color="green" on:click={handleLoadPresetConversations}
+							>Load preset characters</Button
+						>
+					</div>
+				{/if}
 				{#each value as character, i}
 					<a href="agent/{character.id}">
 						<div class="characterInfoSet">
@@ -140,8 +154,8 @@
 	#buttonGrid {
 		display: grid;
 		width: 600px;
-		padding-top:50px;
-		position:relative;
+		padding-top: 50px;
+		position: relative;
 		grid-template-rows: (2, 50%);
 	}
 </style>
