@@ -8,6 +8,7 @@
 	export let type: StoreMessageRole;
 	export let name: string;
 	export let message: string = '';
+	export let userAgentName: string = '';
 	export { classes as class };
 
 	let classes = '';
@@ -30,18 +31,24 @@
 	onMount(() => {
 		scrollToDiv.scrollIntoView({ behavior: 'auto', block: 'end', inline: 'end' });
 	});
+
+	const universalStyle="max-w-[80%] rounded-2xl p-0.25 mb-5 "
+	const leftStyle="bg-gray-800 float-left !ring-blue-500 ring-2 rounded-bl-none"
+	const rightStyle="bg-blue-700 float-left  rounded-br-none"
 </script>
 
 <div class="flex items-center {classSet[type]} ">
-	<p class="text-xs px-2">{type === StoreMessageRole.USER_AGENT ? 'Me' : name}</p>
+	<p class="text-sm px-2">{type === StoreMessageRole.USER_AGENT ? 'Me' : name}</p>
 </div>
 
 <div class="flex {classSet[type]}">
 	<div
 		use:typeEffect={message}
-		class="bg-black py-0.5 px-4 max-w-2xl rounded leading-loose {classes} {classSet[type]}"
+		class="{type == "user_agent" ? universalStyle+rightStyle : universalStyle+leftStyle} {classSet[type]} "
 	>
-		{@html DOMPurify.sanitize(marked.parse(message))}
+		<div class="m-2">
+			{@html DOMPurify.sanitize(marked.parse(message))}
+		</div>
 	</div>
 	<div bind:this={scrollToDiv} />
 </div>
